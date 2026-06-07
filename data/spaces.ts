@@ -168,11 +168,11 @@ export const spaces: Space[] = [
   {
     id: "sp-courtyard",
     slug: "courtyard",
-    name: "Courtyard",
+    name: "Green Court",
     description:
-      "The heart of the home — a reflecting pool and frangipani open to the sky.",
+      "The heart of the home — a north-east green court (20'-5\" x 21') with a still water body, open to the sky.",
     designIntent:
-      "A still water court that cools the section, mirrors the sky, and ties the living spaces together. A single sculptural tree, lily pads, and a stone deck edge.",
+      "A planted water court that cools the section, draws soft diffused light into the living spaces, and gives the family an intimate open room. Layered greenery and a stone deck edge frame a calm reflecting surface.",
     image: "/images/elevation/aerial.jpg",
     domainIds: ["dom-architecture", "dom-landscape", "dom-civil", "dom-plumbing"],
     materialIds: ["mat-marble", "mat-wood-slat"],
@@ -235,6 +235,105 @@ export const spaces: Space[] = [
     lighting: ["Scene-controlled cove", "Accent spots", "Pendant over pool table"],
     vendorIds: ["ven-htp", "ven-lighting"],
     drawingIds: ["dwg-arch-ff"],
+    decisionIds: ["dec-automation"],
+    status: "Concept",
+    lessonIds: ["les-automation-negotiation"],
+  },
+
+  // --- Spaces added from the floor plans (GF/FF/SF), suite-level. Images reuse
+  // the closest Studio Anagami rendering until dedicated room photos exist.
+  {
+    id: "sp-foyer",
+    slug: "foyer",
+    name: "Foyer & Entrance",
+    description:
+      "The ground-floor arrival sequence — an 8'-4\" x 12'-3\" entrance deck leading into a 12'-2\" x 6'-11\" foyer.",
+    designIntent:
+      "A calm, framed threshold that sets the material tone before the house opens up to the green court.",
+    image: "/images/renderings/interior-design/common-05.jpg",
+    domainIds: ["dom-interior", "dom-lighting", "dom-flooring"],
+    materialIds: ["mat-marble"],
+    furniture: ["Console with seating niche", "Shoe/storage joinery"],
+    lighting: ["Recessed downlights", "Accent on art niche"],
+    vendorIds: [],
+    drawingIds: ["dwg-arch-gf"],
+    decisionIds: [],
+    status: "Design",
+    lessonIds: [],
+  },
+  {
+    id: "sp-puja",
+    slug: "puja",
+    name: "Puja Room",
+    description:
+      "A dedicated 4'-7\" x 5'-3\" prayer room off the ground-floor common spaces.",
+    designIntent:
+      "A quiet, warm-lit niche in fine joinery — a small sacred pause within the open plan.",
+    image: "/images/renderings/interior-design/common-18.jpg",
+    domainIds: ["dom-interior", "dom-carpentry", "dom-lighting"],
+    materialIds: ["mat-teak-veneer"],
+    furniture: ["Bespoke prayer unit", "Concealed storage"],
+    lighting: ["Warm accent (2700K)", "Concealed cove"],
+    vendorIds: [],
+    drawingIds: ["dwg-arch-gf"],
+    decisionIds: [],
+    status: "Design",
+    lessonIds: [],
+  },
+  {
+    id: "sp-parents",
+    slug: "parents-room",
+    name: "Parents' Room",
+    description:
+      "A ground-floor bedroom suite (10'-3\" x 11'-2\") with an attached toilet, placed for easy single-level living.",
+    designIntent:
+      "An accessible, restful room with a generous wardrobe and soft, even light.",
+    // TODO: stand-in render (a bedroom view) — no dedicated parents'-room render in source PDFs yet.
+    image: "/images/renderings/interior-design/bedroom-30.jpg",
+    domainIds: ["dom-interior", "dom-carpentry", "dom-lighting"],
+    materialIds: ["mat-teak-veneer"],
+    furniture: ["Queen bed", "Wardrobe", "Bedside units"],
+    lighting: ["General downlights", "Bedside reading spots"],
+    vendorIds: [],
+    drawingIds: ["dwg-arch-gf"],
+    decisionIds: [],
+    status: "Design",
+    lessonIds: [],
+  },
+  {
+    id: "sp-study",
+    slug: "study-library",
+    name: "Study & Library",
+    description:
+      "A 24'-6\" x 6'-7\" study/library along the first floor that doubles as a flexible office, opening to or closing off the circulation.",
+    designIntent:
+      "A long wall of shelving and a continuous desk — a focused, book-lined spine to the upper floor.",
+    image: "/images/renderings/interior-design/common-22.jpg",
+    domainIds: ["dom-interior", "dom-carpentry", "dom-lighting"],
+    materialIds: ["mat-teak-veneer"],
+    furniture: ["Full-height bookshelves", "Continuous study desk", "Reading chair"],
+    lighting: ["Linear shelf grazing", "Desk task light"],
+    vendorIds: [],
+    drawingIds: ["dwg-arch-ff"],
+    decisionIds: [],
+    status: "Design",
+    lessonIds: [],
+  },
+  {
+    id: "sp-lounge",
+    slug: "lounge-bar",
+    name: "Lounge & Bar",
+    description:
+      "A 16'-5\" x 12' lounge and bar on the second floor, adjoining the multipurpose space and terrace.",
+    designIntent:
+      "An entertaining edge — bar counter, soft seating and warm, scene-controlled light for evenings.",
+    image: "/images/renderings/interior-design/multipurpose-6.jpg",
+    domainIds: ["dom-interior", "dom-automation", "dom-lighting", "dom-carpentry"],
+    materialIds: ["mat-teak-veneer", "mat-microcement"],
+    furniture: ["Bar counter with stools", "Lounge seating"],
+    lighting: ["Scene-controlled cove", "Backlit bar shelving"],
+    vendorIds: ["ven-htp", "ven-lighting"],
+    drawingIds: [],
     decisionIds: ["dec-automation"],
     status: "Concept",
     lessonIds: ["les-automation-negotiation"],
