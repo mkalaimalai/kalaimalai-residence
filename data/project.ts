@@ -26,9 +26,9 @@ export const project: Project = {
   villaNo: "", // redacted — private
   community: "", // redacted — private
   address: "", // redacted — private (withheld from the public archive)
-  plotArea: "4,800 sq ft",
-  builtUpArea: "6,200 sq ft",
+  plotArea: "4,000 sq ft",
+  builtUpArea: "5,200 sq ft",
   floors: 3,
   status: "Execution",
-  startDate: "2024-08-01",
+  startDate: "2022-08-01",
 };
