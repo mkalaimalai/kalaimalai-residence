@@ -107,5 +107,202 @@ export const renderingsByDomain: Record<string, RenderingSet[]> = {
         "/images/renderings/interior-design/multipurpose-9.jpg"
       ]
     }
+  ],
+  "lighting": [
+    {
+      "title": "Younger Daughter's Bedroom",
+      "width": 1600,
+      "height": 901,
+      "images": [
+        "/images/renderings/lighting/younger-01.jpg",
+        "/images/renderings/lighting/younger-02.jpg",
+        "/images/renderings/lighting/younger-03.jpg",
+        "/images/renderings/lighting/younger-04.jpg"
+      ]
+    },
+    {
+      "title": "Elder Daughter's Bedroom",
+      "width": 1600,
+      "height": 901,
+      "images": [
+        "/images/renderings/lighting/elder-01.jpg",
+        "/images/renderings/lighting/elder-02.jpg",
+        "/images/renderings/lighting/elder-03.jpg",
+        "/images/renderings/lighting/elder-04.jpg",
+        "/images/renderings/lighting/elder-05.jpg"
+      ]
+    },
+    {
+      "title": "Master Bedroom",
+      "width": 1600,
+      "height": 901,
+      "images": [
+        "/images/renderings/lighting/master-01.jpg",
+        "/images/renderings/lighting/master-02.jpg",
+        "/images/renderings/lighting/master-03.jpg",
+        "/images/renderings/lighting/master-04.jpg",
+        "/images/renderings/lighting/master-05.jpg",
+        "/images/renderings/lighting/master-06.jpg"
+      ]
+    },
+    {
+      "title": "Common Spaces",
+      "width": 1600,
+      "height": 901,
+      "subsections": [
+        {
+          "title": "Living Area",
+          "images": [
+            "/images/renderings/lighting/living-01.jpg",
+            "/images/renderings/lighting/living-02.jpg",
+            "/images/renderings/lighting/living-03.jpg",
+            "/images/renderings/lighting/living-04.jpg",
+            "/images/renderings/lighting/living-05.jpg",
+            "/images/renderings/lighting/living-06.jpg",
+            "/images/renderings/lighting/living-07.jpg",
+            "/images/renderings/lighting/living-08.jpg",
+            "/images/renderings/lighting/living-09.jpg"
+          ]
+        },
+        {
+          "title": "Kitchen & Dining",
+          "images": [
+            "/images/renderings/lighting/kitchen-01.jpg",
+            "/images/renderings/lighting/kitchen-02.jpg",
+            "/images/renderings/lighting/kitchen-03.jpg",
+            "/images/renderings/lighting/kitchen-04.jpg"
+          ]
+        },
+        {
+          "title": "First Floor Common Area",
+          "images": [
+            "/images/renderings/lighting/ff-common-01.jpg",
+            "/images/renderings/lighting/ff-common-02.jpg",
+            "/images/renderings/lighting/ff-common-03.jpg",
+            "/images/renderings/lighting/ff-common-04.jpg",
+            "/images/renderings/lighting/ff-common-05.jpg"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Exterior — Landscape & Facade",
+      "width": 1600,
+      "height": 901,
+      "images": [
+        "/images/renderings/lighting/exterior-01.jpg",
+        "/images/renderings/lighting/exterior-02.jpg",
+        "/images/renderings/lighting/exterior-03.jpg",
+        "/images/renderings/lighting/exterior-04.jpg",
+        "/images/renderings/lighting/exterior-05.jpg",
+        "/images/renderings/lighting/exterior-06.jpg",
+        "/images/renderings/lighting/exterior-07.jpg",
+        "/images/renderings/lighting/exterior-08.jpg",
+        "/images/renderings/lighting/exterior-09.jpg",
+        "/images/renderings/lighting/exterior-10.jpg",
+        "/images/renderings/lighting/exterior-11.jpg",
+        "/images/renderings/lighting/exterior-12.jpg",
+        "/images/renderings/lighting/exterior-13.jpg",
+        "/images/renderings/lighting/exterior-14.jpg",
+        "/images/renderings/lighting/exterior-15.jpg",
+        "/images/renderings/lighting/exterior-16.jpg"
+      ]
+    }
+  ],
+  "flooring": [
+    {
+      "title": "Ground Floor",
+      "width": 1600,
+      "height": 901,
+      "images": [
+        "/images/renderings/flooring/gf-01.jpg",
+        "/images/renderings/flooring/gf-02.jpg",
+        "/images/renderings/flooring/gf-03.jpg",
+        "/images/renderings/flooring/gf-04.jpg",
+        "/images/renderings/flooring/gf-05.jpg",
+        "/images/renderings/flooring/gf-06.jpg",
+        "/images/renderings/flooring/gf-07.jpg",
+        "/images/renderings/flooring/gf-08.jpg",
+        "/images/renderings/flooring/gf-09.jpg",
+        "/images/renderings/flooring/gf-10.jpg",
+        "/images/renderings/flooring/gf-11.jpg",
+        "/images/renderings/flooring/gf-12.jpg",
+        "/images/renderings/flooring/gf-13.jpg",
+        "/images/renderings/flooring/gf-14.jpg",
+        "/images/renderings/flooring/gf-15.jpg",
+        "/images/renderings/flooring/gf-16.jpg",
+        "/images/renderings/flooring/gf-17.jpg",
+        "/images/renderings/flooring/gf-18.jpg",
+        "/images/renderings/flooring/gf-19.jpg",
+        "/images/renderings/flooring/gf-20.jpg",
+        "/images/renderings/flooring/gf-21.jpg",
+        "/images/renderings/flooring/gf-22.jpg",
+        "/images/renderings/flooring/gf-23.jpg"
+      ]
+    },
+    {
+      "title": "Second Floor",
+      "width": 1600,
+      "height": 901,
+      "images": [
+        "/images/renderings/flooring/sf-01.jpg",
+        "/images/renderings/flooring/sf-02.jpg",
+        "/images/renderings/flooring/sf-03.jpg",
+        "/images/renderings/flooring/sf-04.jpg",
+        "/images/renderings/flooring/sf-05.jpg",
+        "/images/renderings/flooring/sf-06.jpg",
+        "/images/renderings/flooring/sf-07.jpg",
+        "/images/renderings/flooring/sf-08.jpg",
+        "/images/renderings/flooring/sf-09.jpg",
+        "/images/renderings/flooring/sf-10.jpg",
+        "/images/renderings/flooring/sf-11.jpg",
+        "/images/renderings/flooring/sf-12.jpg",
+        "/images/renderings/flooring/sf-13.jpg",
+        "/images/renderings/flooring/sf-14.jpg",
+        "/images/renderings/flooring/sf-15.jpg",
+        "/images/renderings/flooring/sf-16.jpg",
+        "/images/renderings/flooring/sf-17.jpg",
+        "/images/renderings/flooring/sf-18.jpg",
+        "/images/renderings/flooring/sf-19.jpg",
+        "/images/renderings/flooring/sf-20.jpg",
+        "/images/renderings/flooring/sf-21.jpg",
+        "/images/renderings/flooring/sf-22.jpg"
+      ]
+    },
+    {
+      "title": "Terrace Floor",
+      "width": 1600,
+      "height": 901,
+      "images": [
+        "/images/renderings/flooring/tf-01.jpg",
+        "/images/renderings/flooring/tf-02.jpg",
+        "/images/renderings/flooring/tf-03.jpg",
+        "/images/renderings/flooring/tf-04.jpg",
+        "/images/renderings/flooring/tf-05.jpg",
+        "/images/renderings/flooring/tf-06.jpg",
+        "/images/renderings/flooring/tf-07.jpg",
+        "/images/renderings/flooring/tf-08.jpg",
+        "/images/renderings/flooring/tf-09.jpg",
+        "/images/renderings/flooring/tf-10.jpg",
+        "/images/renderings/flooring/tf-11.jpg",
+        "/images/renderings/flooring/tf-12.jpg",
+        "/images/renderings/flooring/tf-13.jpg",
+        "/images/renderings/flooring/tf-14.jpg",
+        "/images/renderings/flooring/tf-15.jpg",
+        "/images/renderings/flooring/tf-16.jpg",
+        "/images/renderings/flooring/tf-17.jpg",
+        "/images/renderings/flooring/tf-18.jpg",
+        "/images/renderings/flooring/tf-19.jpg",
+        "/images/renderings/flooring/tf-20.jpg",
+        "/images/renderings/flooring/tf-21.jpg",
+        "/images/renderings/flooring/tf-22.jpg",
+        "/images/renderings/flooring/tf-23.jpg",
+        "/images/renderings/flooring/tf-24.jpg",
+        "/images/renderings/flooring/tf-25.jpg",
+        "/images/renderings/flooring/tf-26.jpg",
+        "/images/renderings/flooring/tf-27.jpg",
+        "/images/renderings/flooring/tf-28.jpg"
+      ]
+    }
   ]
 };

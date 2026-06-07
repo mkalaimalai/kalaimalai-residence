@@ -21,6 +21,7 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { Chip, ChipGroup } from "@/components/Chip";
 import { RenderingGallery } from "@/components/RenderingGallery";
 import { renderingsByDomain } from "@/data/renderings";
+import { drawingSheetsByDomain } from "@/data/drawingSheets";
 
 export async function generateStaticParams() {
   const domains = await getDomains();
@@ -63,6 +64,7 @@ export default async function DomainDetailPage({
   const relLessons = lessonsByIds(domain.lessonIds, lessons);
 
   const renderingSets = renderingsByDomain[domain.slug] ?? [];
+  const drawingSets = drawingSheetsByDomain[domain.slug] ?? [];
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-16">
@@ -92,6 +94,19 @@ export default async function DomainDetailPage({
           />
           <div className="mt-8">
             <RenderingGallery sets={renderingSets} />
+          </div>
+        </section>
+      )}
+
+      {drawingSets.length > 0 && (
+        <section className="mt-14">
+          <SectionHeading
+            eyebrow="Working drawings"
+            title="Drawings"
+            description="Flooring layout plans and detail sheets."
+          />
+          <div className="mt-8">
+            <RenderingGallery sets={drawingSets} />
           </div>
         </section>
       )}
