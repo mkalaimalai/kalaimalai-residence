@@ -19,6 +19,8 @@ import {
 import { SectionHeading } from "@/components/SectionHeading";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Chip, ChipGroup } from "@/components/Chip";
+import { RenderingGallery } from "@/components/RenderingGallery";
+import { renderingsByDomain } from "@/data/renderings";
 
 export async function generateStaticParams() {
   const domains = await getDomains();
@@ -60,6 +62,8 @@ export default async function DomainDetailPage({
   const relVendors = vendorsByIds(domain.vendorIds, vendors);
   const relLessons = lessonsByIds(domain.lessonIds, lessons);
 
+  const renderingSets = renderingsByDomain[domain.slug] ?? [];
+
   return (
     <main className="mx-auto max-w-5xl px-6 py-16">
       <Link
@@ -78,6 +82,19 @@ export default async function DomainDetailPage({
       <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
         {domain.description}
       </p>
+
+      {renderingSets.length > 0 && (
+        <section className="mt-14">
+          <SectionHeading
+            eyebrow="Studio Anagami"
+            title="Renderings"
+            description="Interior presentation decks — scroll through each space."
+          />
+          <div className="mt-8">
+            <RenderingGallery sets={renderingSets} />
+          </div>
+        </section>
+      )}
 
       <div className="mt-12 grid gap-10 sm:grid-cols-2">
         {relSpaces.length > 0 && (
