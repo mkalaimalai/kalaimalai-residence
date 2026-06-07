@@ -114,7 +114,7 @@ export const spaces: Space[] = [
   {
     id: "sp-bed2",
     slug: "bedroom-2",
-    name: "Bedroom 2",
+    name: "Elder Daughter's Bedroom",
     description: "A bright guest/children's room on the first floor.",
     designIntent:
       "Soft, flexible and warm — built-in study, calm neutrals, generous wardrobe.",
@@ -132,7 +132,7 @@ export const spaces: Space[] = [
   {
     id: "sp-bed3",
     slug: "bedroom-3",
-    name: "Bedroom 3",
+    name: "Younger Daughter's Bedroom",
     description: "A compact bedroom opening to the rear.",
     designIntent: "Quiet neutrals with a single accent wall and a garden view.",
     image: "/images/spaces/bedroom-3.jpg",
