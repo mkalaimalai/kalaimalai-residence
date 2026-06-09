@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { getMaterials } from "@/lib/repository";
 import { SectionHeading } from "@/components/SectionHeading";
 import { MaterialsLibrary } from "@/components/MaterialsLibrary";
+import { JsonLd } from "@/components/JsonLd";
+import { itemListJsonLd, productJsonLd } from "@/lib/jsonld";
 
 export const metadata: Metadata = {
   title: "Materials · A Contemporary Zen Residence",
@@ -14,6 +16,9 @@ export default async function MaterialsPage() {
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-16">
+      <JsonLd
+        data={itemListJsonLd(materials.map(productJsonLd), { name: "Materials" })}
+      />
       <SectionHeading
         eyebrow="The palette"
         title="Materials"

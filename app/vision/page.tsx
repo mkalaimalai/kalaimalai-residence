@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { getProject } from "@/lib/repository";
 import { SectionHeading } from "@/components/SectionHeading";
+import { JsonLd } from "@/components/JsonLd";
+import { houseJsonLd, projectJsonLd } from "@/lib/jsonld";
 
 export const metadata: Metadata = {
   title: "Vision · A Contemporary Zen Residence",
@@ -50,6 +52,7 @@ export default async function VisionPage() {
 
   return (
     <main className="flex flex-col">
+      <JsonLd data={[projectJsonLd(project), houseJsonLd(project)]} />
       <section className="relative h-[48vh] min-h-[360px] w-full">
         <Image
           src="/images/elevation/aerial.jpg"

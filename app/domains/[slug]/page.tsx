@@ -19,6 +19,8 @@ import {
 import { SectionHeading } from "@/components/SectionHeading";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Chip, ChipGroup } from "@/components/Chip";
+import { JsonLd } from "@/components/JsonLd";
+import { domainJsonLd, itemListJsonLd, vendorJsonLd } from "@/lib/jsonld";
 import { RenderingGallery } from "@/components/RenderingGallery";
 import { renderingsByDomain } from "@/data/renderings";
 import { drawingSheetsByDomain } from "@/data/drawingSheets";
@@ -66,8 +68,16 @@ export default async function DomainDetailPage({
   const renderingSets = renderingsByDomain[domain.slug] ?? [];
   const drawingSets = drawingSheetsByDomain[domain.slug] ?? [];
 
+  const domainLd = domainJsonLd(domain);
+  const jsonLd = relVendors.length
+    ? [domainLd, itemListJsonLd(relVendors.map(vendorJsonLd), {
+        name: `${domain.name} vendors`,
+      })]
+    : domainLd;
+
   return (
     <main className="mx-auto max-w-5xl px-6 py-16">
+      <JsonLd data={jsonLd} />
       <Link
         href="/domains"
         className="mb-6 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"

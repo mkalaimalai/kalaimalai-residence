@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { getGallery } from "@/lib/repository";
 import { SectionHeading } from "@/components/SectionHeading";
 import { GalleryGrid } from "@/components/GalleryGrid";
+import { JsonLd } from "@/components/JsonLd";
+import { imageObjectJsonLd, itemListJsonLd } from "@/lib/jsonld";
 
 export const metadata: Metadata = {
   title: "Gallery · A Contemporary Zen Residence",
@@ -14,6 +16,9 @@ export default async function GalleryPage() {
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-16">
+      <JsonLd
+        data={itemListJsonLd(gallery.map(imageObjectJsonLd), { name: "Gallery" })}
+      />
       <SectionHeading
         eyebrow="The visual archive"
         title="Gallery"
