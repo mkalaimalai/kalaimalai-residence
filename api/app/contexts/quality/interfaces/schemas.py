@@ -79,6 +79,43 @@ class DecisionCreate(CamelModel):
     status: str = "Open"
 
 
+class InspectionResponse(CamelModel):
+    id: str
+    space_id: str
+    work_package_id: str
+    inspector: str
+    inspection_date: str
+    result: str
+    notes: str
+
+
+class InspectionCreate(CamelModel):
+    space_id: str = ""
+    work_package_id: str = ""
+    inspector: str = ""
+    inspection_date: str = ""
+    result: str = "Pending"
+    notes: str = ""
+
+
+class InspectionUpdate(CamelModel):
+    space_id: str | None = None
+    work_package_id: str | None = None
+    inspector: str | None = None
+    inspection_date: str | None = None
+    result: str | None = None
+    notes: str | None = None
+
+
+class SnagAssign(CamelModel):
+    assigned_to: str
+
+
+class SnagResolve(CamelModel):
+    actual_closure_date: str = ""
+    notes: str = ""
+
+
 class DecisionUpdate(CamelModel):
     title: str | None = None
     domain_id: str | None = None

@@ -20,6 +20,17 @@ class Snag:
 
 
 @dataclass
+class Inspection:
+    id: str
+    space_id: str
+    work_package_id: str = ""
+    inspector: str = ""
+    inspection_date: str = ""
+    result: str = "Pending"  # Pending|Pass|Fail
+    notes: str = ""
+
+
+@dataclass
 class Decision:
     id: str
     title: str

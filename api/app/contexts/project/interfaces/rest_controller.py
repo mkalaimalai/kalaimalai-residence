@@ -123,6 +123,16 @@ async def create_project(body: s.ProjectCreate, repo=Depends(_project_repo)):
     return s.FullProject.model_validate(project)
 
 
+@projects_router.get(
+    "/{project_id}", response_model=s.FullProject, dependencies=[Depends(require_user)]
+)
+async def get_project_by_id(project_id: str, repo=Depends(_project_repo)):
+    project = await repo.get(project_id)
+    if project is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, f"project {project_id} not found")
+    return s.FullProject.model_validate(project)
+
+
 @projects_router.patch(
     "/{project_id}", response_model=s.FullProject,
     dependencies=[Depends(require_admin)],
@@ -135,6 +145,26 @@ async def patch_project(project_id: str, body: s.ProjectUpdate, repo=Depends(_pr
     except NotFoundError as exc:
         raise HTTPException(status.HTTP_404_NOT_FOUND, str(exc)) from exc
     return s.FullProject.model_validate(project)
+
+
+# --- Project-nested spaces (§6) — single-project semantics -------------------------
+@projects_router.get("/{project_id}/spaces", response_model=list[s.SpaceResponse])
+async def list_project_spaces(
+    project_id: str, session: AsyncSession = Depends(get_session)
+):
+    repo = SqlAlchemySpaceRepository(session)
+    return [s.SpaceResponse.model_validate(sp) for sp in await repo.list_all()]
+
+
+@projects_router.post(
+    "/{project_id}/spaces", response_model=s.SpaceResponse,
+    status_code=status.HTTP_201_CREATED, dependencies=[Depends(require_admin)],
+)
+async def create_project_space(
+    project_id: str, body: s.SpaceCreate, session: AsyncSession = Depends(get_session)
+):
+    space = await _space_service(session).create(body.model_dump(by_alias=False))
+    return s.SpaceResponse.model_validate(space)
 
 
 routers = [

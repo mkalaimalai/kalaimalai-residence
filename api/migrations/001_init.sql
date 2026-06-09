@@ -1,8 +1,8 @@
 -- Auto-generated from SQLAlchemy metadata. Apply once to the Supabase database.
--- Bounded contexts own disjoint tables; see api/app/contexts/<ctx>/infrastructure/orm.py
 
 CREATE TABLE IF NOT EXISTS boq_line_items (
 	id VARCHAR NOT NULL, 
+	boq_id VARCHAR NOT NULL, 
 	project_id VARCHAR NOT NULL, 
 	space_id VARCHAR NOT NULL, 
 	work_package_id VARCHAR NOT NULL, 
@@ -49,6 +49,17 @@ CREATE TABLE IF NOT EXISTS decisions (
 	PRIMARY KEY (id)
 );
 
+CREATE TABLE IF NOT EXISTS deliveries (
+	id VARCHAR NOT NULL, 
+	purchase_order_id VARCHAR NOT NULL, 
+	project_id VARCHAR NOT NULL, 
+	expected_date VARCHAR NOT NULL, 
+	actual_date VARCHAR NOT NULL, 
+	status VARCHAR NOT NULL, 
+	notes TEXT NOT NULL, 
+	PRIMARY KEY (id)
+);
+
 CREATE TABLE IF NOT EXISTS domains (
 	id VARCHAR NOT NULL, 
 	slug VARCHAR NOT NULL, 
@@ -88,6 +99,17 @@ CREATE TABLE IF NOT EXISTS gallery_items (
 	PRIMARY KEY (id)
 );
 
+CREATE TABLE IF NOT EXISTS inspections (
+	id VARCHAR NOT NULL, 
+	space_id VARCHAR NOT NULL, 
+	work_package_id VARCHAR NOT NULL, 
+	inspector VARCHAR NOT NULL, 
+	inspection_date VARCHAR NOT NULL, 
+	result VARCHAR NOT NULL, 
+	notes TEXT NOT NULL, 
+	PRIMARY KEY (id)
+);
+
 CREATE TABLE IF NOT EXISTS lessons (
 	id VARCHAR NOT NULL, 
 	title VARCHAR NOT NULL, 
@@ -108,6 +130,18 @@ CREATE TABLE IF NOT EXISTS materials (
 	status VARCHAR NOT NULL, 
 	image VARCHAR NOT NULL, 
 	notes TEXT NOT NULL, 
+	PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS notifications (
+	id VARCHAR NOT NULL, 
+	channel VARCHAR NOT NULL, 
+	recipient VARCHAR NOT NULL, 
+	subject VARCHAR NOT NULL, 
+	body TEXT NOT NULL, 
+	status VARCHAR NOT NULL, 
+	related_entity VARCHAR NOT NULL, 
+	created_at VARCHAR NOT NULL, 
 	PRIMARY KEY (id)
 );
 
@@ -168,6 +202,19 @@ CREATE TABLE IF NOT EXISTS projects (
 	PRIMARY KEY (id)
 );
 
+CREATE TABLE IF NOT EXISTS purchase_orders (
+	id VARCHAR NOT NULL, 
+	project_id VARCHAR NOT NULL, 
+	quote_id VARCHAR NOT NULL, 
+	vendor_id VARCHAR NOT NULL, 
+	amount NUMERIC NOT NULL, 
+	currency VARCHAR NOT NULL, 
+	status VARCHAR NOT NULL, 
+	created_at VARCHAR NOT NULL, 
+	notes TEXT NOT NULL, 
+	PRIMARY KEY (id)
+);
+
 CREATE TABLE IF NOT EXISTS quote_line_items (
 	id VARCHAR NOT NULL, 
 	quote_id VARCHAR NOT NULL, 
@@ -189,6 +236,7 @@ CREATE TABLE IF NOT EXISTS quotes (
 	id VARCHAR NOT NULL, 
 	project_id VARCHAR NOT NULL, 
 	vendor_id VARCHAR NOT NULL, 
+	boq_id VARCHAR NOT NULL, 
 	quote_number VARCHAR NOT NULL, 
 	quote_date VARCHAR NOT NULL, 
 	valid_until VARCHAR NOT NULL, 
@@ -199,6 +247,9 @@ CREATE TABLE IF NOT EXISTS quotes (
 	terms TEXT NOT NULL, 
 	document_id VARCHAR NOT NULL, 
 	comparison_status VARCHAR NOT NULL, 
+	approved_amount NUMERIC NOT NULL, 
+	approved_by VARCHAR NOT NULL, 
+	approval_note TEXT NOT NULL, 
 	PRIMARY KEY (id)
 );
 

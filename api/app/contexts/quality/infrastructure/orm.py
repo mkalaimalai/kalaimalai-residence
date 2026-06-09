@@ -24,6 +24,18 @@ class SnagModel(Base):
     notes: Mapped[str] = mapped_column(Text, default="")
 
 
+class InspectionModel(Base):
+    __tablename__ = "inspections"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    space_id: Mapped[str] = mapped_column(String, default="")
+    work_package_id: Mapped[str] = mapped_column(String, default="")
+    inspector: Mapped[str] = mapped_column(String, default="")
+    inspection_date: Mapped[str] = mapped_column(String, default="")
+    result: Mapped[str] = mapped_column(String, default="Pending")
+    notes: Mapped[str] = mapped_column(Text, default="")
+
+
 class DecisionModel(Base):
     __tablename__ = "decisions"
 

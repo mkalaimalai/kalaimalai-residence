@@ -86,4 +86,19 @@ materials_router = make_crud_router(
     id_prefix="material", public_read=True, service_factory=_material_service,
 )
 
-routers = [boq_router, procurement_router, materials_router]
+# Quote / PurchaseOrder / Delivery routers (the §5/§9 flow) live in quote_controller;
+# §6 endpoint-shape conformance (boq-packages, project-nested reads) in nested_controller.
+from app.contexts.commercial.interfaces.nested_controller import (  # noqa: E402
+    routers as nested_routers,
+)
+from app.contexts.commercial.interfaces.quote_controller import (  # noqa: E402
+    routers as quote_routers,
+)
+
+routers = [
+    boq_router,
+    procurement_router,
+    materials_router,
+    *quote_routers,
+    *nested_routers,
+]

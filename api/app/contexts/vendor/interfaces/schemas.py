@@ -41,6 +41,18 @@ class VendorCreate(CamelModel):
     notes: str = ""
 
 
+class VendorRatings(CamelModel):
+    vendor_id: str
+    rating_value: float
+    best_rating: int = 5
+    rating_count: int = 1
+
+
+class VerificationStatusRequest(CamelModel):
+    # Unverified | Verified | Preferred (schema.md §12.1)
+    status: str
+
+
 class VendorUpdate(CamelModel):
     name: str | None = None
     category: str | None = None

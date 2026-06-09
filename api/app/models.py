@@ -8,8 +8,10 @@ from __future__ import annotations
 from app.contexts.commercial.infrastructure.orm import (  # noqa: F401
     BOQLineItemModel,
     BOQModel,
+    DeliveryModel,
     MaterialModel,
     ProcurementModel,
+    PurchaseOrderModel,
     QuoteLineItemModel,
     QuoteModel,
 )
@@ -19,6 +21,9 @@ from app.contexts.document.infrastructure.orm import (  # noqa: F401
     LessonModel,
 )
 from app.contexts.handover.infrastructure.orm import WarrantyModel  # noqa: F401
+from app.contexts.notification.infrastructure.orm import (  # noqa: F401
+    NotificationModel,
+)
 from app.contexts.project.infrastructure.orm import (  # noqa: F401
     DomainModel,
     ProgressModel,
@@ -27,6 +32,7 @@ from app.contexts.project.infrastructure.orm import (  # noqa: F401
 )
 from app.contexts.quality.infrastructure.orm import (  # noqa: F401
     DecisionModel,
+    InspectionModel,
     SnagModel,
 )
 from app.contexts.vendor.infrastructure.orm import VendorModel  # noqa: F401

@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.contexts.quality.domain import entities as e
 from app.contexts.quality.domain.repository import (
     DecisionRepository,
+    InspectionRepository,
     SnagRepository,
 )
 from app.contexts.quality.infrastructure import orm
@@ -22,3 +23,10 @@ class SqlAlchemyDecisionRepository(
 ):
     def __init__(self, session: AsyncSession) -> None:
         super().__init__(session, orm.DecisionModel, e.Decision)
+
+
+class SqlAlchemyInspectionRepository(
+    SqlAlchemyCrudRepository[e.Inspection], InspectionRepository
+):
+    def __init__(self, session: AsyncSession) -> None:
+        super().__init__(session, orm.InspectionModel, e.Inspection)

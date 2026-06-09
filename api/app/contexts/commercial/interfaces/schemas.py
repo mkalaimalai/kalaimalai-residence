@@ -137,3 +137,163 @@ class MaterialUpdate(CamelModel):
     status: str | None = None
     image: str | None = None
     notes: str | None = None
+
+
+# --- Quote -------------------------------------------------------------------------
+class QuoteResponse(CamelModel):
+    id: str
+    project_id: str
+    vendor_id: str
+    boq_id: str
+    quote_number: str
+    quote_date: str
+    valid_until: str
+    total_amount: float
+    currency: str
+    tax_amount: float
+    scope_summary: str
+    terms: str
+    document_id: str
+    comparison_status: str
+    approved_amount: float
+    approved_by: str
+    approval_note: str
+
+
+class QuoteCreate(CamelModel):
+    project_id: str
+    vendor_id: str
+    boq_id: str = ""
+    quote_number: str = ""
+    quote_date: str = ""
+    valid_until: str = ""
+    total_amount: float = 0
+    currency: str = "INR"
+    tax_amount: float = 0
+    scope_summary: str = ""
+    terms: str = ""
+    document_id: str = ""
+    comparison_status: str = "Pending"
+
+
+class ApproveQuoteRequest(CamelModel):
+    approved_by: str = ""
+    approved_amount: float | None = None
+    approval_note: str = ""
+
+
+class QuoteActionNote(CamelModel):
+    note: str = ""
+
+
+class QuoteLineItemResponse(CamelModel):
+    id: str
+    quote_id: str
+    boq_line_id: str
+    description: str
+    quantity: float
+    unit: str
+    unit_price: float
+    total_price: float
+    brand: str
+    specification: str
+    inclusions: str
+    exclusions: str
+    negotiation_target_price: float
+
+
+class QuoteLineItemCreate(CamelModel):
+    quote_id: str
+    boq_line_id: str = ""
+    description: str = ""
+    quantity: float = 0
+    unit: str = ""
+    unit_price: float = 0
+    total_price: float = 0
+    brand: str = ""
+    specification: str = ""
+    inclusions: str = ""
+    exclusions: str = ""
+    negotiation_target_price: float = 0
+
+
+# --- PurchaseOrder / Delivery ------------------------------------------------------
+class PurchaseOrderResponse(CamelModel):
+    id: str
+    project_id: str
+    quote_id: str
+    vendor_id: str
+    amount: float
+    currency: str
+    status: str
+    created_at: str
+    notes: str
+
+
+class PurchaseOrderCreate(CamelModel):
+    project_id: str
+    quote_id: str = ""
+    vendor_id: str
+    amount: float = 0
+    currency: str = "INR"
+    status: str = "Created"
+    notes: str = ""
+
+
+class PurchaseOrderStatus(CamelModel):
+    status: str
+
+
+class QuoteApprovalResponse(CamelModel):
+    quote: QuoteResponse
+    purchase_order: PurchaseOrderResponse
+    message: str = "Quote approved and purchase order created successfully."
+
+
+class DeliveryResponse(CamelModel):
+    id: str
+    purchase_order_id: str
+    project_id: str
+    expected_date: str
+    actual_date: str
+    status: str
+    notes: str
+
+
+class DeliveryCreate(CamelModel):
+    purchase_order_id: str
+    project_id: str = ""
+    expected_date: str = ""
+    actual_date: str = ""
+    status: str = "Planned"
+    notes: str = ""
+
+
+# --- BOQ line items ----------------------------------------------------------------
+class BOQLineItemResponse(CamelModel):
+    id: str
+    boq_id: str
+    project_id: str
+    space_id: str
+    work_package_id: str
+    description: str
+    quantity: float
+    unit: str
+    benchmark_rate: float
+    approved_rate: float
+    approved_vendor_id: str
+    status: str
+
+
+class BOQLineItemCreate(CamelModel):
+    boq_id: str = ""
+    project_id: str = ""
+    space_id: str = ""
+    work_package_id: str = ""
+    description: str = ""
+    quantity: float = 0
+    unit: str = ""
+    benchmark_rate: float = 0
+    approved_rate: float = 0
+    approved_vendor_id: str = ""
+    status: str = "Estimated"

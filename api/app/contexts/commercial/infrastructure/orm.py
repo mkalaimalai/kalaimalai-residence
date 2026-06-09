@@ -74,6 +74,7 @@ class QuoteModel(Base):
     id: Mapped[str] = mapped_column(String, primary_key=True)
     project_id: Mapped[str] = mapped_column(String, default="")
     vendor_id: Mapped[str] = mapped_column(String, default="")
+    boq_id: Mapped[str] = mapped_column(String, default="")
     quote_number: Mapped[str] = mapped_column(String, default="")
     quote_date: Mapped[str] = mapped_column(String, default="")
     valid_until: Mapped[str] = mapped_column(String, default="")
@@ -84,6 +85,9 @@ class QuoteModel(Base):
     terms: Mapped[str] = mapped_column(Text, default="")
     document_id: Mapped[str] = mapped_column(String, default="")
     comparison_status: Mapped[str] = mapped_column(String, default="Pending")
+    approved_amount: Mapped[float] = mapped_column(Numeric, default=0)
+    approved_by: Mapped[str] = mapped_column(String, default="")
+    approval_note: Mapped[str] = mapped_column(Text, default="")
 
 
 class QuoteLineItemModel(Base):
@@ -108,6 +112,7 @@ class BOQLineItemModel(Base):
     __tablename__ = "boq_line_items"
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
+    boq_id: Mapped[str] = mapped_column(String, default="")  # parent BOQ package
     project_id: Mapped[str] = mapped_column(String, default="")
     space_id: Mapped[str] = mapped_column(String, default="")
     work_package_id: Mapped[str] = mapped_column(String, default="")
@@ -118,3 +123,29 @@ class BOQLineItemModel(Base):
     approved_rate: Mapped[float] = mapped_column(Numeric, default=0)
     approved_vendor_id: Mapped[str] = mapped_column(String, default="")
     status: Mapped[str] = mapped_column(String, default="Estimated")
+
+
+class PurchaseOrderModel(Base):
+    __tablename__ = "purchase_orders"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    project_id: Mapped[str] = mapped_column(String, default="")
+    quote_id: Mapped[str] = mapped_column(String, default="")
+    vendor_id: Mapped[str] = mapped_column(String, default="")
+    amount: Mapped[float] = mapped_column(Numeric, default=0)
+    currency: Mapped[str] = mapped_column(String, default="INR")
+    status: Mapped[str] = mapped_column(String, default="Created")
+    created_at: Mapped[str] = mapped_column(String, default="")
+    notes: Mapped[str] = mapped_column(Text, default="")
+
+
+class DeliveryModel(Base):
+    __tablename__ = "deliveries"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    purchase_order_id: Mapped[str] = mapped_column(String, default="")
+    project_id: Mapped[str] = mapped_column(String, default="")
+    expected_date: Mapped[str] = mapped_column(String, default="")
+    actual_date: Mapped[str] = mapped_column(String, default="")
+    status: Mapped[str] = mapped_column(String, default="Planned")
+    notes: Mapped[str] = mapped_column(Text, default="")

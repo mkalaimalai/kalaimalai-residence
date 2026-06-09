@@ -19,8 +19,10 @@ from app.contexts.vendor.infrastructure.repository_impl import (
 )
 from app.contexts.vendor.interfaces.schemas import (
     VendorCreate,
+    VendorRatings,
     VendorResponse,
     VendorUpdate,
+    VerificationStatusRequest,
 )
 from app.shared.auth import require_admin
 from app.shared.db import get_session
@@ -73,6 +75,37 @@ async def update_vendor(
     changes = body.model_dump(exclude_unset=True)
     try:
         vendor = await UpdateVendor(repo)(vendor_id, UpdateVendorCommand(changes))
+    except NotFoundError as exc:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, str(exc)) from exc
+    return VendorResponse.from_entity(vendor)
+
+
+@router.get("/{vendor_id}/ratings", response_model=VendorRatings)
+async def vendor_ratings(
+    vendor_id: str, repo: SqlAlchemyVendorRepository = Depends(_repo)
+):
+    try:
+        vendor = await GetVendor(repo)(vendor_id)
+    except NotFoundError as exc:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, str(exc)) from exc
+    return VendorRatings(vendor_id=vendor.id, rating_value=vendor.rating)
+
+
+@router.patch(
+    "/{vendor_id}/verification-status", response_model=VendorResponse,
+    dependencies=[Depends(require_admin)],
+)
+async def set_verification_status(
+    vendor_id: str,
+    body: VerificationStatusRequest,
+    repo: SqlAlchemyVendorRepository = Depends(_repo),
+):
+    # types/index.ts Vendor exposes `finalized`; map Verified/Preferred → finalized.
+    finalized = body.status in {"Verified", "Preferred"}
+    try:
+        vendor = await UpdateVendor(repo)(
+            vendor_id, UpdateVendorCommand({"finalized": finalized})
+        )
     except NotFoundError as exc:
         raise HTTPException(status.HTTP_404_NOT_FOUND, str(exc)) from exc
     return VendorResponse.from_entity(vendor)
