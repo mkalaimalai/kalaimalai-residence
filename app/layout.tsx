@@ -32,7 +32,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${inter.variable} h-full antialiased`}
+      className={`${fraunces.variable} ${inter.variable} h-full scroll-smooth antialiased`}
     >
       <head>
         {/* Apply the saved theme before paint so dark users see no light flash.

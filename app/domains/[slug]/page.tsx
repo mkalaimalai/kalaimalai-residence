@@ -16,12 +16,11 @@ import {
   vendorsByIds,
   lessonsByIds,
 } from "@/lib/relations";
-import { SectionHeading } from "@/components/SectionHeading";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Chip, ChipGroup } from "@/components/Chip";
 import { JsonLd } from "@/components/JsonLd";
 import { domainJsonLd, itemListJsonLd, vendorJsonLd } from "@/lib/jsonld";
-import { RenderingGallery } from "@/components/RenderingGallery";
+import { DomainMediaTabs } from "@/components/DomainMediaTabs";
 import { renderingsByDomain } from "@/data/renderings";
 import { drawingSheetsByDomain } from "@/data/drawingSheets";
 
@@ -95,31 +94,10 @@ export default async function DomainDetailPage({
         {domain.description}
       </p>
 
-      {renderingSets.length > 0 && (
-        <section className="mt-14">
-          <SectionHeading
-            eyebrow="Studio Anagami"
-            title="Renderings"
-            description="Interior presentation decks — scroll through each space."
-          />
-          <div className="mt-8">
-            <RenderingGallery sets={renderingSets} />
-          </div>
-        </section>
-      )}
-
-      {drawingSets.length > 0 && (
-        <section className="mt-14">
-          <SectionHeading
-            eyebrow="Working drawings"
-            title="Drawings"
-            description="Flooring layout plans and detail sheets."
-          />
-          <div className="mt-8">
-            <RenderingGallery sets={drawingSets} />
-          </div>
-        </section>
-      )}
+      <DomainMediaTabs
+        renderingSets={renderingSets}
+        drawingSets={drawingSets}
+      />
 
       <div className="mt-12 grid gap-10 sm:grid-cols-2">
         {relSpaces.length > 0 && (

@@ -22,6 +22,15 @@ import type {
   Vendor,
   Warranty,
 } from "@/types";
+import type {
+  Delivery,
+  Inspection,
+  NotificationRecord,
+  PurchaseOrder,
+  Quote,
+  QuoteApproval,
+  QuoteLineItem,
+} from "@/types/api";
 
 const BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 
