@@ -12,6 +12,7 @@ import {
   getDecisions,
   getLessons,
   getMaterials,
+  getProject,
 } from "@/lib/repository";
 import {
   byIds,
@@ -24,6 +25,8 @@ import {
 import { SectionHeading } from "@/components/SectionHeading";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Chip, ChipGroup } from "@/components/Chip";
+import { JsonLd } from "@/components/JsonLd";
+import { roomJsonLd } from "@/lib/jsonld";
 
 export async function generateStaticParams() {
   const spaces = await getSpaces();
@@ -53,7 +56,7 @@ export default async function SpaceDetailPage({
   const space = await getSpaceBySlug(slug);
   if (!space) notFound();
 
-  const [allSpaces, domains, drawings, vendors, decisions, lessons, materials] =
+  const [allSpaces, domains, drawings, vendors, decisions, lessons, materials, project] =
     await Promise.all([
       getSpaces(),
       getDomains(),
@@ -62,6 +65,7 @@ export default async function SpaceDetailPage({
       getDecisions(),
       getLessons(),
       getMaterials(),
+      getProject(),
     ]);
 
   const relDomains = byIds(space.domainIds, domains);
@@ -79,6 +83,7 @@ export default async function SpaceDetailPage({
 
   return (
     <main className="flex flex-col">
+      <JsonLd data={roomJsonLd(space, project, relDrawings)} />
       <section className="relative h-[56vh] min-h-[400px] w-full">
         <Image
           src={space.image}

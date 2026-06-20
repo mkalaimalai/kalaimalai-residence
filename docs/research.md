@@ -1,0 +1,2 @@
+# Home Decor apps
+https://www.inventiva.co.in/trends/top-10-home-decor-startups-in-2026/

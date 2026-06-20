@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { getDomains } from "@/lib/repository";
 import { SectionHeading } from "@/components/SectionHeading";
 import { DomainCard } from "@/components/DomainCard";
+import { JsonLd } from "@/components/JsonLd";
+import { domainJsonLd, itemListJsonLd } from "@/lib/jsonld";
 
 export const metadata: Metadata = {
   title: "Domains · A Contemporary Zen Residence",
@@ -14,6 +16,9 @@ export default async function DomainsPage() {
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-16">
+      <JsonLd
+        data={itemListJsonLd(domains.map(domainJsonLd), { name: "Domains" })}
+      />
       <SectionHeading
         eyebrow="Discipline by discipline"
         title="Domains"
