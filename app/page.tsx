@@ -10,6 +10,8 @@ import {
 import { SectionHeading } from "@/components/SectionHeading";
 import { SpaceCard } from "@/components/SpaceCard";
 import { DomainCard } from "@/components/DomainCard";
+import { JsonLd } from "@/components/JsonLd";
+import { houseJsonLd, projectJsonLd, webSiteJsonLd } from "@/lib/jsonld";
 
 export default async function Home() {
   const [project, spaces, domains, lessons] = await Promise.all([
@@ -28,6 +30,9 @@ export default async function Home() {
 
   return (
     <main className="flex flex-col">
+      <JsonLd
+        data={[webSiteJsonLd(project), projectJsonLd(project), houseJsonLd(project)]}
+      />
       {/* Hero */}
       <section className="relative h-[78vh] min-h-[520px] w-full">
         <Image

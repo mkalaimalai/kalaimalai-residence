@@ -1,21 +1,17 @@
-import type { Metadata } from "next";
-import { getVendors } from "@/lib/repository";
+"use client";
+
+import { usePortalData } from "@/components/portal/PortalDataProvider";
+import { PortalSection } from "@/components/portal/PortalSection";
 import { VendorTable } from "@/components/portal/VendorTable";
 
-export const metadata: Metadata = { title: "Vendors" };
-
-export default async function VendorsPage() {
-  const vendors = await getVendors();
-
+export default function VendorsPage() {
+  const { data } = usePortalData();
   return (
-    <div className="space-y-6">
-      <header className="space-y-1">
-        <h1 className="font-serif text-3xl text-foreground">Vendors</h1>
-        <p className="text-sm text-muted-foreground">
-          Suppliers and contractors, with contact, location and rating.
-        </p>
-      </header>
-      <VendorTable rows={vendors} />
-    </div>
+    <PortalSection
+      title="Vendors"
+      subtitle="Suppliers and contractors, with contact, location and rating."
+    >
+      <VendorTable rows={data.vendors} />
+    </PortalSection>
   );
 }

@@ -8,9 +8,12 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "verify": "tsx scripts/verify-data.ts"
+    "verify": "tsx scripts/verify-data.ts",
+    "verify:api": "DATA_SOURCE=api ALLOW_SEED_FALLBACK=0 tsx scripts/verify-data.ts",
+    "export:seed": "tsx scripts/export-seed.ts"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.108.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.17.0",

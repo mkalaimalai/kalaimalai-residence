@@ -1,0 +1,2663 @@
+{
+  "info": {
+    "name": "Kalaimalai Residence API",
+    "description": "DDD/hexagonal FastAPI modular monolith over Supabase Postgres.\n\n**Setup**\n1. Set the `baseUrl` variable (default `http://localhost:8099`).\n2. For authenticated/admin routes, set the `accessToken` variable to a Supabase JWT (the collection sends it as a Bearer token). In local dev you can instead run the API with `AUTH_DISABLED=true` and any/no token works.\n\n**Auth tiers** (api/README.md): public GETs are open (build-time); the sensitive financial/snag tables and `/project/full` require `require_user`; all writes require `require_admin` (`user_metadata.role == \"admin\"`).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8099"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "description": "",
+      "item": [
+        {
+          "name": "Health check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/healthz",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "healthz"
+              ]
+            },
+            "description": ""
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Project",
+      "description": "",
+      "item": [
+        {
+          "name": "List spaces",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/spaces",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "spaces"
+              ]
+            },
+            "description": "List all. Read: public."
+          },
+          "response": []
+        },
+        {
+          "name": "Get spaces by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/spaces/space-master-bedroom",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "spaces",
+                "space-master-bedroom"
+              ]
+            },
+            "description": "Read: public."
+          },
+          "response": []
+        },
+        {
+          "name": "Create spaces",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/spaces",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "spaces"
+              ]
+            },
+            "description": "Admin only (require_admin).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Master Bedroom\",\n  \"slug\": \"master-bedroom\",\n  \"description\": \"\",\n  \"designIntent\": \"\",\n  \"image\": \"\",\n  \"domainIds\": [],\n  \"materialIds\": [],\n  \"furniture\": [],\n  \"lighting\": [],\n  \"vendorIds\": [],\n  \"drawingIds\": [],\n  \"decisionIds\": [],\n  \"status\": \"Concept\",\n  \"lessonIds\": []\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update spaces",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/spaces/space-master-bedroom",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "spaces",
+                "space-master-bedroom"
+              ]
+            },
+            "description": "Admin only. Partial update (exclude_unset).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"In Progress\",\n  \"description\": \"Updated description\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List domains",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/domains",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "domains"
+              ]
+            },
+            "description": "List all. Read: public."
+          },
+          "response": []
+        },
+        {
+          "name": "Get domains by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/domains/domain-flooring",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "domains",
+                "domain-flooring"
+              ]
+            },
+            "description": "Read: public."
+          },
+          "response": []
+        },
+        {
+          "name": "Create domains",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/domains",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "domains"
+              ]
+            },
+            "description": "Admin only (require_admin).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Flooring\",\n  \"slug\": \"flooring\",\n  \"description\": \"\",\n  \"spaceIds\": [],\n  \"drawingIds\": [],\n  \"vendorIds\": [],\n  \"status\": \"Not Started\",\n  \"lessonIds\": []\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update domains",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/domains/domain-flooring",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "domains",
+                "domain-flooring"
+              ]
+            },
+            "description": "Admin only. Partial update (exclude_unset).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"In Progress\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List progress",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/progress",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "progress"
+              ]
+            },
+            "description": "List all. Read: public."
+          },
+          "response": []
+        },
+        {
+          "name": "Get progress by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/progress/progress-1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "progress",
+                "progress-1"
+              ]
+            },
+            "description": "Read: public."
+          },
+          "response": []
+        },
+        {
+          "name": "Create progress",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/progress",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "progress"
+              ]
+            },
+            "description": "Admin only (require_admin).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"date\": \"2026-06-20\",\n  \"phase\": \"Finishing\",\n  \"spaceId\": \"space-master-bedroom\",\n  \"workCompleted\": \"\",\n  \"photos\": [],\n  \"issues\": \"\",\n  \"nextAction\": \"\",\n  \"owner\": \"Site Engineer\",\n  \"status\": \"On Track\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update progress",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/progress/progress-1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "progress",
+                "progress-1"
+              ]
+            },
+            "description": "Admin only. Partial update (exclude_unset).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Delayed\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get public project",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/project",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "project"
+              ]
+            },
+            "description": "Anonymized singleton. Public."
+          },
+          "response": []
+        },
+        {
+          "name": "Get full project",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/project/full",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "project",
+                "full"
+              ]
+            },
+            "description": "Sensitive identity/location. Auth (require_user)."
+          },
+          "response": []
+        },
+        {
+          "name": "Update project (singleton)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/project/{{projectId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "project",
+                "{{projectId}}"
+              ]
+            },
+            "description": "Admin only.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Handover\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List projects",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/projects",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "projects"
+              ]
+            },
+            "description": "Auth (require_user)."
+          },
+          "response": []
+        },
+        {
+          "name": "Create project",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/projects",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "projects"
+              ]
+            },
+            "description": "Admin only.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"publicTitle\": \"A Contemporary Zen Residence in Bengaluru\",\n  \"publicSubtitle\": \"\",\n  \"city\": \"Bengaluru\",\n  \"designer\": \"\",\n  \"direction\": \"\",\n  \"heroImage\": \"\",\n  \"conceptStatement\": \"\",\n  \"plotArea\": \"\",\n  \"builtUpArea\": \"\",\n  \"floors\": 2,\n  \"status\": \"In Progress\",\n  \"startDate\": \"2025-01-01\",\n  \"internalName\": \"\",\n  \"villaNo\": \"\",\n  \"community\": \"\",\n  \"address\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get project by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/projects/{{projectId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "projects",
+                "{{projectId}}"
+              ]
+            },
+            "description": "Auth (require_user)."
+          },
+          "response": []
+        },
+        {
+          "name": "Update project by id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/projects/{{projectId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "projects",
+                "{{projectId}}"
+              ]
+            },
+            "description": "Admin only.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Handover\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List project spaces",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/projects/{{projectId}}/spaces",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "projects",
+                "{{projectId}}",
+                "spaces"
+              ]
+            },
+            "description": "Nested read (single-project semantics)."
+          },
+          "response": []
+        },
+        {
+          "name": "Create project space",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/projects/{{projectId}}/spaces",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "projects",
+                "{{projectId}}",
+                "spaces"
+              ]
+            },
+            "description": "Admin only.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Master Bedroom\",\n  \"slug\": \"master-bedroom\",\n  \"description\": \"\",\n  \"designIntent\": \"\",\n  \"image\": \"\",\n  \"domainIds\": [],\n  \"materialIds\": [],\n  \"furniture\": [],\n  \"lighting\": [],\n  \"vendorIds\": [],\n  \"drawingIds\": [],\n  \"decisionIds\": [],\n  \"status\": \"Concept\",\n  \"lessonIds\": []\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Document",
+      "description": "",
+      "item": [
+        {
+          "name": "List drawings",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/drawings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "drawings"
+              ]
+            },
+            "description": "List all. Read: public."
+          },
+          "response": []
+        },
+        {
+          "name": "Get drawings by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/drawings/drawing-1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "drawings",
+                "drawing-1"
+              ]
+            },
+            "description": "Read: public."
+          },
+          "response": []
+        },
+        {
+          "name": "Create drawings",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/drawings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "drawings"
+              ]
+            },
+            "description": "Admin only (require_admin).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Ground Floor Plan\",\n  \"domainId\": \"\",\n  \"spaceId\": \"\",\n  \"revision\": \"R0\",\n  \"date\": \"2026-06-20\",\n  \"status\": \"Draft\",\n  \"consultant\": \"\",\n  \"fileUrl\": \"\",\n  \"notes\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update drawings",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/drawings/drawing-1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "drawings",
+                "drawing-1"
+              ]
+            },
+            "description": "Admin only. Partial update (exclude_unset).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Issued\",\n  \"revision\": \"R1\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List gallery",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/gallery",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "gallery"
+              ]
+            },
+            "description": "List all. Read: public."
+          },
+          "response": []
+        },
+        {
+          "name": "Get gallery by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/gallery/gallery-1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "gallery",
+                "gallery-1"
+              ]
+            },
+            "description": "Read: public."
+          },
+          "response": []
+        },
+        {
+          "name": "Create gallery",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/gallery",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "gallery"
+              ]
+            },
+            "description": "Admin only (require_admin).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Living Room Render\",\n  \"category\": \"render\",\n  \"image\": \"\",\n  \"spaceId\": \"\",\n  \"domainId\": \"\",\n  \"caption\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update gallery",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/gallery/gallery-1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "gallery",
+                "gallery-1"
+              ]
+            },
+            "description": "Admin only. Partial update (exclude_unset).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"caption\": \"Updated caption\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List lessons",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/lessons",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "lessons"
+              ]
+            },
+            "description": "List all. Read: public."
+          },
+          "response": []
+        },
+        {
+          "name": "Get lessons by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/lessons/lesson-1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "lessons",
+                "lesson-1"
+              ]
+            },
+            "description": "Read: public."
+          },
+          "response": []
+        },
+        {
+          "name": "Create lessons",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/lessons",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "lessons"
+              ]
+            },
+            "description": "Admin only (require_admin).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Order long-lead items early\",\n  \"category\": \"Procurement\",\n  \"summary\": \"\",\n  \"domainId\": \"\",\n  \"spaceId\": \"\",\n  \"impact\": {\n    \"cost\": \"\",\n    \"time\": \"\",\n    \"quality\": \"\",\n    \"design\": \"\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update lessons",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/lessons/lesson-1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "lessons",
+                "lesson-1"
+              ]
+            },
+            "description": "Admin only. Partial update (exclude_unset).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"summary\": \"Updated summary\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Vendor",
+      "description": "",
+      "item": [
+        {
+          "name": "List vendors",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vendors",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "vendors"
+              ]
+            },
+            "description": "Public."
+          },
+          "response": []
+        },
+        {
+          "name": "Get vendor by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vendors/{{vendorId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "vendors",
+                "{{vendorId}}"
+              ]
+            },
+            "description": "Public."
+          },
+          "response": []
+        },
+        {
+          "name": "Create vendor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/vendors",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "vendors"
+              ]
+            },
+            "description": "Admin only.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Acme Interiors\",\n  \"category\": \"Carpentry\",\n  \"contactPerson\": \"\",\n  \"phone\": \"\",\n  \"email\": \"\",\n  \"location\": \"Bengaluru\",\n  \"website\": \"\",\n  \"quoteUrl\": \"\",\n  \"finalized\": false,\n  \"rating\": 0.0,\n  \"notes\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update vendor",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/vendors/{{vendorId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "vendors",
+                "{{vendorId}}"
+              ]
+            },
+            "description": "Admin only.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"finalized\": true,\n  \"rating\": 4.5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get vendor ratings",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vendors/{{vendorId}}/ratings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "vendors",
+                "{{vendorId}}",
+                "ratings"
+              ]
+            },
+            "description": "Public. Schema.org-style rating projection."
+          },
+          "response": []
+        },
+        {
+          "name": "Set verification status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/vendors/{{vendorId}}/verification-status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "vendors",
+                "{{vendorId}}",
+                "verification-status"
+              ]
+            },
+            "description": "Admin only. Unverified|Verified|Preferred \u2192 finalized flag.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Verified\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Commercial",
+      "description": "",
+      "item": [
+        {
+          "name": "List boq",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/boq",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "boq"
+              ]
+            },
+            "description": "List all. Read: auth (require_user)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get boq by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/boq/boq-1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "boq",
+                "boq-1"
+              ]
+            },
+            "description": "Read: auth (require_user)."
+          },
+          "response": []
+        },
+        {
+          "name": "Create boq",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/boq",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "boq"
+              ]
+            },
+            "description": "Admin only (require_admin).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"vendorId\": \"\",\n  \"category\": \"Civil\",\n  \"quoteDate\": \"2026-06-20\",\n  \"originalAmount\": 100000,\n  \"negotiatedAmount\": 95000,\n  \"gst\": 17100,\n  \"total\": 112100,\n  \"paymentStatus\": \"Unpaid\",\n  \"fileUrl\": \"\",\n  \"notes\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update boq",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/boq/boq-1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "boq",
+                "boq-1"
+              ]
+            },
+            "description": "Admin only. Partial update (exclude_unset).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paymentStatus\": \"Paid\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List procurement",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/procurement",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "procurement"
+              ]
+            },
+            "description": "List all. Read: auth (require_user)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get procurement by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/procurement/procurement-1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "procurement",
+                "procurement-1"
+              ]
+            },
+            "description": "Read: auth (require_user)."
+          },
+          "response": []
+        },
+        {
+          "name": "Create procurement",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/procurement",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "procurement"
+              ]
+            },
+            "description": "Admin only (require_admin).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"item\": \"Italian Marble\",\n  \"category\": \"Flooring\",\n  \"spaceId\": \"\",\n  \"brand\": \"\",\n  \"vendorId\": \"\",\n  \"country\": \"Italy\",\n  \"quantity\": 1,\n  \"estimatedPrice\": 0,\n  \"quotedPrice\": 0,\n  \"negotiatedPrice\": 0,\n  \"finalPrice\": 0,\n  \"currency\": \"INR\",\n  \"status\": \"Identified\",\n  \"deliveryDate\": \"\",\n  \"installationDate\": \"\",\n  \"warranty\": \"\",\n  \"notes\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update procurement",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/procurement/procurement-1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "procurement",
+                "procurement-1"
+              ]
+            },
+            "description": "Admin only. Partial update (exclude_unset).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Ordered\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List materials",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/materials",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "materials"
+              ]
+            },
+            "description": "List all. Read: public."
+          },
+          "response": []
+        },
+        {
+          "name": "Get materials by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/materials/material-1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "materials",
+                "material-1"
+              ]
+            },
+            "description": "Read: public."
+          },
+          "response": []
+        },
+        {
+          "name": "Create materials",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/materials",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "materials"
+              ]
+            },
+            "description": "Admin only (require_admin).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Oak Veneer\",\n  \"category\": \"Wood\",\n  \"spaceIds\": [],\n  \"vendorId\": \"\",\n  \"status\": \"\",\n  \"image\": \"\",\n  \"notes\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update materials",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/materials/material-1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "materials",
+                "material-1"
+              ]
+            },
+            "description": "Admin only. Partial update (exclude_unset).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Selected\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List quotes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/quotes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "quotes"
+              ]
+            },
+            "description": "Auth (require_user)."
+          },
+          "response": []
+        },
+        {
+          "name": "Submit quote",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/quotes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "quotes"
+              ]
+            },
+            "description": "Admin only.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"projectId\": \"project-1\",\n  \"vendorId\": \"vendor-1\",\n  \"boqId\": \"\",\n  \"quoteNumber\": \"\",\n  \"quoteDate\": \"2026-06-20\",\n  \"validUntil\": \"\",\n  \"totalAmount\": 250000,\n  \"currency\": \"INR\",\n  \"taxAmount\": 0,\n  \"scopeSummary\": \"\",\n  \"terms\": \"\",\n  \"documentId\": \"\",\n  \"comparisonStatus\": \"Pending\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get quote by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/quotes/{{quoteId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "quotes",
+                "{{quoteId}}"
+              ]
+            },
+            "description": "Auth (require_user)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get quote line items",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/quotes/{{quoteId}}/line-items",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "quotes",
+                "{{quoteId}}",
+                "line-items"
+              ]
+            },
+            "description": "Auth (require_user)."
+          },
+          "response": []
+        },
+        {
+          "name": "Approve quote",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/quotes/{{quoteId}}/approve",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "quotes",
+                "{{quoteId}}",
+                "approve"
+              ]
+            },
+            "description": "Admin only. Quote\u2192PurchaseOrder flow; notifies vendor.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"approvedBy\": \"Owner\",\n  \"approvedAmount\": 240000,\n  \"approvalNote\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reject quote",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/quotes/{{quoteId}}/reject",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "quotes",
+                "{{quoteId}}",
+                "reject"
+              ]
+            },
+            "description": "Admin only.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Please revise scope and resubmit.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Negotiate quote",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/quotes/{{quoteId}}/negotiate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "quotes",
+                "{{quoteId}}",
+                "negotiate"
+              ]
+            },
+            "description": "Admin only.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Please revise scope and resubmit.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List quote-line-items",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/quote-line-items",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "quote-line-items"
+              ]
+            },
+            "description": "List all. Read: auth (require_user)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get quote-line-items by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/quote-line-items/qli-1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "quote-line-items",
+                "qli-1"
+              ]
+            },
+            "description": "Read: auth (require_user)."
+          },
+          "response": []
+        },
+        {
+          "name": "Create quote-line-items",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/quote-line-items",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "quote-line-items"
+              ]
+            },
+            "description": "Admin only (require_admin).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quoteId\": \"quote-1\",\n  \"boqLineId\": \"\",\n  \"description\": \"Supply & install\",\n  \"quantity\": 10,\n  \"unit\": \"sqft\",\n  \"unitPrice\": 500,\n  \"totalPrice\": 5000,\n  \"brand\": \"\",\n  \"specification\": \"\",\n  \"inclusions\": \"\",\n  \"exclusions\": \"\",\n  \"negotiationTargetPrice\": 0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update quote-line-items",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/quote-line-items/qli-1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "quote-line-items",
+                "qli-1"
+              ]
+            },
+            "description": "Admin only. Partial update (exclude_unset).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quoteId\": \"quote-1\",\n  \"boqLineId\": \"\",\n  \"description\": \"Supply & install\",\n  \"quantity\": 10,\n  \"unit\": \"sqft\",\n  \"unitPrice\": 500,\n  \"totalPrice\": 5000,\n  \"brand\": \"\",\n  \"specification\": \"\",\n  \"inclusions\": \"\",\n  \"exclusions\": \"\",\n  \"negotiationTargetPrice\": 0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List purchase orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/purchase-orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "purchase-orders"
+              ]
+            },
+            "description": "Auth (require_user)."
+          },
+          "response": []
+        },
+        {
+          "name": "Create purchase order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/purchase-orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "purchase-orders"
+              ]
+            },
+            "description": "Admin only.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"projectId\": \"project-1\",\n  \"quoteId\": \"\",\n  \"vendorId\": \"vendor-1\",\n  \"amount\": 240000,\n  \"currency\": \"INR\",\n  \"status\": \"Created\",\n  \"notes\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get purchase order by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/purchase-orders/{{poId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "purchase-orders",
+                "{{poId}}"
+              ]
+            },
+            "description": "Auth (require_user)."
+          },
+          "response": []
+        },
+        {
+          "name": "Set purchase order status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/purchase-orders/{{poId}}/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "purchase-orders",
+                "{{poId}}",
+                "status"
+              ]
+            },
+            "description": "Admin only.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Dispatched\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List deliveries",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/deliveries",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "deliveries"
+              ]
+            },
+            "description": "List all. Read: auth (require_user)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get deliveries by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/deliveries/delivery-1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "deliveries",
+                "delivery-1"
+              ]
+            },
+            "description": "Read: auth (require_user)."
+          },
+          "response": []
+        },
+        {
+          "name": "Create deliveries",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/deliveries",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "deliveries"
+              ]
+            },
+            "description": "Admin only (require_admin).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"purchaseOrderId\": \"po-1\",\n  \"projectId\": \"project-1\",\n  \"expectedDate\": \"2026-07-01\",\n  \"actualDate\": \"\",\n  \"status\": \"Planned\",\n  \"notes\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update deliveries",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/deliveries/delivery-1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "deliveries",
+                "delivery-1"
+              ]
+            },
+            "description": "Admin only. Partial update (exclude_unset).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Delivered\",\n  \"actualDate\": \"2026-07-03\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List BOQ packages",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/boq-packages",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "boq-packages"
+              ]
+            },
+            "description": "Auth (require_user)."
+          },
+          "response": []
+        },
+        {
+          "name": "Create BOQ package",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/boq-packages",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "boq-packages"
+              ]
+            },
+            "description": "Admin only.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"vendorId\": \"\",\n  \"category\": \"Civil\",\n  \"quoteDate\": \"2026-06-20\",\n  \"originalAmount\": 100000,\n  \"negotiatedAmount\": 95000,\n  \"gst\": 17100,\n  \"total\": 112100,\n  \"paymentStatus\": \"Unpaid\",\n  \"fileUrl\": \"\",\n  \"notes\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get BOQ package by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/boq-packages/{{boqId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "boq-packages",
+                "{{boqId}}"
+              ]
+            },
+            "description": "Auth (require_user)."
+          },
+          "response": []
+        },
+        {
+          "name": "List BOQ package line items",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/boq-packages/{{boqId}}/line-items",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "boq-packages",
+                "{{boqId}}",
+                "line-items"
+              ]
+            },
+            "description": "Auth (require_user)."
+          },
+          "response": []
+        },
+        {
+          "name": "Add BOQ package line item",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/boq-packages/{{boqId}}/line-items",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "boq-packages",
+                "{{boqId}}",
+                "line-items"
+              ]
+            },
+            "description": "Admin only.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"boqId\": \"\",\n  \"projectId\": \"\",\n  \"spaceId\": \"\",\n  \"workPackageId\": \"\",\n  \"description\": \"Brickwork\",\n  \"quantity\": 100,\n  \"unit\": \"sqft\",\n  \"benchmarkRate\": 0,\n  \"approvedRate\": 0,\n  \"approvedVendorId\": \"\",\n  \"status\": \"Estimated\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List project quotes (comparison)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/projects/{{projectId}}/quotes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "projects",
+                "{{projectId}}",
+                "quotes"
+              ]
+            },
+            "description": "Auth (require_user)."
+          },
+          "response": []
+        },
+        {
+          "name": "List project purchase orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/projects/{{projectId}}/purchase-orders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "projects",
+                "{{projectId}}",
+                "purchase-orders"
+              ]
+            },
+            "description": "Auth (require_user)."
+          },
+          "response": []
+        },
+        {
+          "name": "List project deliveries",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/projects/{{projectId}}/deliveries",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "projects",
+                "{{projectId}}",
+                "deliveries"
+              ]
+            },
+            "description": "Auth (require_user)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Quality",
+      "description": "",
+      "item": [
+        {
+          "name": "List snags",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/snags",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "snags"
+              ]
+            },
+            "description": "List all. Read: auth (require_user)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get snags by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/snags/snag-1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "snags",
+                "snag-1"
+              ]
+            },
+            "description": "Read: auth (require_user)."
+          },
+          "response": []
+        },
+        {
+          "name": "Create snags",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/snags",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "snags"
+              ]
+            },
+            "description": "Admin only (require_admin).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"spaceId\": \"\",\n  \"category\": \"Finishing\",\n  \"description\": \"Paint smudge on wall\",\n  \"photoUrl\": \"\",\n  \"assignedTo\": \"\",\n  \"priority\": \"Low\",\n  \"status\": \"Open\",\n  \"targetClosureDate\": \"\",\n  \"actualClosureDate\": \"\",\n  \"notes\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update snags",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/snags/snag-1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "snags",
+                "snag-1"
+              ]
+            },
+            "description": "Admin only. Partial update (exclude_unset).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"priority\": \"High\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List decisions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/decisions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "decisions"
+              ]
+            },
+            "description": "List all. Read: public."
+          },
+          "response": []
+        },
+        {
+          "name": "Get decisions by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/decisions/decision-1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "decisions",
+                "decision-1"
+              ]
+            },
+            "description": "Read: public."
+          },
+          "response": []
+        },
+        {
+          "name": "Create decisions",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/decisions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "decisions"
+              ]
+            },
+            "description": "Admin only (require_admin).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Marble vs Tile flooring\",\n  \"domainId\": \"\",\n  \"spaceId\": \"\",\n  \"type\": \"Design\",\n  \"optionsConsidered\": [\n    \"Marble\",\n    \"Vitrified Tile\"\n  ],\n  \"finalDecision\": \"Marble\",\n  \"reason\": \"\",\n  \"costImpact\": \"\",\n  \"timeImpact\": \"\",\n  \"qualityImpact\": \"\",\n  \"date\": \"2026-06-20\",\n  \"owner\": \"Owner\",\n  \"status\": \"Open\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update decisions",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/decisions/decision-1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "decisions",
+                "decision-1"
+              ]
+            },
+            "description": "Admin only. Partial update (exclude_unset).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Decided\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List inspections",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/inspections",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "inspections"
+              ]
+            },
+            "description": "List all. Read: auth (require_user)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get inspections by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/inspections/inspection-1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "inspections",
+                "inspection-1"
+              ]
+            },
+            "description": "Read: auth (require_user)."
+          },
+          "response": []
+        },
+        {
+          "name": "Create inspections",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/inspections",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "inspections"
+              ]
+            },
+            "description": "Admin only (require_admin).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"spaceId\": \"\",\n  \"workPackageId\": \"\",\n  \"inspector\": \"QA Engineer\",\n  \"inspectionDate\": \"2026-06-20\",\n  \"result\": \"Pending\",\n  \"notes\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update inspections",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/inspections/inspection-1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "inspections",
+                "inspection-1"
+              ]
+            },
+            "description": "Admin only. Partial update (exclude_unset).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"result\": \"Pass\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Assign snag",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/snags/{{snagId}}/assign",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "snags",
+                "{{snagId}}",
+                "assign"
+              ]
+            },
+            "description": "Admin only. \u2192 status In Progress.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"assignedTo\": \"Painter Team\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Resolve snag",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/snags/{{snagId}}/resolve",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "snags",
+                "{{snagId}}",
+                "resolve"
+              ]
+            },
+            "description": "Admin only. \u2192 status Fixed.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"actualClosureDate\": \"2026-06-25\",\n  \"notes\": \"Repainted and cleaned.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Close snag",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/snags/{{snagId}}/close",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "snags",
+                "{{snagId}}",
+                "close"
+              ]
+            },
+            "description": "Admin only. \u2192 status Closed."
+          },
+          "response": []
+        },
+        {
+          "name": "List project snags",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/projects/{{projectId}}/snags",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "projects",
+                "{{projectId}}",
+                "snags"
+              ]
+            },
+            "description": "Admin only."
+          },
+          "response": []
+        },
+        {
+          "name": "List project inspections",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/projects/{{projectId}}/inspections",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "projects",
+                "{{projectId}}",
+                "inspections"
+              ]
+            },
+            "description": "Admin only."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Handover",
+      "description": "",
+      "item": [
+        {
+          "name": "List warranties",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/warranties",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "warranties"
+              ]
+            },
+            "description": "List all. Read: auth (require_user)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get warranties by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/warranties/warranty-1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "warranties",
+                "warranty-1"
+              ]
+            },
+            "description": "Read: auth (require_user)."
+          },
+          "response": []
+        },
+        {
+          "name": "Create warranties",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/warranties",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "warranties"
+              ]
+            },
+            "description": "Admin only (require_admin).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"item\": \"Air Conditioner\",\n  \"category\": \"HVAC\",\n  \"vendorId\": \"\",\n  \"brand\": \"Daikin\",\n  \"purchaseDate\": \"2026-06-20\",\n  \"warrantyStart\": \"2026-06-20\",\n  \"warrantyEnd\": \"2031-06-20\",\n  \"invoiceUrl\": \"\",\n  \"manualUrl\": \"\",\n  \"serviceContact\": \"\",\n  \"notes\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update warranties",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/warranties/warranty-1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "warranties",
+                "warranty-1"
+              ]
+            },
+            "description": "Admin only. Partial update (exclude_unset).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"serviceContact\": \"1800-XXX-XXXX\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Notification",
+      "description": "",
+      "item": [
+        {
+          "name": "List notifications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/notifications",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "notifications"
+              ]
+            },
+            "description": "Auth (require_user). Audit log."
+          },
+          "response": []
+        },
+        {
+          "name": "Send notification",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/notifications",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "notifications"
+              ]
+            },
+            "description": "Admin only. Manual send.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"channel\": \"log\",\n  \"recipient\": \"owner@example.com\",\n  \"subject\": \"Quote approved\",\n  \"body\": \"Quote quote-1 has been approved.\",\n  \"relatedEntity\": \"quote-1\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

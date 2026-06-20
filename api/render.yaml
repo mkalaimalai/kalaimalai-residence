@@ -1,0 +1,20 @@
+# Render blueprint for the Kalaimalai Residence API.
+# Create a Web Service from this repo with root directory `api/`.
+services:
+  - type: web
+    name: kalaimalai-residence-api
+    runtime: python
+    rootDir: api
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /healthz
+    envVars:
+      - key: DATABASE_URL
+        sync: false # set to the Supabase POOLED connection string (port 6543)
+      - key: SUPABASE_JWT_SECRET
+        sync: false
+      - key: CORS_ORIGINS
+        value: https://mkalaimalai-residence.github.io,http://localhost:3000
+      - key: AUTH_DISABLED
+        value: "false"

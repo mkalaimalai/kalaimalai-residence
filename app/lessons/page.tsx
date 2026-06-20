@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { getLessons } from "@/lib/repository";
 import { SectionHeading } from "@/components/SectionHeading";
+import { JsonLd } from "@/components/JsonLd";
+import { articleJsonLd, itemListJsonLd } from "@/lib/jsonld";
 
 export const metadata: Metadata = {
   title: "Lessons · A Contemporary Zen Residence",
@@ -20,6 +22,9 @@ export default async function LessonsPage() {
 
   return (
     <main className="mx-auto max-w-4xl px-6 py-16">
+      <JsonLd
+        data={itemListJsonLd(lessons.map(articleJsonLd), { name: "Lessons" })}
+      />
       <SectionHeading
         eyebrow="Hard-won"
         title="Lessons from the build"

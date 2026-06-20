@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Data Model — Kalaimalai Residence</title>
+  <style>
+    :root {
+      --bg: #fafaf9;
+      --fg: #1c1917;
+      --muted: #57534e;
+      --accent: #7c6f5a;
+      --border: #e7e5e4;
+      --code-bg: #f5f5f4;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1c1917;
+        --fg: #e7e5e4;
+        --muted: #a8a29e;
+        --accent: #c5b89a;
+        --border: #44403c;
+        --code-bg: #292524;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      line-height: 1.6;
+    }
+    main { max-width: 1100px; margin: 0 auto; padding: 3rem 1.5rem 6rem; }
+    h1, h2, h3 { font-family: Georgia, "Times New Roman", serif; line-height: 1.25; }
+    h1 { font-size: 2.25rem; margin-bottom: 0.25rem; }
+    h2 { font-size: 1.5rem; margin-top: 3rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    p, li { color: var(--fg); }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.875em;
+      background: var(--code-bg);
+      padding: 0.125rem 0.375rem;
+      border-radius: 0.25rem;
+    }
+    blockquote {
+      margin: 1.5rem 0;
+      padding: 0.75rem 1.25rem;
+      border-left: 3px solid var(--accent);
+      background: var(--code-bg);
+      border-radius: 0 0.5rem 0.5rem 0;
+      color: var(--muted);
+    }
+    blockquote p:first-child { margin-top: 0; }
+    blockquote p:last-child { margin-bottom: 0; }
+    .lede { color: var(--muted); font-size: 1.05rem; }
+    .diagram {
+      margin: 2rem 0;
+      padding: 1rem;
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      background: var(--bg);
+      overflow-x: auto;
+    }
+    .diagram svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+    .note { color: var(--muted); font-size: 0.95rem; }
+    footer { margin-top: 4rem; color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); padding-top: 1rem; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Data Model</h1>
+  <p class="lede">Entity-relationship reference for the residence project, derived from the two sources of truth:</p>
+  <ul>
+    <li><strong><code>types/index.ts</code></strong> — the locked TypeScript contract (constitution §4). The seed modules in <code>data/*.ts</code>, the repository layer, and the API's read responses all conform to these shapes.</li>
+    <li><strong><code>api/migrations/001_init.sql</code></strong> — the Supabase Postgres schema. It mirrors the contract (snake_case columns) and adds backend-only tables for the procurement pipeline and quality tracking.</li>
+  </ul>
+
+  <blockquote>
+    <p>Conventions that shape this model (constitution §2):</p>
+    <ul>
+      <li><strong>Relations are by ID, never by display name.</strong> Cross-references are <code>*Id: string</code> / <code>*Ids: string[]</code> fields resolved at render time via <code>lib/relations</code>. In Postgres these are plain <code>VARCHAR</code> / <code>VARCHAR[]</code> columns — there are <strong>no foreign-key constraints</strong>; integrity is enforced by <code>npm run verify</code> (seed) and the API layer.</li>
+      <li><strong>Optional single references use <code>""</code></strong>, not <code>null</code> (e.g. <code>Drawing.spaceId</code> when a drawing isn't room-specific).</li>
+      <li><strong>Many-to-many links are denormalized on both sides</strong> (e.g. <code>Space.domainIds</code> and <code>Domain.spaceIds</code>) rather than via join tables.</li>
+    </ul>
+  </blockquote>
+
+  <h2>Core contract (types/index.ts — 14 entities)</h2>
+
+  <div class="diagram">
+    <pre class="mermaid">
+erDiagram
+    PROJECT {
+        string id PK
+        string publicTitle "anonymized public identity"
+        string publicSubtitle
+        string city
+        string designer
+        string heroImage
+        string conceptStatement
+        string internalName "portal-only"
+        string villaNo "portal-only"
+        string address "portal-only"
+        string plotArea
+        string builtUpArea
+        number floors
+        string status
+        string startDate
+    }
+
+    SPACE {
+        string id PK
+        string slug UK
+        string name
+        string description
+        string designIntent
+        string image
+        stringArray domainIds FK
+        stringArray materialIds FK
+        stringArray furniture "free text, not linked"
+        stringArray lighting "free text, not linked"
+        stringArray vendorIds FK
+        stringArray drawingIds FK
+        stringArray decisionIds FK
+        stringArray lessonIds FK
+        string status "Concept|Design|Execution|Completed"
+    }
+
+    DOMAIN {
+        string id PK
+        string slug UK
+        string name
+        string description
+        stringArray spaceIds FK
+        stringArray drawingIds FK
+        stringArray vendorIds FK
+        stringArray lessonIds FK
+        string status "Not Started|In Progress|Approved|Completed"
+    }
+
+    DRAWING {
+        string id PK
+        string title
+        string domainId FK
+        string spaceId FK "empty if not room-specific"
+        string revision
+        string date
+        string status "Draft|For Review|Approved|Superseded|IFC"
+        string consultant
+        string fileUrl
+        string notes
+    }
+
+    VENDOR {
+        string id PK
+        string name
+        string category
+        string contactPerson
+        string phone
+        string email
+        string location
+        string website
+        string quoteUrl
+        boolean finalized
+        number rating "0-5"
+        string notes
+    }
+
+    MATERIAL {
+        string id PK
+        string name
+        string category
+        stringArray spaceIds FK
+        string vendorId FK
+        string status
+        string image
+        string notes
+    }
+
+    PROCUREMENT_ITEM {
+        string id PK
+        string item
+        string category
+        string spaceId FK
+        string brand
+        string vendorId FK
+        string country
+        number quantity
+        number estimatedPrice
+        number quotedPrice
+        number negotiatedPrice
+        number finalPrice
+        string currency "INR|EUR|USD"
+        string status "Identified...Closed (8 stages)"
+        string deliveryDate
+        string installationDate
+        string warranty
+        string notes
+    }
+
+    DECISION {
+        string id PK
+        string title
+        string domainId FK
+        string spaceId FK
+        string type "Design|Material|Vendor|Cost|Technical|Schedule|Quality"
+        stringArray optionsConsidered
+        string finalDecision
+        string reason
+        string costImpact
+        string timeImpact
+        string qualityImpact
+        string date
+        string owner
+        string status "Open|Decided|Revisit|Closed"
+    }
+
+    SNAG {
+        string id PK
+        string spaceId FK
+        string category
+        string description
+        string photoUrl
+        string assignedTo
+        string priority "Low|Medium|High|Critical"
+        string status "Open|In Progress|Fixed|Verified|Closed"
+        string targetClosureDate
+        string actualClosureDate
+        string notes
+    }
+
+    BOQ {
+        string id PK
+        string vendorId FK
+        string category
+        string quoteDate
+        number originalAmount
+        number negotiatedAmount
+        number gst
+        number total
+        string paymentStatus "Unpaid|Advance Paid|Part Paid|Fully Paid"
+        string fileUrl
+        string notes
+    }
+
+    LESSON {
+        string id PK
+        string title
+        string category
+        string summary
+        string domainId FK
+        string spaceId FK
+        json impact "cost, time, quality, design"
+    }
+
+    PROGRESS_ENTRY {
+        string id PK
+        string date
+        string phase
+        string spaceId FK
+        string workCompleted
+        stringArray photos
+        string issues
+        string nextAction
+        string owner
+        string status
+    }
+
+    WARRANTY {
+        string id PK
+        string item
+        string category
+        string vendorId FK
+        string brand
+        string purchaseDate
+        string warrantyStart
+        string warrantyEnd
+        string invoiceUrl
+        string manualUrl
+        string serviceContact
+        string notes
+    }
+
+    GALLERY_ITEM {
+        string id PK
+        string title
+        string category "render|drawing|progress|final|material|furniture|lighting|landscape"
+        string image
+        string spaceId FK "empty if not space-specific"
+        string domainId FK "empty if not domain-specific"
+        string caption
+    }
+
+    SPACE }o--o{ DOMAIN : "domainIds / spaceIds"
+    SPACE }o--o{ MATERIAL : "materialIds / spaceIds"
+    SPACE }o--o{ VENDOR : "vendorIds"
+    SPACE ||--o{ DRAWING : "drawingIds / spaceId"
+    SPACE ||--o{ DECISION : "decisionIds / spaceId"
+    SPACE ||--o{ LESSON : "lessonIds / spaceId"
+    SPACE ||--o{ PROCUREMENT_ITEM : "spaceId"
+    SPACE ||--o{ SNAG : "spaceId"
+    SPACE ||--o{ PROGRESS_ENTRY : "spaceId"
+    SPACE ||--o{ GALLERY_ITEM : "spaceId (optional)"
+    DOMAIN ||--o{ DRAWING : "drawingIds / domainId"
+    DOMAIN }o--o{ VENDOR : "vendorIds"
+    DOMAIN ||--o{ DECISION : "domainId"
+    DOMAIN ||--o{ LESSON : "lessonIds / domainId"
+    DOMAIN ||--o{ GALLERY_ITEM : "domainId (optional)"
+    VENDOR ||--o{ MATERIAL : "vendorId"
+    VENDOR ||--o{ PROCUREMENT_ITEM : "vendorId"
+    VENDOR ||--o{ BOQ : "vendorId"
+    VENDOR ||--o{ WARRANTY : "vendorId"
+    </pre>
+  </div>
+
+  <p class="note"><code>PROJECT</code> is a single standalone record (no ID links to or from it in the contract); its portal-only fields (<code>villaNo</code>, <code>address</code>, …) are never rendered on the public site (constitution §5).</p>
+
+  <h2>Backend-only extensions (api/migrations/001_init.sql)</h2>
+
+  <p>The API adds a procurement pipeline (BOQ line items → quotes → purchase orders → deliveries), quality inspections, and a notification log. These exist only in Postgres / the FastAPI domain layer — they are <strong>not</strong> part of <code>types/index.ts</code>.</p>
+
+  <div class="diagram">
+    <pre class="mermaid">
+erDiagram
+    BOQ ||--o{ BOQ_LINE_ITEM : "boq_id"
+    BOQ ||--o{ QUOTE : "boq_id"
+    BOQ_LINE_ITEM }o--|| SPACE : "space_id"
+    BOQ_LINE_ITEM }o--|| PROJECT : "project_id"
+    BOQ_LINE_ITEM }o--o| VENDOR : "approved_vendor_id"
+    QUOTE ||--o{ QUOTE_LINE_ITEM : "quote_id"
+    QUOTE_LINE_ITEM }o--o| BOQ_LINE_ITEM : "boq_line_id"
+    QUOTE }o--|| VENDOR : "vendor_id"
+    QUOTE }o--|| PROJECT : "project_id"
+    QUOTE ||--o| PURCHASE_ORDER : "quote_id"
+    PURCHASE_ORDER }o--|| VENDOR : "vendor_id"
+    PURCHASE_ORDER }o--|| PROJECT : "project_id"
+    PURCHASE_ORDER ||--o{ DELIVERY : "purchase_order_id"
+    INSPECTION }o--|| SPACE : "space_id"
+
+    BOQ_LINE_ITEM {
+        string id PK
+        string boq_id FK
+        string project_id FK
+        string space_id FK
+        string work_package_id "no work_packages table yet"
+        string description
+        number quantity
+        string unit
+        number benchmark_rate
+        number approved_rate
+        string approved_vendor_id FK
+        string status
+    }
+
+    QUOTE {
+        string id PK
+        string project_id FK
+        string vendor_id FK
+        string boq_id FK
+        string quote_number
+        string quote_date
+        string valid_until
+        number total_amount
+        string currency
+        number tax_amount
+        string scope_summary
+        string terms
+        string document_id "no documents table yet"
+        string comparison_status
+        number approved_amount
+        string approved_by
+        string approval_note
+    }
+
+    QUOTE_LINE_ITEM {
+        string id PK
+        string quote_id FK
+        string boq_line_id FK
+        string description
+        number quantity
+        string unit
+        number unit_price
+        number total_price
+        string brand
+        string specification
+        string inclusions
+        string exclusions
+        number negotiation_target_price
+    }
+
+    PURCHASE_ORDER {
+        string id PK
+        string project_id FK
+        string quote_id FK
+        string vendor_id FK
+        number amount
+        string currency
+        string status
+        string created_at
+        string notes
+    }
+
+    DELIVERY {
+        string id PK
+        string purchase_order_id FK
+        string project_id FK
+        string expected_date
+        string actual_date
+        string status
+        string notes
+    }
+
+    INSPECTION {
+        string id PK
+        string space_id FK
+        string work_package_id "no work_packages table yet"
+        string inspector
+        string inspection_date
+        string result
+        string notes
+    }
+
+    NOTIFICATION {
+        string id PK
+        string channel
+        string recipient
+        string subject
+        string body
+        string status
+        string related_entity "free-form pointer, not an FK"
+        string created_at
+    }
+    </pre>
+  </div>
+
+  <p class="note">Known dangling references in the SQL schema: <code>work_package_id</code> (on <code>boq_line_items</code> and <code>inspections</code>) and <code>document_id</code> (on <code>quotes</code>) have no corresponding tables yet.</p>
+
+  <h2>Presentation-only structures (not entities)</h2>
+
+  <p>Two modules carry image-set content keyed by <strong>domain slug</strong> rather than by ID, and are rendered directly by <code>RenderingGallery</code>:</p>
+  <ul>
+    <li><code>data/renderings.ts</code> — <code>renderingsByDomain: Record&lt;slug, RenderingSet[]&gt;</code> (auto-generated by <code>scripts/gen-renderings.ts</code>).</li>
+    <li><code>data/drawingSheets.ts</code> — <code>drawingSheetsByDomain: Record&lt;slug, RenderingSet[]&gt;</code> (A2 drawing PDFs converted to JPGs).</li>
+  </ul>
+  <p><code>RenderingSet</code> = <code>{ title, width, height, images?, subsections? }</code>. These are view models, not relational entities — they have no IDs and nothing links to them, so they sit outside the diagrams above.</p>
+
+  <footer>
+    Generated from <code>types/index.ts</code> and <code>api/migrations/001_init.sql</code>. Markdown source: <code>docs/data-model.md</code>. Diagrams rendered with Mermaid (CDN) — requires internet access to display.
+  </footer>
+</main>
+
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+  const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  mermaid.initialize({ startOnLoad: true, theme: dark ? "dark" : "neutral", er: { useMaxWidth: true } });
+</script>
+</body>
+</html>

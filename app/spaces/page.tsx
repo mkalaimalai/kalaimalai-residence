@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
-import { getSpaces } from "@/lib/repository";
+import { getSpaces, getProject } from "@/lib/repository";
 import { SectionHeading } from "@/components/SectionHeading";
 import { SpaceCard } from "@/components/SpaceCard";
+import { JsonLd } from "@/components/JsonLd";
+import { itemListJsonLd, roomJsonLd } from "@/lib/jsonld";
 
 export const metadata: Metadata = {
   title: "Spaces · A Contemporary Zen Residence",
@@ -10,10 +12,16 @@ export const metadata: Metadata = {
 };
 
 export default async function SpacesPage() {
-  const spaces = await getSpaces();
+  const [spaces, project] = await Promise.all([getSpaces(), getProject()]);
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-16">
+      <JsonLd
+        data={itemListJsonLd(
+          spaces.map((s) => roomJsonLd(s, project)),
+          { name: "Spaces" },
+        )}
+      />
       <SectionHeading
         eyebrow="Room by room"
         title="Spaces"
