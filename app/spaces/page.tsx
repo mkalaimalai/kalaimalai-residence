@@ -8,7 +8,7 @@ import { itemListJsonLd, roomJsonLd } from "@/lib/jsonld";
 export const metadata: Metadata = {
   title: "Spaces · A Contemporary Zen Residence",
   description:
-    "Room by room — living, dining, kitchen, bedrooms, bathrooms, courtyard, terrace, landscape and the multipurpose room.",
+    "Room by room — living, dining, kitchen, bedrooms, toilets, courtyard, terrace, landscape and the multipurpose room.",
 };
 
 export default async function SpacesPage() {

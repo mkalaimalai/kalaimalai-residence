@@ -53,10 +53,10 @@ export default async function VisionPage() {
   return (
     <main className="flex flex-col">
       <JsonLd data={[projectJsonLd(project), houseJsonLd(project)]} />
-      <section className="relative h-[48vh] min-h-[360px] w-full">
+      <section className="relative h-[60vh] min-h-[400px] w-full">
         <Image
-          src="/images/elevation/aerial.jpg"
-          alt="Aerial view of the residence and courtyard"
+          src={project.heroImage}
+          alt={project.publicTitle}
           fill
           priority
           sizes="100vw"
