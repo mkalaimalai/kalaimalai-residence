@@ -13,6 +13,7 @@ import {
   getLessons,
   getMaterials,
   getProject,
+  getGallery,
 } from "@/lib/repository";
 import {
   byIds,
@@ -25,7 +26,9 @@ import {
 import { SectionHeading } from "@/components/SectionHeading";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Chip, ChipGroup } from "@/components/Chip";
+import { RenderingGallery } from "@/components/RenderingGallery";
 import { JsonLd } from "@/components/JsonLd";
+import { drawingSheetsBySpace } from "@/data/drawingSheets";
 import { roomJsonLd } from "@/lib/jsonld";
 
 export async function generateStaticParams() {
@@ -56,7 +59,7 @@ export default async function SpaceDetailPage({
   const space = await getSpaceBySlug(slug);
   if (!space) notFound();
 
-  const [allSpaces, domains, drawings, vendors, decisions, lessons, materials, project] =
+  const [allSpaces, domains, drawings, vendors, decisions, lessons, materials, project, gallery] =
     await Promise.all([
       getSpaces(),
       getDomains(),
@@ -66,6 +69,7 @@ export default async function SpaceDetailPage({
       getLessons(),
       getMaterials(),
       getProject(),
+      getGallery(),
     ]);
 
   const relDomains = byIds(space.domainIds, domains);
@@ -80,6 +84,9 @@ export default async function SpaceDetailPage({
   const relatedSpaces = allSpaces
     .filter((s) => s.id !== space.id && s.domainIds.some((d) => domainSet.has(d)))
     .slice(0, 3);
+
+  // Gallery items specific to this space.
+  const spaceGallery = gallery.filter((g) => g.spaceId === space.id);
 
   return (
     <main className="flex flex-col">
@@ -204,6 +211,45 @@ export default async function SpaceDetailPage({
           )}
         </aside>
       </div>
+
+      {/* Space-specific gallery */}
+      {spaceGallery.length > 0 && (
+        <section className="mx-auto max-w-5xl px-6 pb-20">
+          <h2 className="mb-6 font-serif text-2xl text-foreground">
+            Design renderings
+          </h2>
+          <div className="space-y-6">
+            {spaceGallery.map((item) => (
+              <figure
+                key={item.id}
+                className="overflow-hidden rounded-xl border border-border bg-muted"
+              >
+                <Image
+                  src={item.image}
+                  alt={item.title}
+                  width={3300}
+                  height={2550}
+                  sizes="(max-width: 1024px) 100vw, 896px"
+                  className="h-auto w-full"
+                />
+                <figcaption className="p-4 text-sm text-muted-foreground">
+                  {item.caption}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Space-specific drawing sheets */}
+      {drawingSheetsBySpace[space.slug]?.length > 0 && (
+        <section className="mx-auto max-w-5xl px-6 pb-20">
+          <h2 className="mb-6 font-serif text-2xl text-foreground">
+            Drawings
+          </h2>
+          <RenderingGallery sets={drawingSheetsBySpace[space.slug]} />
+        </section>
+      )}
 
       {/* Related spaces */}
       {relatedSpaces.length > 0 && (

@@ -67,7 +67,7 @@ export const spaces: Space[] = [
     description: "A handleless modular kitchen with a quartz island.",
     designIntent:
       "Calm, seamless cabinetry in a warm oak tone with a full-height quartz splash; everything concealed so the kitchen reads as joinery, not appliances.",
-    image: "/images/spaces/kitchen.jpg",
+    image: "/images/spaces/kitchen/kitchen-rendering-1.jpg",
     domainIds: ["dom-interior", "dom-carpentry", "dom-electrical", "dom-plumbing"],
     materialIds: ["mat-quartz", "mat-teak-veneer"],
     furniture: ["Handleless modular kitchen", "Quartz-topped island"],

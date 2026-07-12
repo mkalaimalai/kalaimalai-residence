@@ -15,6 +15,8 @@ const ARCH = "/images/drawings/architecture";
 const FC = "/images/drawings/false-ceiling";
 const LT = "/images/drawings/lighting";
 
+const KIT = "/images/drawings/kitchen";
+
 /** Build `<INT>/<key>-N.webp` for an inclusive page range. `pad` matches pdftocairo. */
 const seq = (key: string, from: number, to: number, pad = 1): string[] => {
   const out: string[] = [];
@@ -229,4 +231,28 @@ export const drawingSheetsByDomain: Record<string, RenderingSet[]> = {
       images: [`${FLOOR}/detail-3.webp`],
     },
   ],
+};
+
+// Kitchen production drawings — displayed on the kitchen space page.
+const kitchenDrawings: RenderingSet[] = [
+  {
+    title: "Final Production Drawing",
+    width: 1132,
+    height: 1600,
+    images: [
+      `${KIT}/kit-dwg-1.webp`,
+      `${KIT}/kit-dwg-2.webp`,
+      `${KIT}/kit-dwg-3.webp`,
+      `${KIT}/kit-dwg-4.webp`,
+      `${KIT}/kit-dwg-5.webp`,
+      `${KIT}/kit-dwg-6.webp`,
+      `${KIT}/kit-dwg-7.webp`,
+      `${KIT}/kit-dwg-8.webp`,
+    ],
+  },
+];
+
+/** Drawing sheets shown inline on a space detail page, keyed by space slug. */
+export const drawingSheetsBySpace: Record<string, RenderingSet[]> = {
+  kitchen: kitchenDrawings,
 };
