@@ -16,6 +16,7 @@ const FC = "/images/drawings/false-ceiling";
 const LT = "/images/drawings/lighting";
 
 const KIT = "/images/drawings/kitchen";
+const TOILET = "/images/drawings/toilets";
 
 /** Build `<INT>/<key>-N.webp` for an inclusive page range. `pad` matches pdftocairo. */
 const seq = (key: string, from: number, to: number, pad = 1): string[] => {
@@ -252,7 +253,47 @@ const kitchenDrawings: RenderingSet[] = [
   },
 ];
 
+// Toilet flooring drawings — one plan + one detail page per room
+const toiletDrawings: RenderingSet[] = [
+  {
+    title: "Toilet Flooring Drawings",
+    width: 1132,
+    height: 1600,
+    subsections: [
+      {
+        title: "Master Bedroom Toilet",
+        images: [`${TOILET}/toilet-master-01.webp`, `${TOILET}/toilet-master-02.webp`],
+      },
+      {
+        title: "Elder Daughter's Toilet",
+        images: [`${TOILET}/toilet-elder-01.webp`, `${TOILET}/toilet-elder-02.webp`],
+      },
+      {
+        title: "Younger Daughter's Toilet",
+        images: [`${TOILET}/toilet-younger-01.webp`, `${TOILET}/toilet-younger-02.webp`],
+      },
+      {
+        title: "Parents' Bedroom Toilet",
+        images: [`${TOILET}/toilet-parents-01.webp`, `${TOILET}/toilet-parents-02.webp`],
+      },
+      {
+        title: "Multipurpose Toilet",
+        images: [`${TOILET}/toilet-multi-01.webp`, `${TOILET}/toilet-multi-02.webp`],
+      },
+      {
+        title: "Powder Room",
+        images: [`${TOILET}/toilet-powder-01.webp`],
+      },
+      {
+        title: "Driver's Toilet",
+        images: [`${TOILET}/toilet-driver-01.webp`],
+      },
+    ],
+  },
+];
+
 /** Drawing sheets shown inline on a space detail page, keyed by space slug. */
 export const drawingSheetsBySpace: Record<string, RenderingSet[]> = {
   kitchen: kitchenDrawings,
+  toilets: toiletDrawings,
 };

@@ -26,10 +26,10 @@ import {
 import { SectionHeading } from "@/components/SectionHeading";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Chip, ChipGroup } from "@/components/Chip";
-import { RenderingGallery } from "@/components/RenderingGallery";
 import { JsonLd } from "@/components/JsonLd";
 import { drawingSheetsBySpace } from "@/data/drawingSheets";
 import { roomJsonLd } from "@/lib/jsonld";
+import { SpaceMediaTabs } from "@/components/SpaceMediaTabs";
 
 export async function generateStaticParams() {
   const spaces = await getSpaces();
@@ -173,14 +173,6 @@ export default async function SpaceDetailPage({
             </ChipGroup>
           )}
 
-          {relDrawings.length > 0 && (
-            <ChipGroup label="Drawings">
-              {relDrawings.map((d) => (
-                <Chip key={d.id} label={`${d.title} (${d.revision})`} />
-              ))}
-            </ChipGroup>
-          )}
-
           {relDecisions.length > 0 && (
             <div className="space-y-2">
               <h3 className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
@@ -212,44 +204,14 @@ export default async function SpaceDetailPage({
         </aside>
       </div>
 
-      {/* Space-specific gallery */}
-      {spaceGallery.length > 0 && (
-        <section className="mx-auto max-w-5xl px-6 pb-20">
-          <h2 className="mb-6 font-serif text-2xl text-foreground">
-            Design renderings
-          </h2>
-          <div className="space-y-6">
-            {spaceGallery.map((item) => (
-              <figure
-                key={item.id}
-                className="overflow-hidden rounded-xl border border-border bg-muted"
-              >
-                <Image
-                  src={item.image}
-                  alt={item.title}
-                  width={3300}
-                  height={2550}
-                  sizes="(max-width: 1024px) 100vw, 896px"
-                  className="h-auto w-full"
-                />
-                <figcaption className="p-4 text-sm text-muted-foreground">
-                  {item.caption}
-                </figcaption>
-              </figure>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Space-specific drawing sheets */}
-      {drawingSheetsBySpace[space.slug]?.length > 0 && (
-        <section className="mx-auto max-w-5xl px-6 pb-20">
-          <h2 className="mb-6 font-serif text-2xl text-foreground">
-            Drawings
-          </h2>
-          <RenderingGallery sets={drawingSheetsBySpace[space.slug]} />
-        </section>
-      )}
+      <SpaceMediaTabs
+        galleryItems={spaceGallery}
+        drawingSets={drawingSheetsBySpace[space.slug] ?? []}
+        drawingChips={relDrawings.map((d) => ({
+          id: d.id,
+          label: `${d.title} (${d.revision})`,
+        }))}
+      />
 
       {/* Related spaces */}
       {relatedSpaces.length > 0 && (
