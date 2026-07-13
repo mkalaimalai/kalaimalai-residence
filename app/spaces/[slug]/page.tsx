@@ -13,6 +13,7 @@ import {
   getLessons,
   getMaterials,
   getProject,
+  getGallery,
 } from "@/lib/repository";
 import {
   byIds,
@@ -26,7 +27,9 @@ import { SectionHeading } from "@/components/SectionHeading";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Chip, ChipGroup } from "@/components/Chip";
 import { JsonLd } from "@/components/JsonLd";
+import { drawingSheetsBySpace } from "@/data/drawingSheets";
 import { roomJsonLd } from "@/lib/jsonld";
+import { SpaceMediaTabs } from "@/components/SpaceMediaTabs";
 
 export async function generateStaticParams() {
   const spaces = await getSpaces();
@@ -56,7 +59,7 @@ export default async function SpaceDetailPage({
   const space = await getSpaceBySlug(slug);
   if (!space) notFound();
 
-  const [allSpaces, domains, drawings, vendors, decisions, lessons, materials, project] =
+  const [allSpaces, domains, drawings, vendors, decisions, lessons, materials, project, gallery] =
     await Promise.all([
       getSpaces(),
       getDomains(),
@@ -66,6 +69,7 @@ export default async function SpaceDetailPage({
       getLessons(),
       getMaterials(),
       getProject(),
+      getGallery(),
     ]);
 
   const relDomains = byIds(space.domainIds, domains);
@@ -80,6 +84,9 @@ export default async function SpaceDetailPage({
   const relatedSpaces = allSpaces
     .filter((s) => s.id !== space.id && s.domainIds.some((d) => domainSet.has(d)))
     .slice(0, 3);
+
+  // Gallery items specific to this space.
+  const spaceGallery = gallery.filter((g) => g.spaceId === space.id);
 
   return (
     <main className="flex flex-col">
@@ -166,14 +173,6 @@ export default async function SpaceDetailPage({
             </ChipGroup>
           )}
 
-          {relDrawings.length > 0 && (
-            <ChipGroup label="Drawings">
-              {relDrawings.map((d) => (
-                <Chip key={d.id} label={`${d.title} (${d.revision})`} />
-              ))}
-            </ChipGroup>
-          )}
-
           {relDecisions.length > 0 && (
             <div className="space-y-2">
               <h3 className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
@@ -204,6 +203,15 @@ export default async function SpaceDetailPage({
           )}
         </aside>
       </div>
+
+      <SpaceMediaTabs
+        galleryItems={spaceGallery}
+        drawingSets={drawingSheetsBySpace[space.slug] ?? []}
+        drawingChips={relDrawings.map((d) => ({
+          id: d.id,
+          label: `${d.title} (${d.revision})`,
+        }))}
+      />
 
       {/* Related spaces */}
       {relatedSpaces.length > 0 && (

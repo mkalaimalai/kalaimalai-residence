@@ -67,7 +67,7 @@ export const spaces: Space[] = [
     description: "A handleless modular kitchen with a quartz island.",
     designIntent:
       "Calm, seamless cabinetry in a warm oak tone with a full-height quartz splash; everything concealed so the kitchen reads as joinery, not appliances.",
-    image: "/images/spaces/kitchen.jpg",
+    image: "/images/spaces/kitchen/kitchen-rendering-1.jpg",
     domainIds: ["dom-interior", "dom-carpentry", "dom-electrical", "dom-plumbing"],
     materialIds: ["mat-quartz", "mat-teak-veneer"],
     furniture: ["Handleless modular kitchen", "Quartz-topped island"],
@@ -148,12 +148,12 @@ export const spaces: Space[] = [
   },
   {
     id: "sp-bath",
-    slug: "bathrooms",
-    name: "Bathrooms",
-    description: "Spa-like bathrooms in microcement and stone.",
+    slug: "toilets",
+    name: "Toilets",
+    description:
+      "Six toilet rooms and a powder room finished in microcement, marble and warm brass.",
     designIntent:
-      "Seamless microcement surfaces, concealed cisterns, warm brass fittings and a frameless rain shower — wet rooms that feel monolithic.",
-    // TODO: stand-in render (dressing-room view) — no dedicated bathroom render in source PDFs yet.
+      "Compact wet rooms with seamless surfaces, concealed plumbing and warm light — each tailored to its user.",
     image: "/images/spaces/bathroom.jpg",
     domainIds: ["dom-interior", "dom-plumbing", "dom-flooring", "dom-lighting"],
     materialIds: ["mat-microcement", "mat-marble"],
