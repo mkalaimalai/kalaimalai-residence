@@ -33,6 +33,10 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${fraunces.variable} ${inter.variable} h-full scroll-smooth antialiased`}
+      // The theme script below adds `dark` to this element before hydration, so the
+      // client's className legitimately differs from the server's. Suppress the warning
+      // on <html> only — it does not cascade to children.
+      suppressHydrationWarning
     >
       <head>
         {/* Apply the saved theme before paint so dark users see no light flash.
