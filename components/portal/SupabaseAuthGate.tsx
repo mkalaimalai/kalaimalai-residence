@@ -137,8 +137,10 @@ export function SupabaseAuthGate({ children }: { children: React.ReactNode }) {
     );
   }
 
+  // app_metadata mirrors what the API trusts (see api/app/shared/auth.py) — it is
+  // service_role-only, unlike user_metadata which the user can write themselves.
   const role =
-    (session.user.user_metadata?.role as string | undefined) ?? "viewer";
+    (session.user.app_metadata?.role as string | undefined) ?? "viewer";
   const value: AuthCtx = {
     email: session.user.email ?? null,
     isAdmin: role === "admin",

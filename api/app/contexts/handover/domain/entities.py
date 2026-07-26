@@ -18,3 +18,7 @@ class Warranty:
     manual_url: str
     service_contact: str
     notes: str
+    # Tenant boundary (migrations/002_project_scope.sql). Defaulted only because
+    # dataclass ordering forbids a required field after defaulted ones;
+    # CrudService.create rejects an empty value before it reaches the FK.
+    project_id: str = ""

@@ -7,6 +7,7 @@ import type { GalleryItem } from "@/types";
  */
 export const gallery: GalleryItem[] = [
   {
+    projectId: "proj-kr",
     id: "gal-hero",
     title: "Street approach at dusk",
     category: "render",
@@ -16,6 +17,7 @@ export const gallery: GalleryItem[] = [
     caption: "The three slatted volumes and the entry court at dusk.",
   },
   {
+    projectId: "proj-kr",
     id: "gal-aerial",
     title: "Aerial — courtyard & pool",
     category: "render",
@@ -25,6 +27,7 @@ export const gallery: GalleryItem[] = [
     caption: "The reflecting pool and frangipani at the heart of the plan.",
   },
   {
+    projectId: "proj-kr",
     id: "gal-north",
     title: "North elevation",
     category: "render",
@@ -34,6 +37,7 @@ export const gallery: GalleryItem[] = [
     caption: "Board-formed concrete against the teak slat screens.",
   },
   {
+    projectId: "proj-kr",
     id: "gal-rear",
     title: "Rear garden & terrace",
     category: "landscape",
@@ -43,6 +47,7 @@ export const gallery: GalleryItem[] = [
     caption: "Pergola dining and the layered garden edge.",
   },
   {
+    projectId: "proj-kr",
     id: "gal-living",
     title: "Living room",
     category: "render",
@@ -52,6 +57,7 @@ export const gallery: GalleryItem[] = [
     caption: "Double-height living opening to the water court.",
   },
   {
+    projectId: "proj-kr",
     id: "gal-dining",
     title: "Dining",
     category: "render",
@@ -61,6 +67,7 @@ export const gallery: GalleryItem[] = [
     caption: "Statement table under a quiet pendant.",
   },
   {
+    projectId: "proj-kr",
     id: "gal-master",
     title: "Master bedroom",
     category: "render",
@@ -70,6 +77,7 @@ export const gallery: GalleryItem[] = [
     caption: "Teak headboard wall and a glazed corner to the canopy.",
   },
   {
+    projectId: "proj-kr",
     id: "gal-kitchen-1",
     title: "Kitchen — overview",
     category: "render",
@@ -79,6 +87,7 @@ export const gallery: GalleryItem[] = [
     caption: "Handleless modular kitchen with a quartz island and warm oak cabinetry.",
   },
   {
+    projectId: "proj-kr",
     id: "gal-kitchen-2",
     title: "Kitchen — cabinetry detail",
     category: "render",
@@ -88,6 +97,7 @@ export const gallery: GalleryItem[] = [
     caption: "Seamless full-height cabinetry in warm oak tone.",
   },
   {
+    projectId: "proj-kr",
     id: "gal-kitchen-3",
     title: "Kitchen — island & prep",
     category: "render",
@@ -97,6 +107,7 @@ export const gallery: GalleryItem[] = [
     caption: "Quartz-topped island with integrated prep zone.",
   },
   {
+    projectId: "proj-kr",
     id: "gal-kitchen-4",
     title: "Kitchen — storage layout",
     category: "render",
@@ -106,6 +117,7 @@ export const gallery: GalleryItem[] = [
     caption: "Concealed storage and appliance joinery.",
   },
   {
+    projectId: "proj-kr",
     id: "gal-kitchen-5",
     title: "Kitchen — elevation view",
     category: "render",
@@ -115,6 +127,7 @@ export const gallery: GalleryItem[] = [
     caption: "Full-height quartz splashback and handleless fronts.",
   },
   {
+    projectId: "proj-kr",
     id: "gal-kitchen-6",
     title: "Kitchen — lighting & ambiance",
     category: "render",
@@ -124,6 +137,7 @@ export const gallery: GalleryItem[] = [
     caption: "Under-cabinet task strips and 3000K recessed downlights.",
   },
   {
+    projectId: "proj-kr",
     id: "gal-kitchen-7",
     title: "Kitchen — material palette",
     category: "render",
@@ -133,6 +147,7 @@ export const gallery: GalleryItem[] = [
     caption: "Warm oak veneer, engineered quartz, and brass accents.",
   },
   {
+    projectId: "proj-kr",
     id: "gal-kitchen-8",
     title: "Kitchen — designer notes",
     category: "render",
@@ -142,6 +157,7 @@ export const gallery: GalleryItem[] = [
     caption: "Design presentation board — layout, sections, and material callouts.",
   },
   {
+    projectId: "proj-kr",
     id: "gal-multipurpose",
     title: "Multipurpose room",
     category: "render",
@@ -149,5 +165,142 @@ export const gallery: GalleryItem[] = [
     spaceId: "sp-multipurpose",
     domainId: "dom-interior",
     caption: "Top-floor media, bar and games room under the gable.",
+  },
+  // ── Viswanath Residence ──
+  {
+    projectId: "proj-vr",
+    id: "gal-vr-hero",
+    title: "Viswanath Residence — front facade",
+    category: "final",
+    image: "/images/projects/viswanath.jpg",
+    spaceId: "",
+    domainId: "dom-architecture",
+    caption: "Alluring curved facade with greenery at the centre, breaking away from rigid patterns.",
+  },
+  // ── Cotha East End Condominium ──
+  {
+    projectId: "proj-ce",
+    id: "gal-ce-hero",
+    title: "Cotha East End — elevation",
+    category: "final",
+    image: "/images/projects/cotha.jpg",
+    spaceId: "",
+    domainId: "dom-architecture",
+    caption: "Vertical red brick fins and exposed concrete creating a balanced, functional facade.",
+  },
+  // ── Srinivas Residence ──
+  {
+    projectId: "proj-sr",
+    id: "gal-sr-hero",
+    title: "Srinivas Residence",
+    category: "final",
+    image: "/images/projects/srinivas.jpg",
+    spaceId: "",
+    domainId: "dom-architecture",
+    caption: "A spacious 12,000 sq ft residence with minimalistic geometries.",
+  },
+  // ── House of Rayalaseema ──
+  {
+    projectId: "proj-hr",
+    id: "gal-hr-hero",
+    title: "House of Rayalaseema — exterior",
+    category: "final",
+    image: "/images/projects/rayalaseema.jpg",
+    spaceId: "",
+    domainId: "dom-architecture",
+    caption: "A refuge in the arid landscape of Anantapur with self-shading louvers.",
+  },
+  {
+    projectId: "proj-hr",
+    id: "gal-hr-courtyard",
+    title: "House of Rayalaseema — courtyard",
+    category: "landscape",
+    image: "/images/projects/rayalaseema/courtyard.jpg",
+    spaceId: "",
+    domainId: "dom-architecture",
+    caption: "Lush green areas and semi-open living spaces for thermal comfort.",
+  },
+  {
+    projectId: "proj-hr",
+    id: "gal-hr-interior",
+    title: "House of Rayalaseema — interior",
+    category: "final",
+    image: "/images/projects/rayalaseema/interior.jpg",
+    spaceId: "",
+    domainId: "dom-interior",
+    caption: "A bold yet ethereal interior that blends functionality with aesthetics.",
+  },
+  // ── House of Loggia ──
+  {
+    projectId: "proj-hl",
+    id: "gal-hl-hero",
+    title: "House of Loggia — exterior",
+    category: "final",
+    image: "/images/projects/loggia.jpg",
+    spaceId: "",
+    domainId: "dom-architecture",
+    caption: "Greasy concrete geometries floating under a warm wooden canopy.",
+  },
+  {
+    projectId: "proj-hl",
+    id: "gal-hl-exterior",
+    title: "House of Loggia — elevation",
+    category: "final",
+    image: "/images/projects/loggia/exterior.jpg",
+    spaceId: "",
+    domainId: "dom-architecture",
+    caption: "Bold concrete masses and warm wood blending with the tropical landscape.",
+  },
+  {
+    projectId: "proj-hl",
+    id: "gal-hl-interior",
+    title: "House of Loggia — interior",
+    category: "final",
+    image: "/images/projects/loggia/interior.jpg",
+    spaceId: "",
+    domainId: "dom-interior",
+    caption: "Light and breeze engaging the navel spaces of the house.",
+  },
+  // ── Raintree Villa ──
+  {
+    projectId: "proj-rv",
+    id: "gal-rv-hero",
+    title: "Raintree Villa",
+    category: "final",
+    image: "/images/projects/raintree.jpg",
+    spaceId: "",
+    domainId: "dom-architecture",
+    caption: "A tropical modern villa in Bangalore embracing indoor-outdoor living.",
+  },
+  {
+    projectId: "proj-rv",
+    id: "gal-rv-exterior",
+    title: "Raintree Villa — exterior",
+    category: "final",
+    image: "/images/projects/raintree/exterior.jpg",
+    spaceId: "",
+    domainId: "dom-architecture",
+    caption: "Warm material palette and seamless transitions between indoors and outdoors.",
+  },
+  {
+    projectId: "proj-rv",
+    id: "gal-rv-interior",
+    title: "Raintree Villa — interior",
+    category: "final",
+    image: "/images/projects/raintree/interior.jpg",
+    spaceId: "",
+    domainId: "dom-interior",
+    caption: "Contemporary interiors with tropical modern influences.",
+  },
+  // ── 74 Jaroka ──
+  {
+    projectId: "proj-kr",
+    id: "gal-74j-hero",
+    title: "74 Jaroka",
+    category: "final",
+    image: "/images/projects/jaroka.jpg",
+    spaceId: "",
+    domainId: "dom-architecture",
+    caption: "A cool retreat in Hosur with bold geometric layout and warm materials.",
   },
 ];

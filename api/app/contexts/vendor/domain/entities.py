@@ -24,3 +24,7 @@ class Vendor:
     def __post_init__(self) -> None:
         # Enforce the rating invariant through the value object.
         Rating(self.rating)
+    # Tenant boundary (migrations/002_project_scope.sql). Defaulted only because
+    # dataclass ordering forbids a required field after defaulted ones;
+    # CrudService.create rejects an empty value before it reaches the FK.
+    project_id: str = ""

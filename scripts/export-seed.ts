@@ -10,7 +10,7 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 
-import { project } from "@/data/project";
+import { projects } from "@/data/project";
 import { spaces } from "@/data/spaces";
 import { domains } from "@/data/domains";
 import { materials } from "@/data/materials";
@@ -26,7 +26,7 @@ import { lessons } from "@/data/lessons";
 import { gallery } from "@/data/gallery";
 
 const payload = {
-  project,
+  projects,
   spaces,
   domains,
   materials,

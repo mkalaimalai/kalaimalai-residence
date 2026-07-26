@@ -1,7 +1,13 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { PUBLIC_NAV } from "@/lib/nav";
 
 export function SiteFooter() {
+  const pathname = usePathname();
+  if (pathname.startsWith("/2.0")) return null;
+
   return (
     <footer className="mt-24 border-t border-border bg-surface">
       <div className="mx-auto max-w-6xl px-6 py-12">

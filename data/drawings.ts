@@ -2,6 +2,7 @@ import type { Drawing } from "@/types";
 
 export const drawings: Drawing[] = [
   {
+    projectId: "proj-kr",
     id: "dwg-arch-gf",
     title: "Ground Floor Plan",
     domainId: "dom-architecture",
@@ -14,6 +15,7 @@ export const drawings: Drawing[] = [
     notes: "Living, dining, kitchen and courtyard layout.",
   },
   {
+    projectId: "proj-kr",
     id: "dwg-arch-ff",
     title: "First Floor Plan",
     domainId: "dom-architecture",
@@ -26,6 +28,7 @@ export const drawings: Drawing[] = [
     notes: "Bedrooms and multipurpose room.",
   },
   {
+    projectId: "proj-kr",
     id: "dwg-elevation",
     title: "Elevations & Sections",
     domainId: "dom-architecture",
@@ -38,6 +41,7 @@ export const drawings: Drawing[] = [
     notes: "North/south/front elevations and the courtyard section.",
   },
   {
+    projectId: "proj-kr",
     id: "dwg-master-int",
     title: "Master Bedroom Interior Details",
     domainId: "dom-interior",
@@ -50,6 +54,7 @@ export const drawings: Drawing[] = [
     notes: "Headboard wall, wardrobe and balcony detail.",
   },
   {
+    projectId: "proj-kr",
     id: "dwg-living-ceiling",
     title: "Living Room False Ceiling & Lighting",
     domainId: "dom-ceiling",
@@ -62,6 +67,7 @@ export const drawings: Drawing[] = [
     notes: "Cove zones and pendant coordination.",
   },
   {
+    projectId: "proj-kr",
     id: "dwg-electrical-gf",
     title: "Ground Floor Electrical Layout",
     domainId: "dom-electrical",

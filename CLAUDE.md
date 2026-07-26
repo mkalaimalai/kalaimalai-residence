@@ -34,6 +34,18 @@ npm run verify     # data integrity check — RUN THIS after editing anything in
 npm run typecheck  # tsc --noEmit (strict; must pass clean)
 npm run lint       # eslint
 npm run build      # static export to out/ (statically generates every space/domain page)
+npm run verify:api # same check against a live API (DATA_SOURCE=api, no seed fallback)
+npm run export:seed # dump the TS seed to JSON for the Python seed loader
+```
+
+Backend (optional, `api/` — see `api/README.md` for the full flow):
+
+```bash
+cd api && source .venv/bin/activate
+export DATABASE_URL=... AUTH_DISABLED=true PYTHONPATH="$(pwd)"
+python scripts/seed.py      # load the JSON exported by `npm run export:seed`
+python scripts/verify.py    # backend equivalent of npm run verify
+uvicorn app.main:app --reload --port 8099   # docs at /docs
 ```
 
 There is **no test runner**. `npm run verify` (`scripts/verify-data.ts`, run via tsx) is
@@ -56,7 +68,15 @@ These come from `.specify/memory/constitution.md` — the constitution wins over
    This is why no public link 404s.
 4. **The data model in `types/index.ts` is the contract.** It's locked — schema changes are
    their own reviewed feature, not a drive-by edit.
-5. **Public side stays anonymized.** Exact villa number/address live only in portal-only
+5. **Every entity belongs to exactly one project.** All 13 entity types carry a required
+   `projectId` (`project_id`, FK to `projects` with `ON DELETE CASCADE` — see
+   `api/migrations/002_project_scope.sql`); `Project` itself is the tenant root and has
+   none. Collection GETs accept `?projectId=`; omitting it returns every project's rows,
+   so **a caller that renders one project must always pass it**. The three surfaces
+   differ: 1.0 pins `projects[0]` in `lib/repository.ts`, the portal pins
+   `PORTAL_PROJECT_ID` in `lib/api-client.ts`, and 2.0 passes `useProject().selectedId`.
+   Slugs are unique **per project**, not globally.
+6. **Public side stays anonymized.** Exact villa number/address live only in portal-only
    fields (e.g. in `data/project.ts`). Public copy uses "A Contemporary Zen Residence in
    Bengaluru". Genuinely sensitive figures (real negotiated prices, payment/contact details)
    stay **out of `data/` entirely** until real auth exists — see the portal-security note below.
@@ -81,6 +101,22 @@ Entities (`types/index.ts`): `Project`, `Space`, `Domain`, `Drawing`, `Vendor`,
 `npm run verify`. Reference real images under `public/images/` (exterior in `elevation/`,
 interior in `spaces/`).
 
+## Two frontends: `/` (1.0) and `/2.0`
+
+`app/2.0/**` is a parallel, **API-first** rendering of the same public site. Differences
+that matter before editing either:
+
+- 1.0 pages are Server Components reading `lib/repository.ts` (seed by default). 2.0 pages
+  are `"use client"` and fetch at runtime from `lib/api-v2.ts` (`NEXT_PUBLIC_API_URL`,
+  default `http://localhost:8099`) — so 2.0 shows nothing without a running API.
+- 2.0 is **multi-project**: `app/2.0/layout.tsx` owns a project-picker context
+  (`useProject()`, persisted under `v2_selected_project`). 1.0 is single-project.
+- Both share `types/index.ts` and the presentational components in `components/`. Keep
+  those components project-agnostic and prop-driven so both trees can use them.
+
+The seed is likewise now multi-project: `data/project.ts` exports `projects: Project[]`.
+`getProject()` returns `projects[0]` (the 1.0 singleton); `getProjects()` returns all.
+
 ## Component model
 
 Server Components by default. Any view with sort/filter/search state is a Client Component
@@ -98,11 +134,16 @@ Tailwind CSS v4, CSS-first. Theme tokens (palette + fonts, light + dark) live in
 
 ## Portal security model — important
 
-The portal gate (`components/portal/PasswordGate.tsx`) is **obscurity, not security**. The
-site is a static export on GitHub Pages — no server — so the passcode check runs in the
-browser and **all seed data ships in the bundle**. Passcode defaults to `"anagami"`,
-overridable at build via `NEXT_PUBLIC_PORTAL_PASSCODE`. Consequence: do not put anything
-genuinely sensitive into `data/`, ever, under the current setup.
+The portal now gates on **real Supabase Auth** (`components/portal/SupabaseAuthGate.tsx`;
+session in localStorage via `lib/supabase-client.ts`), and portal data is fetched
+client-side through `lib/api-client.ts` rather than baked into the bundle. The old
+obscurity-only `PasswordGate` / `NEXT_PUBLIC_PORTAL_PASSCODE` are **gone** — ignore any
+lingering references in `docs/`.
+
+The constraint that survives: the site is a **static export with no server**, so anything
+placed in `data/*.ts` ships to every visitor. Genuinely sensitive figures (real negotiated
+prices, payment/contact details) belong in the database behind the API's `require_user` /
+`require_admin` endpoints, never in `data/`.
 
 ## Deployment
 

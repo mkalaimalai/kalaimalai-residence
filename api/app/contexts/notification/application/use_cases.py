@@ -15,8 +15,8 @@ class ListNotifications:
     def __init__(self, repo: NotificationRepository) -> None:
         self._repo = repo
 
-    async def __call__(self) -> list[Notification]:
-        return await self._repo.list_all()
+    async def __call__(self, project_id: str | None = None) -> list[Notification]:
+        return await self._repo.list_all(project_id)
 
 
 class SendNotification:

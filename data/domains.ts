@@ -3,6 +3,7 @@ import type { Domain } from "@/types";
 /** The 14 work domains. `spaceIds` back-link to the rooms each domain touches. */
 export const domains: Domain[] = [
   {
+    projectId: "proj-kr",
     id: "dom-architecture",
     slug: "architecture",
     name: "Architecture",
@@ -15,6 +16,7 @@ export const domains: Domain[] = [
     lessonIds: [],
   },
   {
+    projectId: "proj-kr",
     id: "dom-interior",
     slug: "interior-design",
     name: "Interior Design",
@@ -26,6 +28,7 @@ export const domains: Domain[] = [
     lessonIds: ["les-import-hidden-costs"],
   },
   {
+    projectId: "proj-kr",
     id: "dom-civil",
     slug: "civil-structure",
     name: "Civil & Structure",
@@ -37,6 +40,7 @@ export const domains: Domain[] = [
     lessonIds: [],
   },
   {
+    projectId: "proj-kr",
     id: "dom-plumbing",
     slug: "plumbing",
     name: "Plumbing",
@@ -48,6 +52,7 @@ export const domains: Domain[] = [
     lessonIds: [],
   },
   {
+    projectId: "proj-kr",
     id: "dom-electrical",
     slug: "electrical",
     name: "Electrical",
@@ -59,6 +64,7 @@ export const domains: Domain[] = [
     lessonIds: [],
   },
   {
+    projectId: "proj-kr",
     id: "dom-lighting",
     slug: "lighting",
     name: "Lighting",
@@ -70,6 +76,7 @@ export const domains: Domain[] = [
     lessonIds: [],
   },
   {
+    projectId: "proj-kr",
     id: "dom-ceiling",
     slug: "false-ceiling",
     name: "False Ceiling",
@@ -81,6 +88,7 @@ export const domains: Domain[] = [
     lessonIds: [],
   },
   {
+    projectId: "proj-kr",
     id: "dom-carpentry",
     slug: "carpentry",
     name: "Carpentry & Joinery",
@@ -92,6 +100,7 @@ export const domains: Domain[] = [
     lessonIds: [],
   },
   {
+    projectId: "proj-kr",
     id: "dom-flooring",
     slug: "flooring",
     name: "Flooring",
@@ -103,6 +112,7 @@ export const domains: Domain[] = [
     lessonIds: [],
   },
   {
+    projectId: "proj-kr",
     id: "dom-furniture",
     slug: "furniture",
     name: "Furniture",
@@ -114,6 +124,7 @@ export const domains: Domain[] = [
     lessonIds: ["les-import-hidden-costs"],
   },
   {
+    projectId: "proj-kr",
     id: "dom-landscape",
     slug: "landscape",
     name: "Landscape",
@@ -125,6 +136,7 @@ export const domains: Domain[] = [
     lessonIds: [],
   },
   {
+    projectId: "proj-kr",
     id: "dom-automation",
     slug: "home-automation",
     name: "Home Automation",
@@ -137,6 +149,7 @@ export const domains: Domain[] = [
     lessonIds: ["les-automation-negotiation"],
   },
   {
+    projectId: "proj-kr",
     id: "dom-procurement",
     slug: "procurement",
     name: "Procurement",
@@ -148,6 +161,7 @@ export const domains: Domain[] = [
     lessonIds: ["les-import-hidden-costs"],
   },
   {
+    projectId: "proj-kr",
     id: "dom-pm",
     slug: "project-management",
     name: "Project Management",

@@ -1,34 +1,172 @@
 import type { Project } from "@/types";
 
-/**
- * Single project record.
- * Public-facing fields are anonymized (constitution §5). The villa number, community
- * and address are portal-only and must never surface on the public site.
- */
-export const project: Project = {
-  id: "proj-kr",
-
-  // Public, anonymized identity
-  publicTitle: "A Contemporary Zen Residence in Bengaluru",
-  publicSubtitle:
-    "A complete design and construction archive of a family home — from concept and drawings to materials, craftsmanship, automation, furniture, and final handover.",
-  city: "Bengaluru, India",
-  designer: "Studio Anagami",
-  direction: "Contemporary minimalist · warm, calm, architectural",
-  heroImage: "/images/elevation/hero.jpg",
-  conceptStatement:
-    "Sleek, cohesive masses—crowned by a quiet gabled roofline—fold around a North-East green court, where a serene water body and lush planting dissolve the line between inside and out. Thoughtfully placed openings draw soft, diffused light deep into the home, while the private upper-floor rooms look out over the calm of the courtyard.",
-
-  // Internal / portal-only — keep OUT of the public site.
-  // Locating identifiers are redacted in this public repo; the real values are
-  // injected privately (env / portal data) once Session C lands.
-  internalName: "Kalaimalai Residence",
-  villaNo: "", // redacted — private
-  community: "", // redacted — private
-  address: "", // redacted — private (withheld from the public archive)
-  plotArea: "4,000 sq ft",
-  builtUpArea: "5,200 sq ft",
-  floors: 3,
-  status: "Execution",
-  startDate: "2022-08-01",
-};
+export const projects: Project[] = [
+  {
+    id: "proj-kr",
+    publicTitle: "A Contemporary Zen Residence in Bengaluru",
+    publicSubtitle:
+      "A complete design and construction archive of a family home — from concept and drawings to materials, craftsmanship, automation, furniture, and final handover.",
+    city: "Bengaluru, India",
+    designer: "Studio Anagami",
+    direction: "Contemporary minimalist · warm, calm, architectural",
+    heroImage: "/images/elevation/hero.jpg",
+    conceptStatement:
+      "Sleek, cohesive masses—crowned by a quiet gabled roofline—fold around a North-East green court, where a serene water body and lush planting dissolve the line between inside and out. Thoughtfully placed openings draw soft, diffused light deep into the home, while the private upper-floor rooms look out over the calm of the courtyard.",
+    internalName: "Kalaimalai Residence",
+    villaNo: "",
+    community: "",
+    address: "",
+    plotArea: "4,000 sq ft",
+    builtUpArea: "5,200 sq ft",
+    floors: 3,
+    status: "Execution",
+    startDate: "2022-08-01",
+  },
+  {
+    id: "proj-vr",
+    publicTitle: "Viswanath Residence",
+    publicSubtitle:
+      "A residence in Bangalore's CBD integrating urban living with natural elements.",
+    city: "Bangalore, India",
+    designer: "Studio Anagami",
+    direction: "Contemporary · urban-nature integration, curved facade",
+    heroImage: "/images/projects/viswanath.jpg",
+    conceptStatement:
+      "Situated in a bustling Bangalore neighbourhood, the design allocates generous space at the front for openness and tranquillity. Existing greenery acts as a visual barrier from the busy street while serving as a focal point for living spaces. The front facade breaks away from rigid patterns — alluring curves direct attention to a centre adorned with greens and artefacts. Thoughtful terrace spaces maximise indoor-outdoor living through open decks, expansive openings, and soaring double heights.",
+    internalName: "Viswanath Residence",
+    villaNo: "",
+    community: "",
+    address: "",
+    plotArea: "5,000 sq ft",
+    builtUpArea: "5,000 sq ft",
+    floors: 2,
+    status: "Ongoing",
+    startDate: "",
+  },
+  {
+    id: "proj-ce",
+    publicTitle: "Cotha East End Condominium",
+    publicSubtitle:
+      "A condominium in an upscale Bangalore neighbourhood.",
+    city: "Bangalore, India",
+    designer: "Studio Anagami",
+    direction: "Contemporary · vertical fins, red brick, exposed concrete",
+    heroImage: "/images/projects/cotha.jpg",
+    conceptStatement:
+      "Departing from conventional compact layouts, the building's shorter side faces the entrance to establish visual connections between living areas and the outdoor landscape. Vertical fins on the south-facing facade mitigate harsh sunlight while promoting cross ventilation and serving as a privacy screen. Red bricks and exposed concrete fins create a balanced, functional facade that imparts warmth and comfort.",
+    internalName: "Cotha East End Condominium",
+    villaNo: "",
+    community: "",
+    address: "",
+    plotArea: "4,600 sq ft",
+    builtUpArea: "4,600 sq ft",
+    floors: 4,
+    status: "Ongoing",
+    startDate: "",
+  },
+  {
+    id: "proj-sr",
+    publicTitle: "Srinivas Residence",
+    publicSubtitle:
+      "A spacious residence in Bangalore.",
+    city: "Bangalore, India",
+    designer: "Studio Anagami",
+    direction: "Contemporary minimalist",
+    heroImage: "/images/projects/srinivas.jpg",
+    conceptStatement:
+      "A spacious 12,000 sq ft residence that blends sleek, minimalistic geometries with cohesive masses. Thoughtfully situated openings and transition areas achieve a seamless fusion of indoor and outdoor spaces, creating a calm family home with generous proportions.",
+    internalName: "Srinivas Residence",
+    villaNo: "",
+    community: "",
+    address: "",
+    plotArea: "12,000 sq ft",
+    builtUpArea: "12,000 sq ft",
+    floors: 2,
+    status: "Ongoing",
+    startDate: "",
+  },
+  {
+    id: "proj-hr",
+    publicTitle: "House of Rayalaseema",
+    publicSubtitle:
+      "A residence in the arid landscape of Anantapur.",
+    city: "Anantapur, Andhra Pradesh, India",
+    designer: "Studio Anagami",
+    direction: "Arid climate design · thermal comfort, self-shading, semi-open living",
+    heroImage: "/images/projects/rayalaseema.jpg",
+    conceptStatement:
+      "Nestled in the arid landscape of Anantapur, this residence stands as a refuge from the warm, dry climate. Positioned at the south-west corner, it leaves ample space for lush green areas promoting airy indoor-outdoor living. Louvers across the facade mitigate heat absorption and provide self-shading. Terraces serve dual functions — expansive platforms for engagement while reducing heat gain. The design embodies a sustainable ethos tailored to thrive in arid climates.",
+    internalName: "House of Rayalaseema",
+    villaNo: "",
+    community: "",
+    address: "",
+    plotArea: "10,900 sq ft",
+    builtUpArea: "10,900 sq ft",
+    floors: 2,
+    status: "Completed",
+    startDate: "",
+  },
+  {
+    id: "proj-hl",
+    publicTitle: "House of Loggia",
+    publicSubtitle:
+      "Concrete geometries floating under a warm wooden canopy.",
+    city: "Bangalore, India",
+    designer: "Studio Anagami",
+    direction: "Contemporary tropical · concrete, wood, light and breeze",
+    heroImage: "/images/projects/loggia.jpg",
+    conceptStatement:
+      "Greasy concrete geometries floating under a warm wooden canopy, allowing light and breeze to engage the navel spaces of the house. A tropical modern residence that embraces indoor-outdoor living through material contrast and spatial openness.",
+    internalName: "House of Loggia",
+    villaNo: "",
+    community: "",
+    address: "",
+    plotArea: "7,500 sq ft",
+    builtUpArea: "7,500 sq ft",
+    floors: 2,
+    status: "Completed",
+    startDate: "",
+  },
+  {
+    id: "proj-rv",
+    publicTitle: "Raintree Villa",
+    publicSubtitle:
+      "A villa in Bangalore.",
+    city: "Bangalore, India",
+    designer: "Studio Anagami",
+    direction: "Contemporary tropical",
+    heroImage: "/images/projects/raintree.jpg",
+    conceptStatement:
+      "A villa in Bangalore designed by Studio Anagami, embracing tropical modern living through indoor-outdoor connections and a warm material palette.",
+    internalName: "Raintree Villa",
+    villaNo: "",
+    community: "",
+    address: "",
+    plotArea: "8,500 sq ft",
+    builtUpArea: "8,500 sq ft",
+    floors: 2,
+    status: "Completed",
+    startDate: "",
+  },
+  {
+    id: "proj-74j",
+    publicTitle: "74 Jaroka",
+    publicSubtitle:
+      "A cool retreat in the warm city of Hosur.",
+    city: "Hosur, Tamil Nadu, India",
+    designer: "Studio Anagami",
+    direction: "Contemporary · heat mitigation, cross ventilation, warm materials",
+    heroImage: "/images/projects/jaroka.jpg",
+    conceptStatement:
+      "In Hosur, where temperatures soar, this residence emerges as an epitome of relaxation. Addressing the western elevation challenge, the design centres on optimising natural light and airflow to mitigate heat buildup. Generous openings across living spaces offer picturesque views and seamless connection to nature. Public areas face north, private spaces west, with the southern side dedicated to cross ventilation. A bold geometric layout blends rich wooden textures with exposed concrete for a striking yet homely aesthetic.",
+    internalName: "74 Jaroka",
+    villaNo: "",
+    community: "",
+    address: "",
+    plotArea: "5,000 sq ft",
+    builtUpArea: "5,000 sq ft",
+    floors: 2,
+    status: "Completed",
+    startDate: "",
+  },
+];

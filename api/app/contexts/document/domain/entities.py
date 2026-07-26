@@ -16,6 +16,10 @@ class Drawing:
     consultant: str
     file_url: str
     notes: str
+    # Tenant boundary (migrations/002_project_scope.sql). Defaulted only because
+    # dataclass ordering forbids a required field after defaulted ones;
+    # CrudService.create rejects an empty value before it reaches the FK.
+    project_id: str = ""
 
 
 @dataclass
@@ -27,6 +31,10 @@ class GalleryItem:
     space_id: str  # "" if not space-specific
     domain_id: str  # "" if not domain-specific
     caption: str
+    # Tenant boundary (migrations/002_project_scope.sql). Defaulted only because
+    # dataclass ordering forbids a required field after defaulted ones;
+    # CrudService.create rejects an empty value before it reaches the FK.
+    project_id: str = ""
 
 
 @dataclass
@@ -38,3 +46,7 @@ class Lesson:
     domain_id: str
     space_id: str
     impact: dict = field(default_factory=dict)  # {cost,time,quality,design}
+    # Tenant boundary (migrations/002_project_scope.sql). Defaulted only because
+    # dataclass ordering forbids a required field after defaulted ones;
+    # CrudService.create rejects an empty value before it reaches the FK.
+    project_id: str = ""

@@ -1,0 +1,49 @@
+# Local Postgres for the `api/` FastAPI backend.
+# Matches the default `database_url` in api/app/config.py, so no env override is needed:
+#   postgresql+asyncpg://postgres:postgres@localhost:5432/postgres
+#
+#   docker compose up -d db
+#
+# This is plain Postgres, not Supabase. The backend only needs Postgres + a JWT secret;
+# run with AUTH_DISABLED=true locally and no Supabase services are required at all.
+# To exercise real portal login (GoTrue-issued JWTs), use the Supabase CLI instead.
+
+services:
+  db:
+    image: postgres:15
+    container_name: kr-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - kr-pgdata:/var/lib/postgresql/data
+      # Applied only on first init of an empty volume.
+      - ./api/migrations/001_init.sql:/docker-entrypoint-initdb.d/001_init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Web UI for browsing the tables — plain Postgres ships no such thing.
+  # Auto-connects via PGWEB_DATABASE_URL; there is no login. If you open pgweb's
+  # "Connect" form, the host is `db` (the compose service), NOT `localhost` —
+  # inside this container localhost is pgweb itself and you'll get "connection refused".
+  pgweb:
+    image: sosedoff/pgweb
+    container_name: kr-pgweb
+    restart: unless-stopped
+    environment:
+      PGWEB_DATABASE_URL: postgres://postgres:postgres@db:5432/postgres?sslmode=disable
+    ports:
+      - "8081:8081"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  kr-pgdata:

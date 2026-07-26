@@ -9,6 +9,7 @@ from app.shared.camel import CamelModel
 
 
 class VendorResponse(CamelModel):
+    project_id: str
     id: str
     name: str
     category: str
@@ -28,6 +29,7 @@ class VendorResponse(CamelModel):
 
 
 class VendorCreate(CamelModel):
+    project_id: str
     name: str
     category: str = ""
     contact_person: str = ""

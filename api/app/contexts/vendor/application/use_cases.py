@@ -15,8 +15,8 @@ class ListVendors:
     def __init__(self, repo: VendorRepository) -> None:
         self._repo = repo
 
-    async def __call__(self) -> list[Vendor]:
-        return await self._repo.list_all()
+    async def __call__(self, project_id: str | None = None) -> list[Vendor]:
+        return await self._repo.list_all(project_id)
 
 
 class GetVendor:
@@ -37,6 +37,7 @@ class CreateVendor:
     async def __call__(self, cmd: CreateVendorCommand) -> Vendor:
         vendor = Vendor(
             id=new_id("vendor"),
+            project_id=cmd.project_id,
             name=cmd.name,
             category=cmd.category,
             contact_person=cmd.contact_person,

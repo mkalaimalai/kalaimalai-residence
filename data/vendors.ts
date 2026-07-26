@@ -7,6 +7,7 @@ import type { Vendor } from "@/types";
  */
 export const vendors: Vendor[] = [
   {
+    projectId: "proj-kr",
     id: "ven-paint",
     name: "Bengaluru Painting & Finishes",
     category: "Painting & Microcement",
@@ -21,6 +22,7 @@ export const vendors: Vendor[] = [
     notes: "Quoted painting + microcement application. Negotiated ~8% off list.",
   },
   {
+    projectId: "proj-kr",
     id: "ven-steel",
     name: "Precision Steel Fabricators",
     category: "Metal Fabrication",
@@ -36,6 +38,7 @@ export const vendors: Vendor[] = [
       "Steel staircase fabrication + terrace pergola. Comparing against an RCC stair option.",
   },
   {
+    projectId: "proj-kr",
     id: "ven-lighting",
     name: "Lumen Lighting Studio",
     category: "Lighting Supply",
@@ -50,6 +53,7 @@ export const vendors: Vendor[] = [
     notes: "Architectural fixtures quotation — line items per room.",
   },
   {
+    projectId: "proj-kr",
     id: "ven-sync",
     name: "Sync Technologies",
     category: "Home Automation (KNX / BAB)",
@@ -65,6 +69,7 @@ export const vendors: Vendor[] = [
       "Selected automation partner — KNX backbone with BAB integration. See decision dec-automation.",
   },
   {
+    projectId: "proj-kr",
     id: "ven-htp",
     name: "Home Theatre Plus",
     category: "Home Automation (KNX / Control4)",
@@ -80,6 +85,7 @@ export const vendors: Vendor[] = [
       "Alternative automation bid — KNX with Control4 AV. Strong AV, higher licensing cost.",
   },
   {
+    projectId: "proj-kr",
     id: "ven-italy",
     name: "Italian Furniture Export House",
     category: "Furniture (Import — Italy)",
@@ -95,6 +101,7 @@ export const vendors: Vendor[] = [
       "13 candidate brands, EUR ex-works. Landed INR ≈ 1.7–1.8× after freight/duty/GST.",
   },
   {
+    projectId: "proj-kr",
     id: "ven-turkey",
     name: "Turkey Furniture & Joinery",
     category: "Furniture (Import — Turkey)",
@@ -109,6 +116,7 @@ export const vendors: Vendor[] = [
     notes: "Upholstery, outdoor lounge and kitchen joinery options.",
   },
   {
+    projectId: "proj-kr",
     id: "ven-stone",
     name: "Heritage Stone & Marble",
     category: "Stone & Flooring",

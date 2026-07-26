@@ -15,7 +15,7 @@
  * live, client-side, via `lib/api-client` (auth + sensitive data stay out of the bundle).
  */
 
-import { project } from "@/data/project";
+import { projects } from "@/data/project";
 import { spaces } from "@/data/spaces";
 import { domains } from "@/data/domains";
 import { materials } from "@/data/materials";
@@ -56,10 +56,19 @@ const ALLOW_FALLBACK = process.env.ALLOW_SEED_FALLBACK === "1";
 // every page calls these, and we must not hammer the API (or re-pay latency) per call.
 const cache = new Map<string, Promise<unknown>>();
 
-async function fetchList<T>(path: string, fallback: T[]): Promise<T[]> {
-  if (!USE_API) return fallback;
-  if (!cache.has(path)) cache.set(path, doFetch<T[]>(path, fallback));
-  return cache.get(path) as Promise<T[]>;
+// 1.0 is the single-project site: it renders `projects[0]` and nothing else. Now that
+// entities carry `projectId` and the seed holds several projects (gallery already does),
+// every list must be scoped or 1.0 would leak other projects' rows onto the public site.
+const SINGLETON_ID = projects[0].id;
+
+type Scoped = { projectId: string };
+
+async function fetchList<T extends Scoped>(path: string, fallback: T[]): Promise<T[]> {
+  const scopedFallback = fallback.filter((row) => row.projectId === SINGLETON_ID);
+  if (!USE_API) return scopedFallback;
+  const url = `${path}?projectId=${encodeURIComponent(SINGLETON_ID)}`;
+  if (!cache.has(url)) cache.set(url, doFetch<T[]>(url, scopedFallback));
+  return cache.get(url) as Promise<T[]>;
 }
 
 async function doFetch<T>(path: string, fallback: T): Promise<T> {
@@ -76,14 +85,13 @@ async function doFetch<T>(path: string, fallback: T): Promise<T> {
   }
 }
 
-// Project is a singleton with a public/full split; pad portal-only fields the public
-// endpoint omits so the returned object still satisfies the `Project` type.
+// Projects -------------------------------------------------------------------
 async function fetchProject(): Promise<Project> {
-  if (!USE_API) return project;
+  if (!USE_API) return projects[0];
   if (!cache.has("/project")) {
     cache.set(
       "/project",
-      doFetch<Partial<Project>>("/project", project).then((p) => ({
+      doFetch<Partial<Project>>("/project", projects[0]).then((p) => ({
         internalName: "",
         villaNo: "",
         community: "",
@@ -95,9 +103,15 @@ async function fetchProject(): Promise<Project> {
   return cache.get("/project") as Promise<Project>;
 }
 
-// Project --------------------------------------------------------------------
 export async function getProject(): Promise<Project> {
   return fetchProject();
+}
+
+/** Not scoped — `Project` is the tenant root, and 2.0's picker needs the whole list. */
+export async function getProjects(): Promise<Project[]> {
+  if (!USE_API) return projects;
+  if (!cache.has("/projects")) cache.set("/projects", doFetch<Project[]>("/projects", projects));
+  return cache.get("/projects") as Promise<Project[]>;
 }
 
 // Spaces ---------------------------------------------------------------------

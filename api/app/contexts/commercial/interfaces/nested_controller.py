@@ -9,7 +9,7 @@ filter by project_id, which they carry).
 """
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.contexts.commercial.application.quote_use_cases import CompareQuotes
@@ -26,6 +26,10 @@ from app.shared.auth import require_admin, require_user
 from app.shared.crud import CrudService
 from app.shared.db import get_session
 
+# Shared query param: restrict a collection to one project (see shared/crud.py).
+_PROJECT_Q = Query(None, alias="projectId")
+
+
 # --- BOQ packages ------------------------------------------------------------------
 boq_packages_router = APIRouter(prefix="/boq-packages", tags=["commercial"])
 
@@ -37,8 +41,8 @@ def _boqs(session: AsyncSession = Depends(get_session)):
 @boq_packages_router.get(
     "", response_model=list[s.BOQResponse], dependencies=[Depends(require_user)]
 )
-async def list_boq_packages(repo=Depends(_boqs)):
-    return [s.BOQResponse.model_validate(b) for b in await repo.list_all()]
+async def list_boq_packages(repo=Depends(_boqs), project_id: str | None = _PROJECT_Q):
+    return [s.BOQResponse.model_validate(b) for b in await repo.list_all(project_id)]
 
 
 @boq_packages_router.post(

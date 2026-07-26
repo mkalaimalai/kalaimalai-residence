@@ -2,6 +2,7 @@ import type { Snag } from "@/types";
 
 export const snags: Snag[] = [
   {
+    projectId: "proj-kr",
     id: "snag-living-paint",
     spaceId: "sp-living",
     category: "Finishes",
@@ -15,6 +16,7 @@ export const snags: Snag[] = [
     notes: "Likely shrinkage; rake out and re-skim before topcoat.",
   },
   {
+    projectId: "proj-kr",
     id: "snag-master-bath-leak",
     spaceId: "sp-bath",
     category: "Plumbing",
@@ -28,6 +30,7 @@ export const snags: Snag[] = [
     notes: "Re-seat valve and re-test before tiling closes the wall.",
   },
   {
+    projectId: "proj-kr",
     id: "snag-kitchen-shutter",
     spaceId: "sp-kitchen",
     category: "Carpentry",

@@ -10,12 +10,12 @@ from sqlalchemy import Integer, Numeric, String, Text
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.shared.db import Base
+from app.shared.db import Base, ProjectScoped
 
 _STR_ARRAY = ARRAY(String)
 
 
-class BOQModel(Base):
+class BOQModel(ProjectScoped, Base):
     __tablename__ = "boqs"
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
@@ -31,7 +31,7 @@ class BOQModel(Base):
     notes: Mapped[str] = mapped_column(Text, default="")
 
 
-class ProcurementModel(Base):
+class ProcurementModel(ProjectScoped, Base):
     __tablename__ = "procurement_items"
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
@@ -54,7 +54,7 @@ class ProcurementModel(Base):
     notes: Mapped[str] = mapped_column(Text, default="")
 
 
-class MaterialModel(Base):
+class MaterialModel(ProjectScoped, Base):
     __tablename__ = "materials"
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
@@ -68,11 +68,10 @@ class MaterialModel(Base):
 
 
 # --- New MVP tables (schema only; no endpoints yet) --------------------------------
-class QuoteModel(Base):
+class QuoteModel(ProjectScoped, Base):
     __tablename__ = "quotes"
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
-    project_id: Mapped[str] = mapped_column(String, default="")
     vendor_id: Mapped[str] = mapped_column(String, default="")
     boq_id: Mapped[str] = mapped_column(String, default="")
     quote_number: Mapped[str] = mapped_column(String, default="")
@@ -90,7 +89,7 @@ class QuoteModel(Base):
     approval_note: Mapped[str] = mapped_column(Text, default="")
 
 
-class QuoteLineItemModel(Base):
+class QuoteLineItemModel(ProjectScoped, Base):
     __tablename__ = "quote_line_items"
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
@@ -108,12 +107,11 @@ class QuoteLineItemModel(Base):
     negotiation_target_price: Mapped[float] = mapped_column(Numeric, default=0)
 
 
-class BOQLineItemModel(Base):
+class BOQLineItemModel(ProjectScoped, Base):
     __tablename__ = "boq_line_items"
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
     boq_id: Mapped[str] = mapped_column(String, default="")  # parent BOQ package
-    project_id: Mapped[str] = mapped_column(String, default="")
     space_id: Mapped[str] = mapped_column(String, default="")
     work_package_id: Mapped[str] = mapped_column(String, default="")
     description: Mapped[str] = mapped_column(Text, default="")
@@ -125,11 +123,10 @@ class BOQLineItemModel(Base):
     status: Mapped[str] = mapped_column(String, default="Estimated")
 
 
-class PurchaseOrderModel(Base):
+class PurchaseOrderModel(ProjectScoped, Base):
     __tablename__ = "purchase_orders"
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
-    project_id: Mapped[str] = mapped_column(String, default="")
     quote_id: Mapped[str] = mapped_column(String, default="")
     vendor_id: Mapped[str] = mapped_column(String, default="")
     amount: Mapped[float] = mapped_column(Numeric, default=0)
@@ -139,12 +136,11 @@ class PurchaseOrderModel(Base):
     notes: Mapped[str] = mapped_column(Text, default="")
 
 
-class DeliveryModel(Base):
+class DeliveryModel(ProjectScoped, Base):
     __tablename__ = "deliveries"
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
     purchase_order_id: Mapped[str] = mapped_column(String, default="")
-    project_id: Mapped[str] = mapped_column(String, default="")
     expected_date: Mapped[str] = mapped_column(String, default="")
     actual_date: Mapped[str] = mapped_column(String, default="")
     status: Mapped[str] = mapped_column(String, default="Planned")

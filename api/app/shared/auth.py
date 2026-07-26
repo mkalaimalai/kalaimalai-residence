@@ -17,7 +17,7 @@ from app.config import Settings, get_settings
 class AuthUser:
     id: str
     email: str | None
-    role: str  # app-level role from user_metadata.role, defaults to "viewer"
+    role: str  # app-level role from app_metadata.role, defaults to "viewer"
 
 
 def _decode(token: str, settings: Settings) -> dict:
@@ -52,7 +52,11 @@ def require_user(
             headers={"WWW-Authenticate": "Bearer"},
         ) from exc
 
-    metadata = claims.get("user_metadata") or {}
+    # app_metadata, NOT user_metadata: the latter is writable by the user themselves
+    # (`updateUser({ data: { role: "admin" } })` with only the public anon key), so
+    # trusting it for authorization lets any account self-promote. app_metadata can
+    # only be written with the service_role key.
+    metadata = claims.get("app_metadata") or {}
     return AuthUser(
         id=claims.get("sub", ""),
         email=claims.get("email"),

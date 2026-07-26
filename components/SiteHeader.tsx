@@ -12,6 +12,8 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
+  if (pathname.startsWith("/2.0")) return null;
+
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 

@@ -236,7 +236,7 @@ collection = {
             "can instead run the API with `AUTH_DISABLED=true` and any/no token works.\n\n"
             "**Auth tiers** (api/README.md): public GETs are open (build-time); the "
             "sensitive financial/snag tables and `/project/full` require `require_user`; "
-            "all writes require `require_admin` (`user_metadata.role == \"admin\"`)."
+            "all writes require `require_admin` (`app_metadata.role == \"admin\"`)."
         ),
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     },

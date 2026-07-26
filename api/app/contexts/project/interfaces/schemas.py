@@ -11,6 +11,7 @@ from app.shared.camel import CamelModel
 
 # --- Space -------------------------------------------------------------------------
 class SpaceResponse(CamelModel):
+    project_id: str
     id: str
     slug: str
     name: str
@@ -29,6 +30,7 @@ class SpaceResponse(CamelModel):
 
 
 class SpaceCreate(CamelModel):
+    project_id: str
     name: str
     slug: str | None = None
     description: str = ""
@@ -64,6 +66,7 @@ class SpaceUpdate(CamelModel):
 
 # --- Domain ------------------------------------------------------------------------
 class DomainResponse(CamelModel):
+    project_id: str
     id: str
     slug: str
     name: str
@@ -76,6 +79,7 @@ class DomainResponse(CamelModel):
 
 
 class DomainCreate(CamelModel):
+    project_id: str
     name: str
     slug: str | None = None
     description: str = ""
@@ -99,6 +103,7 @@ class DomainUpdate(CamelModel):
 
 # --- ProgressEntry -----------------------------------------------------------------
 class ProgressResponse(CamelModel):
+    project_id: str
     id: str
     date: str
     phase: str
@@ -112,6 +117,7 @@ class ProgressResponse(CamelModel):
 
 
 class ProgressCreate(CamelModel):
+    project_id: str
     date: str = ""
     phase: str = ""
     space_id: str = ""

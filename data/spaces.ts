@@ -6,6 +6,7 @@ import type { Space } from "@/types";
  */
 export const spaces: Space[] = [
   {
+    projectId: "proj-kr",
     id: "sp-living",
     slug: "living-room",
     name: "Living Room",
@@ -39,6 +40,7 @@ export const spaces: Space[] = [
     lessonIds: ["les-automation-negotiation"],
   },
   {
+    projectId: "proj-kr",
     id: "sp-dining",
     slug: "dining",
     name: "Dining",
@@ -61,6 +63,7 @@ export const spaces: Space[] = [
     lessonIds: ["les-import-hidden-costs"],
   },
   {
+    projectId: "proj-kr",
     id: "sp-kitchen",
     slug: "kitchen",
     name: "Kitchen",
@@ -79,6 +82,7 @@ export const spaces: Space[] = [
     lessonIds: [],
   },
   {
+    projectId: "proj-kr",
     id: "sp-master",
     slug: "master-bedroom",
     name: "Master Bedroom",
@@ -112,6 +116,7 @@ export const spaces: Space[] = [
     lessonIds: ["les-automation-negotiation"],
   },
   {
+    projectId: "proj-kr",
     id: "sp-bed2",
     slug: "bedroom-2",
     name: "Elder Daughter's Bedroom",
@@ -130,6 +135,7 @@ export const spaces: Space[] = [
     lessonIds: [],
   },
   {
+    projectId: "proj-kr",
     id: "sp-bed3",
     slug: "bedroom-3",
     name: "Younger Daughter's Bedroom",
@@ -147,6 +153,7 @@ export const spaces: Space[] = [
     lessonIds: [],
   },
   {
+    projectId: "proj-kr",
     id: "sp-bath",
     slug: "toilets",
     name: "Toilets",
@@ -166,6 +173,7 @@ export const spaces: Space[] = [
     lessonIds: [],
   },
   {
+    projectId: "proj-kr",
     id: "sp-courtyard",
     slug: "courtyard",
     name: "Green Court",
@@ -185,6 +193,7 @@ export const spaces: Space[] = [
     lessonIds: [],
   },
   {
+    projectId: "proj-kr",
     id: "sp-terrace",
     slug: "terrace",
     name: "Terrace",
@@ -203,6 +212,7 @@ export const spaces: Space[] = [
     lessonIds: [],
   },
   {
+    projectId: "proj-kr",
     id: "sp-landscape",
     slug: "landscape",
     name: "Landscape",
@@ -221,6 +231,7 @@ export const spaces: Space[] = [
     lessonIds: [],
   },
   {
+    projectId: "proj-kr",
     id: "sp-multipurpose",
     slug: "multipurpose-room",
     name: "Multipurpose Room",
@@ -243,6 +254,7 @@ export const spaces: Space[] = [
   // --- Spaces added from the floor plans (GF/FF/SF), suite-level. Images reuse
   // the closest Studio Anagami rendering until dedicated room photos exist.
   {
+    projectId: "proj-kr",
     id: "sp-foyer",
     slug: "foyer",
     name: "Foyer & Entrance",
@@ -262,6 +274,7 @@ export const spaces: Space[] = [
     lessonIds: [],
   },
   {
+    projectId: "proj-kr",
     id: "sp-puja",
     slug: "puja",
     name: "Puja Room",
@@ -281,6 +294,7 @@ export const spaces: Space[] = [
     lessonIds: [],
   },
   {
+    projectId: "proj-kr",
     id: "sp-parents",
     slug: "parents-room",
     name: "Parents' Room",
@@ -301,6 +315,7 @@ export const spaces: Space[] = [
     lessonIds: [],
   },
   {
+    projectId: "proj-kr",
     id: "sp-study",
     slug: "study-library",
     name: "Study & Library",
@@ -320,6 +335,7 @@ export const spaces: Space[] = [
     lessonIds: [],
   },
   {
+    projectId: "proj-kr",
     id: "sp-lounge",
     slug: "lounge-bar",
     name: "Lounge & Bar",

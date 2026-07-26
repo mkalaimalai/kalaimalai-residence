@@ -9,6 +9,8 @@
 export type SpaceStatus = "Concept" | "Design" | "Execution" | "Completed";
 
 export interface Space {
+  /** Owning project. Tenant boundary — see api/migrations/002_project_scope.sql. */
+  projectId: string;
   id: string;
   slug: string;
   name: string;
@@ -33,6 +35,8 @@ export type DomainStatus =
   | "Completed";
 
 export interface Domain {
+  /** Owning project. Tenant boundary — see api/migrations/002_project_scope.sql. */
+  projectId: string;
   id: string;
   slug: string;
   name: string;
@@ -52,6 +56,8 @@ export type DrawingStatus =
   | "Issued for Construction";
 
 export interface Drawing {
+  /** Owning project. Tenant boundary — see api/migrations/002_project_scope.sql. */
+  projectId: string;
   id: string;
   title: string;
   domainId: string;
@@ -65,6 +71,8 @@ export interface Drawing {
 }
 
 export interface Vendor {
+  /** Owning project. Tenant boundary — see api/migrations/002_project_scope.sql. */
+  projectId: string;
   id: string;
   name: string;
   category: string;
@@ -92,6 +100,8 @@ export type ProcurementStatus =
   | "Closed";
 
 export interface ProcurementItem {
+  /** Owning project. Tenant boundary — see api/migrations/002_project_scope.sql. */
+  projectId: string;
   id: string;
   item: string;
   category: string;
@@ -124,6 +134,8 @@ export type DecisionType =
 export type DecisionStatus = "Open" | "Decided" | "Revisit" | "Closed";
 
 export interface Decision {
+  /** Owning project. Tenant boundary — see api/migrations/002_project_scope.sql. */
+  projectId: string;
   id: string;
   title: string;
   domainId: string;
@@ -145,6 +157,8 @@ export type SnagPriority = "Low" | "Medium" | "High" | "Critical";
 export type SnagStatus = "Open" | "In Progress" | "Fixed" | "Verified" | "Closed";
 
 export interface Snag {
+  /** Owning project. Tenant boundary — see api/migrations/002_project_scope.sql. */
+  projectId: string;
   id: string;
   spaceId: string;
   category: string;
@@ -165,6 +179,8 @@ export type PaymentStatus =
   | "Fully Paid";
 
 export interface BOQ {
+  /** Owning project. Tenant boundary — see api/migrations/002_project_scope.sql. */
+  projectId: string;
   id: string;
   vendorId: string;
   category: string;
@@ -179,6 +195,8 @@ export interface BOQ {
 }
 
 export interface Material {
+  /** Owning project. Tenant boundary — see api/migrations/002_project_scope.sql. */
+  projectId: string;
   id: string;
   name: string;
   category: string;
@@ -190,6 +208,8 @@ export interface Material {
 }
 
 export interface Lesson {
+  /** Owning project. Tenant boundary — see api/migrations/002_project_scope.sql. */
+  projectId: string;
   id: string;
   title: string;
   category: string;
@@ -200,6 +220,8 @@ export interface Lesson {
 }
 
 export interface ProgressEntry {
+  /** Owning project. Tenant boundary — see api/migrations/002_project_scope.sql. */
+  projectId: string;
   id: string;
   date: string;
   phase: string;
@@ -213,6 +235,8 @@ export interface ProgressEntry {
 }
 
 export interface Warranty {
+  /** Owning project. Tenant boundary — see api/migrations/002_project_scope.sql. */
+  projectId: string;
   id: string;
   item: string;
   category: string;
@@ -264,6 +288,8 @@ export type GalleryCategory =
   | "landscape";
 
 export interface GalleryItem {
+  /** Owning project. Tenant boundary — see api/migrations/002_project_scope.sql. */
+  projectId: string;
   id: string;
   title: string;
   category: GalleryCategory;

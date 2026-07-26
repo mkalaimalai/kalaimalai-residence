@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 
 @dataclass
 class CreateVendorCommand:
+    project_id: str
     name: str
     category: str = ""
     contact_person: str = ""

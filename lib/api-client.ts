@@ -92,18 +92,36 @@ export const apiPost = <T>(path: string, body: unknown) =>
 export const apiPatch = <T>(path: string, body: unknown) =>
   request<T>("PATCH", path, body);
 
+/**
+ * The project this portal administers. The portal is the control centre for one
+ * project (unlike `/2.0`, which has a picker), so every read is scoped to it and every
+ * create is stamped with it — entities are `NOT NULL` on `project_id` since
+ * api/migrations/002_project_scope.sql.
+ */
+export const PORTAL_PROJECT_ID =
+  process.env.NEXT_PUBLIC_PROJECT_ID ?? "proj-kr";
+
+export const scopedPath = (path: string) =>
+  `${path}?projectId=${encodeURIComponent(PORTAL_PROJECT_ID)}`;
+
+/** Stamp the owning project on a create payload. */
+export const withProject = <T extends object>(payload: T) => ({
+  projectId: PORTAL_PROJECT_ID,
+  ...payload,
+});
+
 // --- typed collection reads (mirror the repository getters used by the portal) ----
 export const api = {
-  spaces: () => apiGet<Space[]>("/spaces"),
-  domains: () => apiGet<Domain[]>("/domains"),
-  vendors: () => apiGet<Vendor[]>("/vendors"),
-  materials: () => apiGet<Material[]>("/materials"),
-  drawings: () => apiGet<Drawing[]>("/drawings"),
-  decisions: () => apiGet<Decision[]>("/decisions"),
-  procurement: () => apiGet<ProcurementItem[]>("/procurement"),
-  boqs: () => apiGet<BOQ[]>("/boq"),
-  snags: () => apiGet<Snag[]>("/snags"),
-  progress: () => apiGet<ProgressEntry[]>("/progress"),
-  warranties: () => apiGet<Warranty[]>("/warranties"),
+  spaces: () => apiGet<Space[]>(scopedPath("/spaces")),
+  domains: () => apiGet<Domain[]>(scopedPath("/domains")),
+  vendors: () => apiGet<Vendor[]>(scopedPath("/vendors")),
+  materials: () => apiGet<Material[]>(scopedPath("/materials")),
+  drawings: () => apiGet<Drawing[]>(scopedPath("/drawings")),
+  decisions: () => apiGet<Decision[]>(scopedPath("/decisions")),
+  procurement: () => apiGet<ProcurementItem[]>(scopedPath("/procurement")),
+  boqs: () => apiGet<BOQ[]>(scopedPath("/boq")),
+  snags: () => apiGet<Snag[]>(scopedPath("/snags")),
+  progress: () => apiGet<ProgressEntry[]>(scopedPath("/progress")),
+  warranties: () => apiGet<Warranty[]>(scopedPath("/warranties")),
   projectFull: () => apiGet<Project>("/project/full"),
 };
