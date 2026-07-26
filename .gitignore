@@ -54,3 +54,19 @@ artifacts/
 
 # Internal business strategy — keep local, do not publish on the public repo
 docs/business-brainstorm.html
+
+# Google Cloud service-account keys. These are live credentials — a committed key is a
+# compromised key, and this repo is published. Keep them out of the tree if you can; if
+# one must live here, it matches these patterns.
+*-service-account*.json
+*.iam.gserviceaccount.com.json
+ai-builder-*.json
+gcp-*.json
+service-account*.json
+credentials.json
+
+# Google OAuth client + user token — live credentials, never commit
+.google-oauth-client.json
+.google-oauth-token.json
+api/.google-oauth-client.json
+api/.google-oauth-token.json

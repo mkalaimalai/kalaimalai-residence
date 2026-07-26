@@ -18,6 +18,10 @@ from app.contexts.document.interfaces.rest_controller import (
 from app.contexts.handover.interfaces.rest_controller import (
     routers as handover_routers,
 )
+from app.contexts.identity.interfaces.rest_controller import (
+    routers as identity_routers,
+)
+from app.contexts.media.interfaces.rest_controller import routers as media_routers
 from app.contexts.notification.interfaces.rest_controller import (
     routers as notification_routers,
 )
@@ -37,6 +41,8 @@ def build_api_router() -> APIRouter:
         *quality_routers,
         *handover_routers,
         *notification_routers,
+        *media_routers,
+        *identity_routers,
     ]:
         api.include_router(router)
     return api

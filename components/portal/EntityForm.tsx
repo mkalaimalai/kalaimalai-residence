@@ -30,6 +30,7 @@ export function EntityForm({
   error,
   onSubmit,
   onCancel,
+  children,
 }: {
   entity: EntityDef;
   row: Record<string, unknown> | null;
@@ -38,6 +39,14 @@ export function EntityForm({
   error: string | null;
   onSubmit: (payload: Record<string, unknown>) => void;
   onCancel: () => void;
+  /**
+   * Extra panels rendered between the fields and the Save/Cancel row, so those buttons
+   * stay the last thing on the form. Used by the spaces tab for its file uploader —
+   * with the panel below the buttons, Save looked like it applied only to the fields
+   * above it. Anything passed here must mark its own buttons `type="button"`, or they
+   * will submit the form.
+   */
+  children?: React.ReactNode;
 }) {
   const [values, setValues] = useState(() => initialValues(entity, row));
 
@@ -68,6 +77,7 @@ export function EntityForm({
           {error}
         </p>
       )}
+      {children}
       <div className="flex gap-2">
         <button
           type="submit"

@@ -3,12 +3,43 @@ import type {
   Snag, BOQ, Material, Lesson, ProgressEntry, Warranty, GalleryItem, Project,
 } from "@/types";
 
+import { getSupabase } from "@/lib/supabase-client";
+
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8099";
 
-async function fetchJson<T>(path: string): Promise<T> {
-  const res = await fetch(`${BASE_URL}${path}`);
+/**
+ * Attach the Supabase access token when there is one.
+ *
+ * Most 2.0 reads are public endpoints that don't need it, but sending it means the
+ * gated ones (`/me`, `/users`, and anything that later moves behind `require_user`)
+ * work without a second fetch helper. Guarded on `window` so a server render — where
+ * there is no session and no localStorage — degrades to an anonymous request instead
+ * of throwing.
+ */
+async function authHeaders(): Promise<Record<string, string>> {
+  if (typeof window === "undefined") return {};
+  const supabase = getSupabase();
+  if (!supabase) return {};
+  const { data } = await supabase.auth.getSession();
+  const token = data.session?.access_token;
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+  const res = await fetch(`${BASE_URL}${path}`, {
+    ...init,
+    headers: {
+      ...(init.body ? { "Content-Type": "application/json" } : {}),
+      ...(await authHeaders()),
+      ...init.headers,
+    },
+  });
   if (!res.ok) throw new Error(`API ${res.status}: ${path}`);
-  return res.json();
+  return res.status === 204 ? (undefined as T) : res.json();
+}
+
+function fetchJson<T>(path: string): Promise<T> {
+  return request<T>(path);
 }
 
 /**
@@ -32,6 +63,40 @@ export type PublicProject = Omit<
   "internalName" | "villaNo" | "community" | "address"
 >;
 
+/**
+ * The API's record of a signed-up person (`user_profiles`). Distinct from the Supabase
+ * auth user: no credential, no email-verification state — just the app-level facts.
+ * `role` mirrors the token's `app_metadata.role` and is display-only; authorization is
+ * decided server-side from the token itself.
+ */
+export interface UserProfile {
+  id: string;
+  email: string | null;
+  displayName: string | null;
+  role: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * A `media_sets` row. Superset of `RenderingSet` in `data/renderings.ts` — same
+ * title/width/height/images/subsections — so `RenderingGallery` renders these without
+ * a translation layer, plus the ownership columns the DB needs.
+ */
+export interface MediaSet {
+  id: string;
+  projectId: string;
+  kind: "rendering" | "drawing_sheet";
+  title: string;
+  width: number;
+  height: number;
+  images: string[];
+  subsections: { title: string; images: string[] }[] | null;
+  domainId: string | null;
+  spaceId: string | null;
+  sortOrder: number;
+}
+
 export const api = {
   // Gated (portal/admin): returns internal identity fields, 401s without a token.
   projects:        (): Promise<Project[]>                  => fetchJson("/projects"),
@@ -39,6 +104,32 @@ export const api = {
   publicProjects:  (): Promise<PublicProject[]>            => fetchJson("/projects/public"),
   project:         (): Promise<Project>                    => fetchJson("/project"),
   projectById:     (id: string): Promise<Project>          => fetchJson(`/projects/${id}`),
+
+  // Identity. The subject always comes from the bearer token, never from a parameter,
+  // so none of these can be pointed at another user.
+  ensureProfile: (): Promise<UserProfile> => request("/me", { method: "POST" }),
+  me:            (): Promise<UserProfile> => request("/me"),
+  updateMe:      (displayName: string): Promise<UserProfile> =>
+    request("/me", { method: "PATCH", body: JSON.stringify({ displayName }) }),
+  users:         (): Promise<UserProfile[]> => request("/users"),
+
+  /**
+   * Rendering / drawing-sheet sets, filtered server-side. Behind `require_user`, so it
+   * only works for a signed-in caller — which the 2.0 tree always is.
+   */
+  mediaSets: (filters: {
+    projectId?: string;
+    domainId?: string;
+    spaceId?: string;
+    kind?: MediaSet["kind"];
+  }): Promise<MediaSet[]> => {
+    const query = new URLSearchParams();
+    for (const [key, value] of Object.entries(filters)) {
+      if (value) query.set(key, value);
+    }
+    const suffix = query.toString();
+    return request<MediaSet[]>(`/media-sets${suffix ? `?${suffix}` : ""}`);
+  },
 
   spaces:      (projectId?: string) => list<Space>("/spaces", projectId),
   domains:     (projectId?: string) => list<Domain>("/domains", projectId),

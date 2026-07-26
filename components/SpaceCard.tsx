@@ -3,10 +3,10 @@ import Link from "next/link";
 import type { Space } from "@/types";
 import { StatusBadge } from "@/components/StatusBadge";
 
-export function SpaceCard({ space }: { space: Space }) {
+export function SpaceCard({ space, basePath = "" }: { space: Space; basePath?: string }) {
   return (
     <Link
-      href={`/spaces/${space.slug}`}
+      href={`${basePath}/spaces/${space.slug}`}
       className="group block overflow-hidden rounded-xl border border-border bg-card transition-shadow hover:shadow-md"
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-muted">

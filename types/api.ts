@@ -91,3 +91,38 @@ export interface NotificationRecord {
   relatedEntity: string;
   createdAt: string;
 }
+
+/**
+ * Rendering / drawing-sheet media sets (`GET|POST|PATCH|DELETE /media-sets`). The shape
+ * deliberately mirrors `RenderingSet` in `data/renderings.ts` so `RenderingGallery` can
+ * render DB rows unchanged. Owner is project-level unless `domainId`/`spaceId` is set.
+ */
+export type MediaKind = "rendering" | "drawing_sheet";
+
+export interface MediaSubsection {
+  title: string;
+  images: string[];
+}
+
+export interface MediaSet {
+  id: string;
+  projectId: string;
+  kind: MediaKind;
+  title: string;
+  width: number;
+  height: number;
+  images: string[];
+  subsections: MediaSubsection[] | null;
+  domainId: string | null;
+  spaceId: string | null;
+  sortOrder: number;
+}
+
+/** One file uploaded to Drive via `POST /uploads` or `/media-sets/{id}/files`. */
+export interface UploadedFile {
+  name: string;
+  fileId: string;
+  url: string;
+  mimeType: string;
+  size: number;
+}

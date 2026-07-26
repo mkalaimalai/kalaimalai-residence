@@ -10,6 +10,10 @@ import {
   type RefKey,
 } from "@/lib/admin-schema";
 import { EntityForm } from "@/components/portal/EntityForm";
+import { MediaAdmin } from "@/components/portal/admin/MediaAdmin";
+import { QuotesAdmin } from "@/components/portal/admin/QuotesAdmin";
+import { SpaceFilesPanel } from "@/components/portal/admin/SpaceFilesPanel";
+import { usePortalProject } from "@/components/portal/PortalProjectProvider";
 import { useAuth } from "@/components/portal/SupabaseAuthGate";
 import { cn } from "@/lib/utils";
 
@@ -18,11 +22,28 @@ type RefRows = Partial<Record<RefKey, { id: string; name: string }[]>>;
 
 const REF_KEYS: RefKey[] = [
   "spaces", "domains", "vendors", "materials", "drawings", "decisions", "lessons",
+  "boq",
 ];
+
+/**
+ * Tabs backed by a purpose-built component instead of the generic EntityForm. Quotes are
+ * a parent + line-items aggregate and media sets carry nested subsections, neither of
+ * which the flat field registry can express.
+ */
+const CUSTOM_TABS = [
+  { key: "quotes", label: "Quotes" },
+  { key: "media", label: "Renderings & Sheets" },
+] as const;
+
+type CustomKey = (typeof CUSTOM_TABS)[number]["key"];
+
+const isCustom = (key: string): key is CustomKey =>
+  CUSTOM_TABS.some((t) => t.key === key);
 
 export default function AdminPage() {
   const { isAdmin } = useAuth();
-  const [activeKey, setActiveKey] = useState(ENTITIES[0].key);
+  const { selectedId: projectId } = usePortalProject();
+  const [activeKey, setActiveKey] = useState<string>(ENTITIES[0].key);
   const [refs, setRefs] = useState<RefRows>({});
   const [rows, setRows] = useState<Row[]>([]);
   const [listLoading, setListLoading] = useState(true);
@@ -31,9 +52,15 @@ export default function AdminPage() {
   const [busy, setBusy] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
-  const entity = ENTITY_BY_KEY[activeKey];
+  // Null on the custom tabs, which own their own data loading.
+  const entity: EntityDef | null = isCustom(activeKey)
+    ? null
+    : ENTITY_BY_KEY[activeKey];
 
   const loadRefs = useCallback(async () => {
+    // See PortalDataProvider: scopedPath() resolves the active project itself, so this
+    // read is what makes `projectId` a truthful dependency of the callback.
+    void projectId;
     const entries = await Promise.all(
       REF_KEYS.map(async (key) => {
         const def = ENTITY_BY_KEY[key];
@@ -46,9 +73,10 @@ export default function AdminPage() {
       }),
     );
     setRefs(Object.fromEntries(entries));
-  }, []);
+  }, [projectId]);
 
   const loadRows = useCallback(async (def: EntityDef) => {
+    void projectId; // refetch trigger — see loadRefs.
     setListLoading(true);
     setListError(null);
     try {
@@ -58,7 +86,7 @@ export default function AdminPage() {
     } finally {
       setListLoading(false);
     }
-  }, []);
+  }, [projectId]);
 
   useEffect(() => {
     // Mount-time data fetch: state updates happen after the await inside loadRefs.
@@ -67,18 +95,25 @@ export default function AdminPage() {
   }, [loadRefs]);
 
   useEffect(() => {
+    if (!entity) return;
     // eslint-disable-next-line react-hooks/set-state-in-effect
     void loadRows(entity);
   }, [entity, loadRows]);
 
   const save = async (payload: Row) => {
+    if (!entity) return;
     setBusy(true);
     setFormError(null);
     try {
       if (editing && editing !== "new") {
         await apiPatch(`${entity.endpoint}/${editing.id}`, payload);
       } else {
-        await apiPost(entity.endpoint, withProject(payload));
+        // `Project` is the tenant root — it has no `projectId` of its own, and
+        // `ProjectCreate` rejects the extra field. Every other entity gets stamped.
+        await apiPost(
+          entity.endpoint,
+          withProject(payload, { scoped: entity.key !== "projects" }),
+        );
       }
       setEditing(null);
       await Promise.all([loadRows(entity), loadRefs()]);
@@ -113,7 +148,7 @@ export default function AdminPage() {
       </header>
 
       <div className="flex flex-wrap gap-1.5">
-        {ENTITIES.map((e) => (
+        {[...ENTITIES, ...CUSTOM_TABS].map((e) => (
           <button
             key={e.key}
             onClick={() => {
@@ -132,7 +167,21 @@ export default function AdminPage() {
         ))}
       </div>
 
-      {editing ? (
+      {!entity ? (
+        activeKey === "quotes" ? (
+          <QuotesAdmin
+            projectId={projectId}
+            vendors={refs.vendors ?? []}
+            boqs={refs.boq ?? []}
+          />
+        ) : (
+          <MediaAdmin
+            projectId={projectId}
+            domains={refs.domains ?? []}
+            spaces={refs.spaces ?? []}
+          />
+        )
+      ) : editing ? (
         <section className="rounded-xl border border-border p-5">
           <h2 className="mb-4 font-serif text-xl text-foreground">
             {editing === "new" ? `New ${entity.label}` : `Edit ${entity.label}`}
@@ -145,7 +194,17 @@ export default function AdminPage() {
             error={formError}
             onSubmit={save}
             onCancel={() => setEditing(null)}
-          />
+          >
+            {/* Inside the form, above Save: uploads need an id to attach to, so this
+                appears only once the space exists — not on the "new" form. */}
+            {entity.key === "spaces" && editing !== "new" && (
+              <SpaceFilesPanel
+                projectId={projectId}
+                spaceId={String(editing.id)}
+                spaceName={String(editing.name ?? "Space")}
+              />
+            )}
+          </EntityForm>
         </section>
       ) : (
         <section className="space-y-3">

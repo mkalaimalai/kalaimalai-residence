@@ -28,6 +28,7 @@ from app.contexts.document.infrastructure.orm import (
     LessonModel,
 )
 from app.contexts.handover.infrastructure.orm import WarrantyModel
+from app.contexts.media.infrastructure.orm import MediaSetModel
 from app.contexts.project.infrastructure.orm import (
     DomainModel,
     ProgressModel,
@@ -55,6 +56,8 @@ COLLECTIONS = {
     "decisions": DecisionModel,
     "snags": SnagModel,
     "warranties": WarrantyModel,
+    # Last: rows reference domains/spaces, which the entries above create.
+    "mediaSets": MediaSetModel,
 }
 
 
