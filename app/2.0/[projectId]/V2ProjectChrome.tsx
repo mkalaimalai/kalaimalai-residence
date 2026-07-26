@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowLeft, Menu, X } from "lucide-react";
 import { api, type PublicProject } from "@/lib/api-v2";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { cn } from "@/lib/utils";
 
 const NAV = [
@@ -93,6 +94,7 @@ export function V2ProjectChrome({
                   </Link>
                 ))}
               </nav>
+              <ThemeToggle />
               <button
                 type="button"
                 aria-label="Toggle menu"
