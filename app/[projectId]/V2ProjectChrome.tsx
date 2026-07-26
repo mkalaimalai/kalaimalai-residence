@@ -52,7 +52,7 @@ export function V2ProjectChrome({
   }, [projectId]);
 
   const href = (segment: string) =>
-    segment ? `/2.0/${projectId}/${segment}` : `/2.0/${projectId}`;
+    segment ? `/${projectId}/${segment}` : `/${projectId}`;
 
   const isActive = (segment: string) => {
     const target = href(segment);
@@ -67,7 +67,7 @@ export function V2ProjectChrome({
           <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-6">
             <div className="flex min-w-0 items-center gap-3">
               <Link
-                href="/2.0"
+                href="/"
                 className="flex shrink-0 items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
               >
                 <ArrowLeft size={16} />

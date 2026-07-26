@@ -49,7 +49,7 @@ export function V2SpaceDetail({ slug, seed }: { slug: string; seed: SeedData }) 
         <div className="absolute inset-0 bg-gradient-to-t from-black/65 to-transparent" />
         <div className="absolute inset-0 flex items-end">
           <div className="mx-auto w-full max-w-5xl px-6 pb-12">
-            <Link href="/2.0/spaces" className="mb-4 inline-flex items-center gap-1.5 text-sm text-white/80 hover:text-white">
+            <Link href={`/${selectedId}/spaces`} className="mb-4 inline-flex items-center gap-1.5 text-sm text-white/80 hover:text-white">
               <ArrowLeft size={15} /> All spaces
             </Link>
             <div className="flex flex-wrap items-center gap-4">
@@ -87,7 +87,7 @@ export function V2SpaceDetail({ slug, seed }: { slug: string; seed: SeedData }) 
         <aside className="space-y-8">
           {relDomains.length > 0 && (
             <ChipGroup label="Domains">
-              {relDomains.map((d) => <Chip key={d.id} label={d.name} href={`/2.0/domains/${d.slug}`} />)}
+              {relDomains.map((d) => <Chip key={d.id} label={d.name} href={`/${selectedId}/domains/${d.slug}`} />)}
             </ChipGroup>
           )}
           {relVendors.length > 0 && (
@@ -115,7 +115,7 @@ export function V2SpaceDetail({ slug, seed }: { slug: string; seed: SeedData }) 
           )}
           {relLessons.length > 0 && (
             <ChipGroup label="Lessons">
-              {relLessons.map((l) => <Chip key={l.id} label={l.title} href="/2.0/lessons" />)}
+              {relLessons.map((l) => <Chip key={l.id} label={l.title} href={`/${selectedId}/lessons`} />)}
             </ChipGroup>
           )}
         </aside>
@@ -142,7 +142,7 @@ export function V2SpaceDetail({ slug, seed }: { slug: string; seed: SeedData }) 
           <h2 className="mb-6 font-serif text-2xl text-foreground">Related spaces</h2>
           <div className="flex flex-wrap gap-3">
             {relatedSpaces.map((s) => (
-              <Chip key={s.id} label={s.name} href={`/2.0/spaces/${s.slug}`} />
+              <Chip key={s.id} label={s.name} href={`/${selectedId}/spaces/${s.slug}`} />
             ))}
           </div>
         </section>

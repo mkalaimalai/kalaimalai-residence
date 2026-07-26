@@ -104,7 +104,7 @@ export default async function SpaceDetailPage({
         <div className="absolute inset-0 flex items-end">
           <div className="mx-auto w-full max-w-5xl px-6 pb-12">
             <Link
-              href="/spaces"
+              href="/1.0/spaces"
               className="mb-4 inline-flex items-center gap-1.5 text-sm text-white/80 hover:text-white"
             >
               <ArrowLeft size={15} /> All spaces
@@ -160,7 +160,7 @@ export default async function SpaceDetailPage({
           {relDomains.length > 0 && (
             <ChipGroup label="Domains">
               {relDomains.map((d) => (
-                <Chip key={d.id} label={d.name} href={`/domains/${d.slug}`} />
+                <Chip key={d.id} label={d.name} href={`/1.0/domains/${d.slug}`} />
               ))}
             </ChipGroup>
           )}
@@ -197,7 +197,7 @@ export default async function SpaceDetailPage({
           {relLessons.length > 0 && (
             <ChipGroup label="Lessons">
               {relLessons.map((l) => (
-                <Chip key={l.id} label={l.title} href="/lessons" />
+                <Chip key={l.id} label={l.title} href="/1.0/lessons" />
               ))}
             </ChipGroup>
           )}
@@ -221,7 +221,7 @@ export default async function SpaceDetailPage({
           </h2>
           <div className="flex flex-wrap gap-3">
             {relatedSpaces.map((s) => (
-              <Chip key={s.id} label={s.name} href={`/spaces/${s.slug}`} />
+              <Chip key={s.id} label={s.name} href={`/1.0/spaces/${s.slug}`} />
             ))}
           </div>
         </section>

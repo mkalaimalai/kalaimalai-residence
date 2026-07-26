@@ -43,10 +43,10 @@ export default function V2Home() {
             <h1 className="max-w-3xl font-serif text-4xl leading-tight text-white sm:text-6xl">{project.publicTitle}</h1>
             <p className="mt-5 max-w-xl text-base text-white/85 sm:text-lg">{project.publicSubtitle}</p>
             <div className="mt-8 flex flex-wrap gap-4">
-              <Link href="/2.0/spaces" className="inline-flex items-center gap-2 rounded-full bg-background px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent">
+              <Link href={`/${selectedId}/spaces`} className="inline-flex items-center gap-2 rounded-full bg-background px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent">
                 Explore the spaces <ArrowRight size={16} />
               </Link>
-              <Link href="/2.0/vision" className="inline-flex items-center gap-2 rounded-full border border-white/40 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-white/10">
+              <Link href={`/${selectedId}/vision`} className="inline-flex items-center gap-2 rounded-full border border-white/40 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-white/10">
                 The vision
               </Link>
             </div>
@@ -68,7 +68,7 @@ export default function V2Home() {
       <section className="mx-auto max-w-3xl px-6 py-20 text-center">
         <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">Design vision</p>
         <p className="mt-5 font-serif text-2xl leading-relaxed text-foreground sm:text-3xl">{project.conceptStatement}</p>
-        <Link href="/2.0/vision" className="mt-8 inline-flex items-center gap-2 text-sm font-medium text-foreground underline-offset-4 hover:underline">
+        <Link href={`/${selectedId}/vision`} className="mt-8 inline-flex items-center gap-2 text-sm font-medium text-foreground underline-offset-4 hover:underline">
           Read the philosophy <ArrowRight size={16} />
         </Link>
       </section>
@@ -76,24 +76,24 @@ export default function V2Home() {
       <section className="mx-auto max-w-6xl px-6 py-12">
         <div className="mb-8 flex items-end justify-between gap-4">
           <SectionHeading eyebrow="Room by room" title="Explore by space" description="Each room as an archive — design intent, palette, lighting, and the people and decisions behind it." />
-          <Link href="/2.0/spaces" className="hidden shrink-0 items-center gap-1 text-sm text-muted-foreground hover:text-foreground sm:inline-flex">
+          <Link href={`/${selectedId}/spaces`} className="hidden shrink-0 items-center gap-1 text-sm text-muted-foreground hover:text-foreground sm:inline-flex">
             All spaces <ArrowRight size={15} />
           </Link>
         </div>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {spaces.slice(0, 6).map((s) => (<SpaceCard key={s.id} space={s} />))}
+          {spaces.slice(0, 6).map((s) => (<SpaceCard key={s.id} space={s} basePath={`/${selectedId}`} />))}
         </div>
       </section>
 
       <section className="mx-auto max-w-6xl px-6 py-12">
         <div className="mb-8 flex items-end justify-between gap-4">
           <SectionHeading eyebrow="Discipline by discipline" title="Explore by domain" description="From architecture and structure to automation and procurement." />
-          <Link href="/2.0/domains" className="hidden shrink-0 items-center gap-1 text-sm text-muted-foreground hover:text-foreground sm:inline-flex">
+          <Link href={`/${selectedId}/domains`} className="hidden shrink-0 items-center gap-1 text-sm text-muted-foreground hover:text-foreground sm:inline-flex">
             All domains <ArrowRight size={15} />
           </Link>
         </div>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {domains.slice(0, 6).map((d) => (<DomainCard key={d.id} domain={d} />))}
+          {domains.slice(0, 6).map((d) => (<DomainCard key={d.id} domain={d} basePath={`/${selectedId}`} />))}
         </div>
       </section>
 
@@ -101,7 +101,7 @@ export default function V2Home() {
         <SectionHeading eyebrow="Hard-won" title="Lessons from the build" description="The negotiation and hidden-cost learnings that shaped key decisions." className="mb-8" />
         <div className="grid gap-6 sm:grid-cols-3">
           {lessons.map((l) => (
-            <Link key={l.id} href="/2.0/lessons" className="rounded-xl border border-border bg-card p-6 transition-colors hover:border-foreground/20 hover:bg-accent/20">
+            <Link key={l.id} href={`/${selectedId}/lessons`} className="rounded-xl border border-border bg-card p-6 transition-colors hover:border-foreground/20 hover:bg-accent/20">
               <p className="text-xs uppercase tracking-wider text-muted-foreground">{l.category}</p>
               <h3 className="mt-2 font-serif text-lg text-foreground">{l.title}</h3>
               <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{l.summary}</p>

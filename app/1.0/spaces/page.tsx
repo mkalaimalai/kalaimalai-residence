@@ -30,7 +30,7 @@ export default async function SpacesPage() {
       />
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {spaces.map((s) => (
-          <SpaceCard key={s.id} space={s} />
+          <SpaceCard key={s.id} space={s} basePath="/1.0" />
         ))}
       </div>
     </main>

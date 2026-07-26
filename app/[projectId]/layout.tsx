@@ -3,7 +3,7 @@ import { V2ProjectChrome } from "./V2ProjectChrome";
 
 /**
  * The export needs every project id up front. This reads the seed rather than the API
- * so `npm run build` stays runnable with no backend, matching how the other 2.0 dynamic
+ * so `npm run build` stays runnable with no backend, matching how the other dynamic
  * segments resolve their params.
  */
 export async function generateStaticParams() {

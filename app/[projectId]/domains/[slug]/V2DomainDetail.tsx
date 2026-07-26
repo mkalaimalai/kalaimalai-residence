@@ -35,7 +35,7 @@ export function V2DomainDetail({ slug, seed }: { slug: string; seed: SeedData })
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-16">
-      <Link href="/2.0/domains" className="mb-6 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
+      <Link href={`/${selectedId}/domains`} className="mb-6 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
         <ArrowLeft size={15} /> All domains
       </Link>
 
@@ -54,7 +54,7 @@ export function V2DomainDetail({ slug, seed }: { slug: string; seed: SeedData })
               <SectionHeading eyebrow="Connected to" title="Spaces" className="mb-4" />
               <div className="space-y-3">
                 {relSpaces.map((s) => (
-                  <Link key={s.id} href={`/2.0/spaces/${s.slug}`} className="flex items-center justify-between rounded-xl border border-border bg-card p-4 transition-colors hover:border-foreground/20 hover:bg-accent/20">
+                  <Link key={s.id} href={`/${selectedId}/spaces/${s.slug}`} className="flex items-center justify-between rounded-xl border border-border bg-card p-4 transition-colors hover:border-foreground/20 hover:bg-accent/20">
                     <div>
                       <h3 className="font-serif text-lg text-foreground">{s.name}</h3>
                       <p className="text-sm text-muted-foreground">{s.description}</p>
@@ -80,7 +80,7 @@ export function V2DomainDetail({ slug, seed }: { slug: string; seed: SeedData })
           )}
           {relLessons.length > 0 && (
             <ChipGroup label="Lessons">
-              {relLessons.map((l) => <Chip key={l.id} label={l.title} href="/2.0/lessons" />)}
+              {relLessons.map((l) => <Chip key={l.id} label={l.title} href={`/${selectedId}/lessons`} />)}
             </ChipGroup>
           )}
         </aside>

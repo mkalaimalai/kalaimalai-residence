@@ -1,29 +1,29 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { Space } from "@/types";
+import type { Domain } from "@/types";
 import { api } from "@/lib/api-v2";
 import { useProject } from "../V2ProjectChrome";
 import { SectionHeading } from "@/components/SectionHeading";
-import { SpaceCard } from "@/components/SpaceCard";
+import { DomainCard } from "@/components/DomainCard";
 
-export default function V2Spaces() {
+export default function V2Domains() {
   const { selectedId } = useProject();
-  const [spaces, setSpaces] = useState<Space[] | null>(null);
+  const [domains, setDomains] = useState<Domain[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    api.spaces(selectedId).then(setSpaces).catch((e) => setError(e.message));
+    api.domains(selectedId).then(setDomains).catch((e) => setError(e.message));
   }, [selectedId]);
 
   if (error) return <p className="p-6 text-destructive">{error}</p>;
-  if (!spaces) return <LoadingState />;
+  if (!domains) return <LoadingState />;
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-16">
-      <SectionHeading eyebrow="Room by room" title="Spaces" description="Each room as a living archive — design intent, palette, lighting, furniture, and the decisions and people behind it." className="mb-10" />
+      <SectionHeading eyebrow="Discipline by discipline" title="Domains" description="The fourteen work domains that shaped the home — from architecture to project management." className="mb-10" />
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {spaces.map((s) => <SpaceCard key={s.id} space={s} />)}
+        {domains.map((d) => <DomainCard key={d.id} domain={d} basePath={`/${selectedId}`} />)}
       </div>
     </main>
   );

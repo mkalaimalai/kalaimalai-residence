@@ -22,18 +22,40 @@ A web application documenting the design and construction of a family home in Be
 
 ## Tech stack
 
+### Frontend
+
 | Concern | Choice |
 |---|---|
 | Framework | Next.js 16 (App Router), React 19 |
 | Language | TypeScript (strict, no `any`) |
 | Styling | Tailwind CSS v4 (CSS-first theme tokens, light + dark) |
 | UI helpers | shadcn-compatible config ("new-york"/stone) + `cn`, lucide-react icons |
+| Icons | lucide-react |
 | Fonts | Fraunces (serif headings) + Inter (sans body) via `next/font` |
 | Data (default) | Typed TypeScript modules in `data/`, read through a repository layer |
-| Data (optional) | FastAPI + SQLAlchemy (async) + Pydantic over Supabase Postgres |
-| Auth | Supabase Auth (portal); JWT verification in the API |
-| Build output | Static export (`output: "export"`) → `out/` |
-| Deploy target | GitHub Pages (frontend), Render free tier (API) |
+| Auth client | `@supabase/supabase-js` (portal session in localStorage) |
+| Build output | Static export (`output: "export"`, `trailingSlash: true`) → `out/` |
+| Tooling | ESLint 9 (`eslint-config-next`), `tsx` for data scripts — no test runner |
+
+### Backend (`api/`, optional)
+
+| Concern | Choice |
+|---|---|
+| Framework | FastAPI (async), Uvicorn |
+| Architecture | DDD / hexagonal modular monolith, eight bounded contexts |
+| Persistence | SQLAlchemy 2 (async, `asyncpg`) over Supabase Postgres |
+| Validation | Pydantic v2 (`CamelModel` → camelCase responses), `pydantic-settings` for config |
+| Auth | Supabase Auth JWTs (HS256), verified in `app/shared/auth.py` |
+| Schema | Hand-checked SQL in `api/migrations/*.sql`; `create_all()` for dev convenience |
+| Local infra | Docker Compose — Postgres 15 + pgweb |
+
+### Hosting
+
+| Concern | Choice |
+|---|---|
+| Frontend | GitHub Pages (static, no Node runtime) via `.github/workflows/deploy.yml` |
+| Backend | Render free tier (`api/render.yaml`) |
+| Database | Supabase Postgres (pooled connection, port 6543) |
 
 ---
 
@@ -211,7 +233,7 @@ docs/ specs/ .specify/   # design docs, Spec Kit specs, project constitution
 
 ## The data model
 
-Defined in `types/index.ts`, seeded in `data/`:
+The **frontend contract** lives in `types/index.ts` and is seeded in `data/`:
 
 `Project`, `Space`, `Domain`, `Drawing`, `Vendor`, `ProcurementItem`, `Decision`, `Snag`,
 `BOQ`, `Material`, `Lesson`, `ProgressEntry`, `Warranty`, `GalleryItem` — plus
@@ -220,6 +242,83 @@ entity carries a `projectId`.
 
 The seed is multi-project: `data/project.ts` exports `projects: Project[]`. `getProject()`
 returns `projects[0]` (the 1.0 singleton); `getProjects()` returns all.
+
+### Database model
+
+The API's Postgres schema (SQLAlchemy models in `api/app/contexts/*/infrastructure/orm.py`,
+DDL in `api/migrations/`) is a superset of the frontend contract — it also carries the
+commercial/quality workflow tables the public site never renders. Tables are owned by
+exactly one bounded context, and **no context reads another's tables**; cross-context
+access goes through service-client ports.
+
+| Context | Tables |
+|---|---|
+| `project` | `projects`, `spaces`, `domains`, `progress_entries` |
+| `document` | `drawings`, `gallery_items`, `lessons` |
+| `vendor` | `vendors` |
+| `commercial` | `boqs`, `boq_line_items`, `quotes`, `quote_line_items`, `purchase_orders`, `deliveries`, `procurement_items`, `materials` |
+| `quality` | `snags`, `inspections`, `decisions` |
+| `handover` | `warranties` |
+| `notification` | `notifications` |
+| `media` | `media_sets` |
+
+Column naming is snake_case in Postgres; Pydantic response models emit camelCase so
+`types/index.ts` is untouched.
+
+#### Tenancy
+
+`projects` is the tenant root and carries no `project_id`. **Every other table** has a
+`project_id VARCHAR NOT NULL REFERENCES projects(id) ON DELETE CASCADE`, plus a supporting
+`ix_<table>_project_id` index — every list query is `WHERE project_id = $1`. This is applied
+by `002_project_scope.sql`, which backfills pre-existing rows to `proj-kr` (the original
+single project) and refuses to run if that row is missing.
+
+The same migration also swaps the **global** unique constraint on `spaces.slug` and
+`domains.slug` for a composite `(project_id, slug)` — two projects may each legitimately
+have a `living-room`.
+
+#### How relations are stored
+
+Two different mechanisms, deliberately:
+
+- **Tenancy and media ownership are real foreign keys.** `project_id` cascades on delete;
+  `media_sets.domain_id` / `media_sets.space_id` are nullable FKs with `ON DELETE SET NULL`,
+  so losing the owner demotes the imagery to project-level rather than destroying it.
+- **Everything else is ID arrays** — `spaces.domain_ids`, `material_ids`, `vendor_ids`,
+  `drawing_ids`, `decision_ids`, `lesson_ids`, and so on, as Postgres `VARCHAR[]`. These are
+  **not** FK-enforced at the database level; they mirror the seed's `*Ids` shape and are
+  resolved at render time by `lib/relations.ts`. Referential integrity for them is checked
+  by `npm run verify` / `api/scripts/verify.py`, not by Postgres. Writes that cross a
+  context boundary (e.g. a `vendorId` on a commercial row) are validated in the application
+  layer through the service-client ports.
+
+```
+projects ──┬── spaces ──────┐
+           ├── domains ─────┤   *_ids VARCHAR[] arrays cross-reference
+           ├── drawings ────┤   these tables; resolved in the app layer,
+           ├── vendors ─────┤   not by FK constraints
+           ├── materials ───┘
+           ├── boqs ── boq_line_items
+           ├── quotes ── quote_line_items ── purchase_orders ── deliveries
+           ├── procurement_items,  snags ── inspections,  decisions
+           ├── lessons, gallery_items, progress_entries, warranties, notifications
+           └── media_sets  (FK → domains / spaces, ON DELETE SET NULL)
+
+every table above: project_id NOT NULL → projects.id, ON DELETE CASCADE
+```
+
+#### Migrations
+
+Applied in order against a fresh database; each is idempotent.
+
+| File | What it does |
+|---|---|
+| `001_init.sql` | Base DDL for all core tables (generated from the ORM metadata) |
+| `002_project_scope.sql` | Adds/backfills/constrains `project_id` everywhere; per-project slug uniqueness |
+| `003_media_sets.sql` | The `media_sets` table for the media context |
+
+In dev you can skip them and use `create_all()` (see the setup above); production applies
+the SQL files, then runs the seed loader.
 
 ---
 

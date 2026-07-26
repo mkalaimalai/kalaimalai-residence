@@ -78,7 +78,7 @@ export default async function DomainDetailPage({
     <main className="mx-auto max-w-5xl px-6 py-16">
       <JsonLd data={jsonLd} />
       <Link
-        href="/domains"
+        href="/1.0/domains"
         className="mb-6 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft size={15} /> All domains
@@ -103,7 +103,7 @@ export default async function DomainDetailPage({
         {relSpaces.length > 0 && (
           <ChipGroup label="Related spaces">
             {relSpaces.map((s) => (
-              <Chip key={s.id} label={s.name} href={`/spaces/${s.slug}`} />
+              <Chip key={s.id} label={s.name} href={`/1.0/spaces/${s.slug}`} />
             ))}
           </ChipGroup>
         )}
@@ -127,7 +127,7 @@ export default async function DomainDetailPage({
         {relLessons.length > 0 && (
           <ChipGroup label="Lessons">
             {relLessons.map((l) => (
-              <Chip key={l.id} label={l.title} href="/lessons" />
+              <Chip key={l.id} label={l.title} href="/1.0/lessons" />
             ))}
           </ChipGroup>
         )}
