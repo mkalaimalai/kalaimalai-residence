@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Model ERD</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <style>
+    body {
+      background: #1a1a2e;
+      color: #e0e0e0;
+      font-family: 'Inter', system-ui, sans-serif;
+      margin: 0;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      font-family: 'Fraunces', serif;
+      font-weight: 400;
+      margin-bottom: 0.25rem;
+    }
+    .subtitle {
+      color: #888;
+      margin-bottom: 2rem;
+      font-size: 0.9rem;
+    }
+    .mermaid {
+      background: #fafafa;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+      max-width: 100%;
+      overflow-x: auto;
+    }
+    .legend {
+      margin-top: 2rem;
+      font-size: 0.85rem;
+      color: #aaa;
+      max-width: 700px;
+      text-align: center;
+      line-height: 1.6;
+    }
+    .legend code {
+      background: #2a2a4e;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      color: #c7c7ff;
+    }
+    a {
+      color: #8888ff;
+    }
+  </style>
+</head>
+<body>
+  <h1>Kalaimalai Residence — Data Model</h1>
+  <p class="subtitle">14 entities · relations resolved via <code>*Ids</code> arrays at render time</p>
+
+  <div class="mermaid">
+erDiagram
+    Project ||--o{ Space : ""
+    Project ||--o{ Domain : ""
+    Project ||--o{ GalleryItem : ""
+
+    Space }o--|| Material : "materialIds &gt;"
+    Space }o--|| Vendor : "vendorIds &gt;"
+    Space }o--|| Drawing : "drawingIds &gt;"
+    Space }o--|| Decision : "decisionIds &gt;"
+    Space }o--|| Lesson : "lessonIds &gt;"
+    Space ||--o{ ProcurementItem : "spaceId"
+    Space ||--o{ Snag : "spaceId"
+    Space ||--o{ ProgressEntry : "spaceId"
+
+    Domain }o--|| Drawing : "drawingIds &gt;"
+    Domain }o--|| Vendor : "vendorIds &gt;"
+    Domain }o--|| Lesson : "lessonIds &gt;"
+    Domain ||--o{ Decision : "domainId"
+
+    Domain }o--|| Space : "spaceIds &gt;"
+
+    Drawing }o--|| Domain : "domainId"
+    Drawing }o--|| Space : "spaceId"
+
+    Vendor ||--o{ ProcurementItem : "vendorId"
+    Vendor ||--o{ BOQ : "vendorId"
+    Vendor ||--o{ Material : "vendorId"
+    Vendor ||--o{ Warranty : "vendorId"
+
+    GalleryItem }o--|| Space : "spaceId"
+    GalleryItem }o--|| Domain : "domainId"
+  </div>
+
+  <div class="legend">
+    <strong>Key</strong><br>
+    <code>||--o{</code> one-to-many &nbsp;·&nbsp;
+    <code>}o--||</code> many-to-one &nbsp;·&nbsp;
+    <code>}o--o{</code> many-to-many (via <code>*Ids</code> arrays)<br>
+    Dashed lines indicate many-to-many relationships stored as <code>*Ids: string[]</code>
+    on the entity, resolved to full records via <code>lib/relations.ts</code>.
+  </div>
+</body>
+</html>

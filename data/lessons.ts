@@ -2,6 +2,7 @@ import type { Lesson } from "@/types";
 
 export const lessons: Lesson[] = [
   {
+    projectId: "proj-kr",
     id: "les-automation-negotiation",
     title: "Compare automation bids on lifetime cost, not just hardware",
     category: "Negotiation",
@@ -17,6 +18,7 @@ export const lessons: Lesson[] = [
     },
   },
   {
+    projectId: "proj-kr",
     id: "les-import-hidden-costs",
     title: "Model landed cost, not ex-works, for imported furniture",
     category: "Procurement",
@@ -32,6 +34,7 @@ export const lessons: Lesson[] = [
     },
   },
   {
+    projectId: "proj-kr",
     id: "les-contractor-quote",
     title: "Normalise contractor quotes before comparing",
     category: "Project Management",

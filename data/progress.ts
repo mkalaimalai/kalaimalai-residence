@@ -2,6 +2,7 @@ import type { ProgressEntry } from "@/types";
 
 export const progress: ProgressEntry[] = [
   {
+    projectId: "proj-kr",
     id: "prog-structure",
     date: "2025-01-30",
     phase: "Structure",
@@ -14,6 +15,7 @@ export const progress: ProgressEntry[] = [
     status: "Completed",
   },
   {
+    projectId: "proj-kr",
     id: "prog-blockwork",
     date: "2025-03-18",
     phase: "Masonry",
@@ -26,6 +28,7 @@ export const progress: ProgressEntry[] = [
     status: "In Progress",
   },
   {
+    projectId: "proj-kr",
     id: "prog-courtyard",
     date: "2025-04-22",
     phase: "Waterproofing",

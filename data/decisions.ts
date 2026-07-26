@@ -2,6 +2,7 @@ import type { Decision } from "@/types";
 
 export const decisions: Decision[] = [
   {
+    projectId: "proj-kr",
     id: "dec-automation",
     title: "Home automation platform & integrator",
     domainId: "dom-automation",
@@ -24,6 +25,7 @@ export const decisions: Decision[] = [
     status: "Decided",
   },
   {
+    projectId: "proj-kr",
     id: "dec-flooring",
     title: "Living room flooring — marble vs large-format porcelain",
     domainId: "dom-flooring",
@@ -45,6 +47,7 @@ export const decisions: Decision[] = [
     status: "Decided",
   },
   {
+    projectId: "proj-kr",
     id: "dec-staircase",
     title: "Main staircase — steel folded-plate vs RCC",
     domainId: "dom-civil",

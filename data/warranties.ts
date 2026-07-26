@@ -2,6 +2,7 @@ import type { Warranty } from "@/types";
 
 export const warranties: Warranty[] = [
   {
+    projectId: "proj-kr",
     id: "war-lighting",
     item: "Architectural Lighting Fixtures",
     category: "Lighting",
@@ -16,6 +17,7 @@ export const warranties: Warranty[] = [
     notes: "2-year driver & fixture warranty.",
   },
   {
+    projectId: "proj-kr",
     id: "war-automation",
     item: "KNX Automation System",
     category: "Home Automation",
@@ -30,6 +32,7 @@ export const warranties: Warranty[] = [
     notes: "5-year hardware warranty; AMC optional after year 1.",
   },
   {
+    projectId: "proj-kr",
     id: "war-appliances",
     item: "Kitchen Appliances Suite",
     category: "Appliances",

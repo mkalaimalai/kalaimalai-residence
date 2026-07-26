@@ -8,6 +8,7 @@ from app.contexts.vendor.infrastructure.orm import VendorModel
 def to_entity(row: VendorModel) -> Vendor:
     return Vendor(
         id=row.id,
+        project_id=row.project_id,
         name=row.name,
         category=row.category,
         contact_person=row.contact_person,
@@ -25,6 +26,7 @@ def to_entity(row: VendorModel) -> Vendor:
 def to_columns(vendor: Vendor) -> dict:
     return {
         "id": vendor.id,
+        "project_id": vendor.project_id,
         "name": vendor.name,
         "category": vendor.category,
         "contact_person": vendor.contact_person,

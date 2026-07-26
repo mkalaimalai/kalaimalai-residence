@@ -40,8 +40,8 @@ from app.shared.db import SessionFactory
 
 SEED_PATH = Path(__file__).parent / "seed.json"
 
-# JSON collection name -> ORM model. "project" is a single object, handled separately.
 COLLECTIONS = {
+    "projects": ProjectModel,
     "spaces": SpaceModel,
     "domains": DomainModel,
     "progress": ProgressModel,
@@ -94,12 +94,6 @@ async def main() -> None:
             n = await _upsert(session, model, data.get(name, []))
             total += n
             print(f"  {name:12} {n}")
-
-        project = data.get("project")
-        if project:
-            await _upsert(session, ProjectModel, [project])
-            print(f"  {'project':12} 1")
-            total += 1
 
         await session.commit()
         print(f"Seeded {total} rows.")

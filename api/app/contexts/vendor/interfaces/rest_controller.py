@@ -1,7 +1,7 @@
 """Vendor REST controller — the inbound adapter (HTTP → use cases)."""
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.contexts.vendor.application.commands import (
@@ -36,8 +36,11 @@ def _repo(session: AsyncSession = Depends(get_session)) -> SqlAlchemyVendorRepos
 
 
 @router.get("", response_model=list[VendorResponse])
-async def list_vendors(repo: SqlAlchemyVendorRepository = Depends(_repo)):
-    vendors = await ListVendors(repo)()
+async def list_vendors(
+    repo: SqlAlchemyVendorRepository = Depends(_repo),
+    project_id: str | None = Query(None, alias="projectId"),
+):
+    vendors = await ListVendors(repo)(project_id)
     return [VendorResponse.from_entity(v) for v in vendors]
 
 

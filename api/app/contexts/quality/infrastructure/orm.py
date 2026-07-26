@@ -5,10 +5,10 @@ from sqlalchemy import String, Text
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.shared.db import Base
+from app.shared.db import Base, ProjectScoped
 
 
-class SnagModel(Base):
+class SnagModel(ProjectScoped, Base):
     __tablename__ = "snags"
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
@@ -24,7 +24,7 @@ class SnagModel(Base):
     notes: Mapped[str] = mapped_column(Text, default="")
 
 
-class InspectionModel(Base):
+class InspectionModel(ProjectScoped, Base):
     __tablename__ = "inspections"
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
@@ -36,7 +36,7 @@ class InspectionModel(Base):
     notes: Mapped[str] = mapped_column(Text, default="")
 
 
-class DecisionModel(Base):
+class DecisionModel(ProjectScoped, Base):
     __tablename__ = "decisions"
 
     id: Mapped[str] = mapped_column(String, primary_key=True)

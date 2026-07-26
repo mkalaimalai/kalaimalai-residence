@@ -142,6 +142,41 @@ async function main() {
   }
   if (failures === 0) console.log("  ✓ all cross-references resolve");
 
+  // 2b. Tenant boundary -----------------------------------------------------
+  // Every entity carries `projectId` (api/migrations/002_project_scope.sql). The
+  // repository scopes 1.0 to the singleton project, so anything reaching here must
+  // already belong to it — a foreign row means the scoping seam has a hole.
+  console.log("\nTenant boundary");
+  const projectIds = new Set((await repo.getProjects()).map((p) => p.id));
+  const scoped: [string, { id: string; projectId: string }[]][] = [
+    ["space", spaces], ["domain", domains], ["drawing", drawings],
+    ["vendor", vendors], ["procurement", procurement], ["decision", decisions],
+    ["boq", boqs], ["material", materials], ["progress", progress],
+    ["snag", snags], ["warranty", warranties], ["lesson", lessons],
+    ["gallery", gallery],
+  ];
+  let tenantIssues = 0;
+  for (const [label, rows] of scoped) {
+    for (const row of rows) {
+      if (!row.projectId) {
+        tenantIssues += 1;
+        fail(`${label} ${row.id} has no projectId`);
+      } else if (!projectIds.has(row.projectId)) {
+        tenantIssues += 1;
+        fail(`${label} ${row.id} references missing project "${row.projectId}"`);
+      } else if (row.projectId !== project.id) {
+        tenantIssues += 1;
+        fail(
+          `${label} ${row.id} belongs to "${row.projectId}" but leaked into the ` +
+            `"${project.id}" view — repository scoping is not filtering`,
+        );
+      }
+    }
+  }
+  if (tenantIssues === 0) {
+    console.log(`  ✓ every record is scoped to ${project.id}`);
+  }
+
   // 3. Image paths ----------------------------------------------------------
   console.log("\nImage paths");
   const publicDir = join(process.cwd(), "public");

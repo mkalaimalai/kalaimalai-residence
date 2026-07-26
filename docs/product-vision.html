@@ -1,0 +1,672 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>BuildHome — Product Vision &amp; Market Analysis</title>
+<meta name="robots" content="noindex, nofollow" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #faf8f4;
+    --surface: #ffffff;
+    --surface-2: #f4efe7;
+    --text: #2b2a27;
+    --muted: #6f6a62;
+    --accent: #b07a4f;
+    --accent-soft: #efe6db;
+    --border: #e7e1d6;
+    --green: #4e7c59;
+    --warn: #b4632a;
+    --red: #b13e3e;
+    --serif: "Fraunces", Georgia, "Times New Roman", serif;
+    --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: var(--sans); line-height: 1.6; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+
+  header.hero { padding: 72px 0 40px; border-bottom: 1px solid var(--border); }
+  .eyebrow {
+    font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600; margin: 0 0 14px;
+  }
+  h1 {
+    font-family: var(--serif); font-weight: 500;
+    font-size: clamp(2.1rem, 5vw, 3.2rem); line-height: 1.08;
+    margin: 0 0 16px; letter-spacing: -0.01em;
+  }
+  .lede { font-size: 1.12rem; color: var(--muted); max-width: 68ch; margin: 0; }
+  .meta { margin-top: 22px; font-size: 13px; color: var(--muted); }
+  .meta span { color: var(--text); font-weight: 500; }
+
+  section { padding: 46px 0; border-bottom: 1px solid var(--border); }
+  h2 {
+    font-family: var(--serif); font-weight: 500;
+    font-size: clamp(1.5rem, 3.5vw, 2rem); margin: 0 0 6px; letter-spacing: -0.01em;
+  }
+  h2 .num { font-size: 0.7em; color: var(--accent); font-weight: 600; font-family: var(--sans); margin-right: 10px; letter-spacing: 0.05em; }
+  .section-sub { color: var(--muted); margin: 0 0 24px; max-width: 68ch; }
+  .section-sub-wide { color: var(--muted); margin: 0 0 24px; max-width: 80ch; }
+  h3 { font-family: var(--serif); font-weight: 500; font-size: 1.25rem; margin: 28px 0 6px; }
+  h3:first-child { margin-top: 0; }
+  h4 { font-family: var(--sans); font-weight: 600; font-size: 0.95rem; margin: 20px 0 4px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+  p { margin: 0 0 14px; }
+  a { color: var(--accent); }
+
+  .callout {
+    background: var(--surface-2); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 12px; padding: 20px 24px; margin: 8px 0 0;
+  }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout.green { border-left-color: var(--green); }
+  .callout.red { border-left-color: var(--red); }
+  .callout.warn { border-left-color: var(--warn); }
+
+  .table-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; margin: 6px 0 0; }
+  .table-scroll table { margin: 0; width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  .table-scroll thead th:first-child, .table-scroll tbody td:first-child { padding-left: 16px; }
+  th, td { text-align: left; padding: 11px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  thead th { color: var(--muted); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; background: var(--surface-2); }
+  tbody tr:hover { background: var(--surface-2); }
+  table .num { font-family: var(--serif); color: var(--accent); font-weight: 600; }
+  .icon-y { color: var(--green); font-weight: 600; }
+  .icon-n { color: var(--red); }
+  .icon-p { color: var(--warn); }
+
+  .cards { display: grid; gap: 16px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 22px 24px;
+  }
+  .card .tag {
+    display: inline-block; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent); font-weight: 600; margin-bottom: 8px;
+  }
+  .card p:last-child { margin-bottom: 0; }
+
+  .moat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+  .moat-item {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px;
+  }
+  .moat-item h4 { margin: 0 0 6px; font-family: var(--serif); font-weight: 500; text-transform: none; letter-spacing: 0; font-size: 1.05rem; color: var(--text); }
+  .moat-item p { font-size: 0.88rem; color: var(--muted); margin: 0; }
+
+  .phases { display: grid; gap: 18px; counter-reset: phase; }
+  .phase {
+    position: relative; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 16px; padding: 24px 26px 24px 30px; overflow: hidden;
+  }
+  .phase::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: var(--accent); }
+  .phase-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; margin-bottom: 10px; }
+  .phase-num { font-family: var(--serif); font-size: 1.05rem; color: var(--accent); font-weight: 600; }
+  .phase-title { font-family: var(--serif); font-size: 1.35rem; font-weight: 500; margin: 0; }
+  .badge {
+    margin-left: auto; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border); color: var(--muted); background: var(--surface-2);
+  }
+  .badge.now { color: #fff; background: var(--accent); border-color: var(--accent); }
+  .phase ul { margin: 4px 0 0; padding-left: 18px; }
+  .phase li { margin-bottom: 4px; font-size: 0.93rem; }
+
+  .arch-flow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 12px 0; }
+  .arch-box {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 16px; font-size: 0.85rem; font-weight: 500; text-align: center;
+  }
+  .arch-arrow { color: var(--muted); font-size: 1.2rem; }
+
+  .revenue-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+  .rev-item {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; text-align: center;
+  }
+  .rev-item .pct { font-family: var(--serif); font-size: 1.8rem; color: var(--accent); font-weight: 600; display: block; }
+  .rev-item .label { font-size: 0.88rem; color: var(--muted); }
+  .rev-item .src { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
+
+  .tier-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin: 6px 0 0; }
+  .tier-table th, .tier-table td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border); }
+  .tier-table thead th { background: var(--surface-2); font-size: 0.82rem; }
+  .tier-table .price { font-family: var(--serif); font-size: 1.2rem; color: var(--accent); font-weight: 600; white-space: nowrap; }
+
+  footer { padding: 40px 0 64px; color: var(--muted); font-size: 13px; }
+
+  @media (max-width: 560px) {
+    .moat-grid, .revenue-grid { grid-template-columns: 1fr; }
+  }
+  @media print {
+    body { background: #fff; }
+    section, header.hero { border-color: #ddd; }
+    .phase, .card, .callout { break-inside: avoid; }
+    a { color: var(--text); text-decoration: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">BuildHome · Product Vision</p>
+    <h1>From Family Home Docs to World-Class Construction Platform</h1>
+    <p class="lede">A homeowner-first platform for the Indian custom home market — turning the experience of building one design-led home in Bengaluru into a product that solves transparency, coordination, and accountability problems across the entire journey from inspiration to handover to maintenance.</p>
+    <p class="meta">Based on: <span>Kalaimalai Residence codebase</span> · Industry research across 18 competitors · Indian construction market dynamics · July 2026</p>
+  </div>
+</header>
+
+<main>
+
+<!-- ===== 01. The White Space ===== -->
+<section id="whitespace">
+  <div class="wrap">
+    <h2><span class="num">01</span>The market white space</h2>
+    <p class="section-sub">No single app serves the Indian custom-home owner across the full journey. They manage everything via WhatsApp groups, Excel sheets, and physical site visits. The data model you already built covers 16 entities spanning the entire lifecycle — that's your head start.</p>
+
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Need</th>
+            <th>Global Tools<br/>(Buildertrend/Procore)</th>
+            <th>Indian Tools<br/>(BuildSupply/SiteSetu)</th>
+            <th>Homeowner Apps</th>
+            <th>Your Opportunity</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Homeowner-first design</strong></td><td class="icon-n">✗ Builder-centric</td><td class="icon-n">✗ Builder-centric</td><td class="icon-n">✗ US/EU only</td><td class="icon-y">Wide open</td></tr>
+          <tr><td><strong>India regulatory (RERA, approvals)</strong></td><td class="icon-n">✗</td><td class="icon-p">◐ Partial — large projects</td><td class="icon-n">✗</td><td class="icon-y">Complete gap</td></tr>
+          <tr><td><strong>Multi-language + regional units</strong></td><td class="icon-n">✗</td><td class="icon-p">◐ Hindi occasionally</td><td class="icon-n">✗</td><td class="icon-y">Major gap</td></tr>
+          <tr><td><strong>Informal contractor mgmt</strong></td><td class="icon-n">✗</td><td class="icon-p">◐ Basic</td><td class="icon-n">✗</td><td class="icon-y">Complete gap</td></tr>
+          <tr><td><strong>Material procurement (individual)</strong></td><td class="icon-n">✗</td><td class="icon-n">✗ (B2B only)</td><td class="icon-n">✗</td><td class="icon-y">Major gap</td></tr>
+          <tr><td><strong>Homeowner-led snagging</strong></td><td class="icon-p">◐ Expensive tier</td><td class="icon-p">◐ Basic</td><td class="icon-n">✗</td><td class="icon-y">Major gap</td></tr>
+          <tr><td><strong>RERA payment milestones + escrow</strong></td><td class="icon-n">✗</td><td class="icon-n">✗</td><td class="icon-n">✗</td><td class="icon-y">Complete gap</td></tr>
+          <tr><td><strong>End-to-end (inspiration → handover → maintenance)</strong></td><td class="icon-n">✗ Fragmented</td><td class="icon-n">✗ Fragmented</td><td class="icon-n">✗ Design-only</td><td class="icon-y">Wide open</td></tr>
+          <tr><td><strong>Price viable for Indian individual</strong></td><td class="icon-n">✗ $400–1,100/mo</td><td class="icon-p">◐ $13–500/mo</td><td class="icon-y">✔ Free–$20</td><td class="icon-y">Needs ₹499–2,999/mo</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout" style="margin-top:18px">
+      <p><strong>The strategic read.</strong> The volume interiors segment is consolidating into a duopoly (Livspace vs. HomeLane+DesignCafe). Tech-enabled construction contracting is being locked up by Brick &amp; Bolt. The white space is exactly where your own pain was: <strong>premium, design-led, owner-side coordination, transparency tooling, and software for the fragmented supply side</strong> — with proven international models (BuildBook, Houzz Pro, Block Renovation) but no strong Indian equivalent.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 02. Product Vision ===== -->
+<section id="vision">
+  <div class="wrap">
+    <h2><span class="num">02</span>Product vision — BuildHome</h2>
+    <p class="section-sub-wide">A mobile-first platform that accompanies the Indian homeowner from <strong>"I want to build a home" → handover → 10 years of maintenance</strong>. Eight core differentiators that together create a moat no Indian competitor currently has.</p>
+
+    <div class="cards">
+      <div class="card">
+        <span class="tag">① Regulatory Engine</span>
+        <h3>RERA &amp; Approval Workflow</h3>
+        <p>Digitize the entire regulatory chain: building plan sanction, CLU, RERA registration, Fire NOC, environmental clearance, utility connections. Auto-generate RERA quarterly progress reports. Milestone-based payment tracking aligned with RERA escrow requirements (70% fund ring-fencing). State-by-state compliance logic (MahaRERA, Karnataka RERA, TNRERA, etc.).</p>
+        <p><strong>Moat:</strong> Once your project approvals are in the system, switching cost is near-infinite. This is the lock-in.</p>
+      </div>
+
+      <div class="card">
+        <span class="tag">② WhatsApp-Native Architecture</span>
+        <h3>Construction Coordination Hub</h3>
+        <p>500M+ Indians use WhatsApp for construction coordination — the app meets them there. Snap a snag photo → WhatsApp → auto-logged with AI tagging. Progress updates from site photos sent via WhatsApp voice note. Vendor communication, approval requests, payment confirmations — all via WhatsApp. Works without app download (progressive engagement). Notifications in the user's language.</p>
+        <p><strong>Moat:</strong> Usage habit stickiness. Once the WhatsApp thread is the source of truth, no one switches.</p>
+      </div>
+
+      <div class="card">
+        <span class="tag">③ Multi-Language + Regional Adaptation</span>
+        <h3>Speaks Your Language</h3>
+        <p>8 Indian languages at launch (Hindi, Tamil, Kannada, Telugu, Malayalam, Marathi, Bengali, Gujarati). Region-specific terminology mapping — "slab" vs "roof", "cent" vs "sq yard" vs "anna". Voice input for snags in local languages. UI adapts to regional construction practices (Tamil Nadu snag culture, Kerala post-monsoon inspection norms, North vs South pricing conventions).</p>
+      </div>
+
+      <div class="card">
+        <span class="tag">④ Financial Spine</span>
+        <h3>RERA-Compliant Payment Engine</h3>
+        <p>Auto-calculate milestone payment schedules per RERA norms (foundation → plinth → slab → brickwork → plaster → flooring → finishing → handover). Bank coordination: generate engineer certification → trigger home loan disbursement. Escrow tracking and verification. GST calculation (1%/5%/12% slabs + input credit). Home loan application &amp; tracking via bank partnerships.</p>
+      </div>
+
+      <div class="card">
+        <span class="tag">⑤ Procurement Marketplace</span>
+        <h3>Buy Smarter Together</h3>
+        <p>Individual homeowners pay retail — BuildHome aggregates demand across projects for bulk pricing. Verified local dealers with real-time stock &amp; pricing. Price comparison + quality certification (brand vs generic, grade verification). Order tracking from factory to site. Post-delivery inspection workflow. Import concierge for premium materials (EUR ex-works → landed INR).</p>
+      </div>
+
+      <div class="card">
+        <span class="tag">⑥ AI Site Intelligence</span>
+        <h3>Computer Vision for Construction</h3>
+        <p>Upload a site photo → AI identifies current stage (excavation, foundation, plinth, slab, brickwork, plaster, flooring). Snag auto-detection from photos (cracks, seepage, tile misalignment, paint defects). Price prediction for materials (steel/cement trends based on market data). Contractor quality scoring from past project outcomes.</p>
+      </div>
+
+      <div class="card">
+        <span class="tag">⑦ Snag Lifecycle</span>
+        <h3>Homeowner-Led Quality Assurance</h3>
+        <p>Open a snag from phone camera → auto-categorize → assign to contractor. Photo + voice note in local language. SLA tracking (critical → 24 hr, high → 72 hr). Sign-off with photo evidence. Rolling snagging by stage (RCC, masonry, plaster, waterproofing, tiling, painting) — not just at handover. History follows the home, not the contractor.</p>
+      </div>
+
+      <div class="card">
+        <span class="tag">⑧ Home OS</span>
+        <h3>Post-Construction for Life</h3>
+        <p>Centralized warranty tracker for all materials + workmanship. Maintenance calendar (service water tank, service AC, repaint timeline, septic tank cleaning). 10-year structural defect monitoring based on monsoon-cycle inspection reminders. Service provider network for repairs. "Home health score" based on age + maintenance history. A 10+ year engagement with every home built through the platform.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 03. Architecture Evolution ===== -->
+<section id="architecture">
+  <div class="wrap">
+    <h2><span class="num">03</span>Architecture evolution from current codebase</h2>
+    <p class="section-sub">Your existing codebase is a <strong>single-project pilot</strong> of the core product. Here's how each component maps to the production platform.</p>
+
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th>Current Feature</th><th style="width:50px"></th><th>Product Evolution</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1 project, hardcoded seed data</td><td>→</td><td><strong>Multi-tenant</strong> — org/project/user hierarchy. Supabase Postgres replaces seed files.</td></tr>
+          <tr><td>Repository pattern (lib/repository.ts)</td><td>→</td><td>Directly scales — swap seed data source for multi-tenant DB queries. Already has API mode.</td></tr>
+          <tr><td>ID-based relations (relations.ts)</td><td>→</td><td>Stays exactly as-is. This was the right call — it's the foundation for cross-project data.</td></tr>
+          <tr><td>Generic CRUD admin (EntityForm + admin-schema.ts)</td><td>→</td><td>Expands to admin console across all tenants. Schema-driven forms are already production-ready.</td></tr>
+          <tr><td>Supabase Auth + RBAC</td><td>→</td><td>Extended roles: homeowner, architect, contractor, site supervisor, vendor, admin</td></tr>
+          <tr><td>Portal dashboard</td><td>→</td><td>Becomes per-project homepage with role-based views. Metric cards + timeline already there.</td></tr>
+          <tr><td>DataTable component (sort/filter/search)</td><td>→</td><td>Powers all list views. Needs mobile-responsive variant + column customization.</td></tr>
+          <tr><td>API — hexagonal DDD (api/)</td><td>→</td><td>Scales directly. Add rate limiting, webhooks, background queues, caching layer.</td></tr>
+          <tr><td>Static export (next.config.ts)</td><td>→</td><td>Must become dynamic (Vercel/Railway/Render). Static export = no real-time, no auth, no API.</td></tr>
+          <tr><td>Public pages (spaces, domains, materials)</td><td>→</td><td>Becomes template library / design inspiration gallery. Community-contributed project showcases.</td></tr>
+          <tr><td>Journey timeline (data/progress.ts)</td><td>→</td><td>Becomes real-time progress feed with WhatsApp-photo integration.</td></tr>
+          <tr><td>Snag tracking (data/snags.ts)</td><td>→</td><td>Mobile-first snag workflow with photo + voice + SLA + assignment chain.</td></tr>
+          <tr><td>Decision log (data/decisions.ts)</td><td>→</td><td>Collaborative decision tracker with option comparison, cost/time/quality impact scoring.</td></tr>
+          <tr><td>Procurement (data/procurement.ts)</td><td>→</td><td>Marketplace integration + landed-cost calculator + bulk aggregation.</td></tr>
+          <tr><td>Warranties (data/warranties.ts)</td><td>→</td><td>Home OS — proactive reminders, service booking, manufacturer warranty tracking.</td></tr>
+          <tr><td>Lessons (data/lessons.ts)</td><td>→</td><td>Community knowledge base — "what other homeowners learned building their home."</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout green" style="margin-top:16px">
+      <p><strong>Key architectural insight.</strong> The two hardest technical decisions are already made correctly: (1) the repository as the single data door, and (2) ID-based relations that survive renames. These patterns, which cost significant thought upfront, are what make the multi-tenant transition tractable instead of a rewrite.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 04. Competitive Moat ===== -->
+<section id="moat">
+  <div class="wrap">
+    <h2><span class="num">04</span>The competitive moat</h2>
+    <p class="section-sub">Four structural advantages that compound over time, making it increasingly hard for incumbents (Livspace, Brick &amp; Bolt) or new entrants to replicate.</p>
+
+    <div class="moat-grid">
+      <div class="moat-item">
+        <h4>Data Network Effect</h4>
+        <p>More projects → better price predictions, accurate contractor ratings, real material cost benchmarks, reliable timeline estimates. Each new project makes the platform more valuable for the next user.</p>
+      </div>
+      <div class="moat-item">
+        <h4>Regulatory Embed</h4>
+        <p>Once a project's RERA filings, approvals, escrow accounts, and bank linkages are in the system, the cost of switching to any alternative approaches infinity. This is structural lock-in.</p>
+      </div>
+      <div class="moat-item">
+        <h4>WhatsApp Habit Stickiness</h4>
+        <p>The daily coordination thread (snag photos, progress updates, approvals) lives in WhatsApp, integrated with the app. Breaking that habit to switch tools means breaking the communication channel itself.</p>
+      </div>
+      <div class="moat-item">
+        <h4>Post-Construction Lock-In</h4>
+        <p>Your home's warranty, maintenance history, service bookings, and manufacturer contacts live in the app. A 10+ year engagement with every home — switching means losing your home's digital record.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 05. Business Model ===== -->
+<section id="business-model">
+  <div class="wrap">
+    <h2><span class="num">05</span>Business model &amp; pricing</h2>
+    <p class="section-sub">A layered approach matching willingness to pay across different homeowner segments.</p>
+
+    <table class="tier-table">
+      <thead>
+        <tr>
+          <th>Tier</th>
+          <th>Price</th>
+          <th>Who it's for</th>
+          <th>Key Features</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Free</strong></td>
+          <td class="price">₹0</td>
+          <td>Everyone exploring</td>
+          <td>1 project, 5 snags, basic progress timeline, WhatsApp notifications, material price benchmarks</td>
+        </tr>
+        <tr>
+          <td><strong>Builder</strong></td>
+          <td class="price">₹999 / project</td>
+          <td>Active homeowners</td>
+          <td>Full snag lifecycle, procurement tracking, BOQ management, decision log, up to 5 users per project, milestone tracker</td>
+        </tr>
+        <tr>
+          <td><strong>Premium</strong></td>
+          <td class="price">₹2,499 / project</td>
+          <td>Premium / complex builds</td>
+          <td>All Builder features + RERA compliance engine, bank disbursal coordination, AI progress tracking, material marketplace access, import concierge, priority support</td>
+        </tr>
+        <tr>
+          <td><strong>Enterprise</strong></td>
+          <td class="price">Custom</td>
+          <td>Architects / small builders</td>
+          <td>Multi-project portfolio, sub-contractor management, branded client portal, custom workflows, API access, dedicated account manager</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Revenue mix projection</h3>
+    <div class="revenue-grid" style="margin-top:12px">
+      <div class="rev-item">
+        <span class="pct">60%</span>
+        <span class="label">Subscriptions</span>
+        <span class="src">Freemium → paid conversion</span>
+      </div>
+      <div class="rev-item">
+        <span class="pct">25%</span>
+        <span class="label">Marketplace commissions</span>
+        <span class="src">2–5% on material procurement</span>
+      </div>
+      <div class="rev-item">
+        <span class="pct">10%</span>
+        <span class="label">Bank / loan referrals</span>
+        <span class="src">1–2% of home loan amount</span>
+      </div>
+      <div class="rev-item">
+        <span class="pct">5%</span>
+        <span class="label">Professional services</span>
+        <span class="src">Owner's rep, QA inspections, import concierge</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 06. Phased Roadmap ===== -->
+<section id="roadmap">
+  <div class="wrap">
+    <h2><span class="num">06</span>Phased product roadmap</h2>
+    <p class="section-sub-wide">Each phase funds and derisks the next. Build only what the market proves it needs. Current codebase puts you well ahead of a blank-slate start — estimate 30–40% shorter timelines vs. building from scratch.</p>
+
+    <div class="phases">
+
+      <div class="phase">
+        <div class="phase-head">
+          <span class="phase-num">Phase 0</span>
+          <h3 class="phase-title">Multi-Tenant Foundation</h3>
+          <span class="badge now">Now</span>
+        </div>
+        <p>Refactor from single-project hardcoded data to multi-tenant architecture. This is the prerequisite for everything else.</p>
+        <ul>
+          <li>Add tenant/project/user tables to Supabase</li>
+          <li>Replace data/*.ts imports with dynamic DB queries in repository layer (API mode already exists)</li>
+          <li>Extend Supabase Auth with role-based access (homeowner, architect, contractor, admin)</li>
+          <li>Add project-switcher UI to portal</li>
+          <li>Deploy API on Render/Railway with persistent Postgres</li>
+        </ul>
+        <p style="margin-top:8px"><strong>Est. 4–6 weeks.</strong> Leverages existing repository pattern + API architecture.</p>
+      </div>
+
+      <div class="phase">
+        <div class="phase-head">
+          <span class="phase-num">Phase 1</span>
+          <h3 class="phase-title">Mobile Web + WhatsApp Bot</h3>
+          <span class="badge">Next</span>
+        </div>
+        <p>Make the portal work on mobile (responsive) and meet users on WhatsApp — the de facto construction communication tool in India.</p>
+        <ul>
+          <li>Mobile-responsive DataTable, forms, dashboard</li>
+          <li>WhatsApp Business API integration — inbound photos auto-log as snags or progress updates</li>
+          <li>WhatsApp notifications: snag assigned, milestone due, payment approved, decision needed</li>
+          <li>Voice note → text transcription for snags in local languages</li>
+          <li>Photo capture from within mobile web app</li>
+        </ul>
+        <p style="margin-top:8px"><strong>Est. 4 weeks.</strong> Highest impact per engineering hour — this is where the habit forms.</p>
+      </div>
+
+      <div class="phase">
+        <div class="phase-head">
+          <span class="phase-num">Phase 2</span>
+          <h3 class="phase-title">Snag Workflow + Progress Timeline</h3>
+          <span class="badge">Next</span>
+        </div>
+        <p>Core construction tracking — the features that save the most time and disputes on-site.</p>
+        <ul>
+          <li>Rich snag workflow: photo + voice + location → auto-categorize → assign → SLA → verify → sign-off</li>
+          <li>Progress timeline with photo feed from site (WhatsApp integration already in place)</li>
+          <li>Stage-based snagging (RCC, masonry, plaster, waterproofing, tiling, painting — separate per stage)</li>
+          <li>Snag dashboard: open vs resolved by priority, stage, contractor</li>
+        </ul>
+        <p style="margin-top:8px"><strong>Est. 3 weeks.</strong> The data model already exists in data/snags.ts and data/progress.ts — productize existing schema.</p>
+      </div>
+
+      <div class="phase">
+        <div class="phase-head">
+          <span class="phase-num">Phase 3</span>
+          <h3 class="phase-title">RERA Compliance Engine</h3>
+          <span class="badge">Later</span>
+        </div>
+        <p>The structural moat — regulatory embed no competitor can replicate quickly.</p>
+        <ul>
+          <li>Milestone payment scheduler aligned with RERA norms (foundation → plinth → slab → brickwork → plaster → flooring → finishing → handover)</li>
+          <li>Auto-generate RERA quarterly progress reports (QPRs) from project data</li>
+          <li>Bank coordination workflow: engineer/architect certification → bank disbursement trigger</li>
+          <li>Escrow account tracking: 70% fund ring-fencing verification</li>
+          <li>State-specific compliance variants (MahaRERA, Karnataka RERA, TNRERA, etc.)</li>
+          <li>GST calculation engine (1%/5%/12% + input credit optimization)</li>
+        </ul>
+        <p style="margin-top:8px"><strong>Est. 6 weeks.</strong> This is the part that requires regulatory research as much as coding.</p>
+      </div>
+
+      <div class="phase">
+        <div class="phase-head">
+          <span class="phase-num">Phase 4</span>
+          <h3 class="phase-title">Material Marketplace MVP</h3>
+          <span class="badge">Later</span>
+        </div>
+        <p>Aggregate demand for better pricing and verified quality — the transactional revenue engine.</p>
+        <ul>
+          <li>Onboard verified local dealers (cement, steel, tiles, plumbing, electrical, paint, hardware)</li>
+          <li>Price comparison across dealers with real-time stock</li>
+          <li>Demand aggregation: group similar orders from multiple projects → bulk pricing</li>
+          <li>Order tracking: factory dispatch → transit → site delivery</li>
+          <li>Post-delivery inspection workflow with photo evidence</li>
+          <li>Import concierge: EUR/USD ex-works → estimated landed INR (you already have landedFromEUR() utility)</li>
+        </ul>
+        <p style="margin-top:8px"><strong>Est. 8 weeks.</strong> Marketplace dynamics are hard — start with curated dealers, not an open marketplace.</p>
+      </div>
+
+      <div class="phase">
+        <div class="phase-head">
+          <span class="phase-num">Phase 5</span>
+          <h3 class="phase-title">Native Mobile Apps</h3>
+          <span class="badge">Later</span>
+        </div>
+        <p>Native experience for on-site photography, offline operation, and push notifications.</p>
+        <ul>
+          <li>React Native (or Expo) apps for iOS + Android</li>
+          <li>Offline-first: snag capture, photo taking, notes — sync when online</li>
+          <li>Camera integration with auto-categorization</li>
+          <li>Push notifications (augmenting WhatsApp, not replacing it)</li>
+          <li>QR code scanning for material delivery verification</li>
+        </ul>
+        <p style="margin-top:8px"><strong>Est. 8–12 weeks.</strong> Mobile web may be sufficient for early adopters — validate before investing in native.</p>
+      </div>
+
+      <div class="phase">
+        <div class="phase-head">
+          <span class="phase-num">Phase 6</span>
+          <h3 class="phase-title">AI Features</h3>
+          <span class="badge">Later</span>
+        </div>
+        <p>Computer vision and predictive models that compound the data advantage.</p>
+        <ul>
+          <li>Stage classification from site photos (which construction stage is this?)</li>
+          <li>Snag auto-detection: cracks, seepage, tile misalignment, paint defects from photos</li>
+          <li>Material price prediction (steel/cement trends via market data + historical project data)</li>
+          <li>Contractor quality scoring from snag resolution patterns across projects</li>
+          <li>Timeline prediction: estimated completion based on progress rate vs similar projects</li>
+        </ul>
+        <p style="margin-top:8px"><strong>Est. 8 weeks.</strong> Requires dataset that earlier phases generate — don't start before Phase 2 is live with real usage.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== 07. What You Already Have ===== -->
+<section id="existing">
+  <div class="wrap">
+    <h2><span class="num">07</span>What the current codebase already gives you</h2>
+    <p class="section-sub">Your existing project is not a generic Next.js template — it's a purpose-built construction documentation platform with architectural decisions that directly translate to product value.</p>
+
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th>Asset</th><th>What it means for the product</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>16-entity data model</strong> (types/index.ts)</td>
+            <td>Covers the full lifecycle: Project → Spaces → Domains → Drawings → Vendors → Procurement → Decisions → BOQ → Materials → Progress → Snags → Lessons → Warranties → Gallery. This is the schema you'd design from scratch in a greenfield product — you already have it.</td>
+          </tr>
+          <tr>
+            <td><strong>Repository pattern</strong> (lib/repository.ts)</td>
+            <td>The single data door. Swap seed data for multi-tenant DB without touching a single page component. Already has an API mode.</td>
+          </tr>
+          <tr>
+            <td><strong>ID-based relations</strong> (lib/relations.ts)</td>
+            <td>Relations survive renames. Add cross-project data aggregation (price benchmarks, contractor ratings) by reusing the same byIds/byId pattern.</td>
+          </tr>
+          <tr>
+            <td><strong>Generic CRUD admin</strong> (EntityForm + admin-schema.ts)</td>
+            <td>Schema-driven forms for all entities. New entity types require only schema definitions — zero form code. This is the admin panel of the product.</td>
+          </tr>
+          <tr>
+            <td><strong>Hexagonal API backend</strong> (api/)</td>
+            <td>DDD modular monolith with 6 bounded contexts, JWT auth, generic CRUD router factory. Production-ready architecture — add rate limiting, caching, webhooks on top.</td>
+          </tr>
+          <tr>
+            <td><strong>Role-based portal</strong> (SupabaseAuthGate + RBAC)</td>
+            <td>Auth and role infrastructure exists. Extend roles from admin/user to homeowner/architect/contractor/vendor.</td>
+          </tr>
+          <tr>
+            <td><strong>landedFromEUR() utility</strong> (lib/utils.ts)</td>
+            <td>Import cost calculation logic — core of the import concierge feature and procurement marketplace pricing.</td>
+          </tr>
+          <tr>
+            <td><strong>Production seed data</strong> (data/*.ts)</td>
+            <td>15 spaces, 14 domains, 6 drawings, 8 vendors, procurement items, decisions, BOQ, materials, progress, snags, warranties, lessons, gallery — real, internally consistent data you can use for demos, testing, and template content.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout green" style="margin-top:16px">
+      <p><strong>Estimate:</strong> A typical team starting from scratch would spend 8–12 weeks to build what you already have (data model + repository + API + CRUD admin + auth). Your current codebase puts you at least <strong>2–3 months ahead</strong> of a blank-slate competitor.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 08. Risks & Mitigations ===== -->
+<section id="risks">
+  <div class="wrap">
+    <h2><span class="num">08</span>Honest risks</h2>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Risk</th><th>Mitigation</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Multi-tenant refactor is harder than it looks.</strong> Extracting hardcoded singletons into a tenant-aware service while keeping the existing site working requires careful abstraction.</td><td>The repository pattern was designed for exactly this. Create a new <code>MultiTenantRepository</code> implementation that uses the same interface as the current one. Run both in parallel during migration.</td></tr>
+          <tr><td><strong>WhatsApp Business API has platform risk.</strong> Meta controls the API terms, pricing, and access. Policy changes could break the core workflow.</td><td>Abstract the notification layer. Start with WhatsApp as the primary channel but design for Telegram/RCS as fallback. Don't hardcode WhatsApp-specific logic into business code.</td></tr>
+          <tr><td><strong>Regulatory complexity is underestimated.</strong> Every state has different RERA forms, approval timelines, fees, and processes. Full compliance is a legal product as much as a technical one.</td><td>Launch with Karnataka RERA (your home state) first. Add states based on user demand. Partner with a construction law firm for compliance review. Never claim "legal advice" — position as "tracking tool" that helps you prepare filings.</td></tr>
+          <tr><td><strong>Marketplace chicken-and-egg problem.</strong> Dealers won't list without buyers; buyers won't come without dealers.</td><td>Start with the demand aggregation model (group orders from your own users) before opening a dealer marketplace. Phase 4 follows Phase 1–2 for a reason: build the user base first.</td></tr>
+          <tr><td><strong>AI features require data you don't have yet.</strong> Computer vision models need thousands of labelled site photos. Price prediction needs transaction data.</td><td>Don't build Phase 6 until Phase 2 generates real usage data. Start with heuristic rules (not ML) for stage classification. Label photos as a byproduct of user interactions.</td></tr>
+          <tr><td><strong>Homeowner willingness to pay.</strong> Indian homeowners are price-sensitive. A ₹2,499/project subscription may face resistance against "free" (WhatsApp + Excel).</td><td>The free tier is the conversion funnel. The pain of coordination must become acute before payment feels worth it. Price at the point where the alternative (hiring a project manager) costs 10× more.</td></tr>
+          <tr><td><strong>Incumbents have capital.</strong> Livspace ($450M+ raised) or Brick &amp; Bolt could copy features.</td><td>They're structurally supply-side — their revenue comes from builders/vendors, not homeowners. Building a homeowner-trust brand requires a different DNA. The regulatory moat (Phase 3) is hard to replicate quickly across states.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 09. Founder-Fit Advantage ===== -->
+<section id="founder-fit">
+  <div class="wrap">
+    <h2><span class="num">09</span>Founder-fit: why you're the right person</h2>
+    <p class="section-sub">The best construction software companies were founded by people who actually built — Buildertrend's founder was a home builder; Procore's founder managed commercial construction. Your advantage is the same: you lived the problem.</p>
+
+    <div class="cards">
+      <div class="card">
+        <span class="tag">You built it</span>
+        <p>You managed a design-led custom home in Bengaluru across civil, MEP, interiors, automation, and imported furniture. You know every pain point from personal experience — not from customer interviews.</p>
+      </div>
+      <div class="card">
+        <span class="tag">You coded it</span>
+        <p>You built a production-quality platform (Next.js 16 / TypeScript / FastAPI / Supabase) to document the entire build. The data model, repository pattern, generic CRUD, hexagonal API — these aren't toy projects. They're the foundation of a real product.</p>
+      </div>
+      <div class="card">
+        <span class="tag">You documented it</span>
+        <p>15 spaces, 14 domains, 8 vendors, decisions, snags, lessons, warranties — all internally consistent, ID-linked seed data. This becomes the template library and demo environment for the product.</p>
+      </div>
+      <div class="card">
+        <span class="tag">You have the network</span>
+        <p>Studio Anagami (architect), vendors, contractors, material suppliers — you already know the supply side. And other Bangalore homeowners planning builds are your natural first users.</p>
+      </div>
+      <div class="card">
+        <span class="tag">You understand the premium segment</span>
+        <p>Import logistics, KNX vs Control4, EUR-to-INR landed cost, design-led material selection — your build was not a standard project. You speak the language of the premium homeowner who needs this product most.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 10. Immediate Next Steps ===== -->
+<section id="next">
+  <div class="wrap">
+    <h2><span class="num">10</span>Immediate next steps</h2>
+    <p class="section-sub">What you can do today or this week — no funding required.</p>
+    <div class="cards">
+      <div class="card">
+        <span class="tag">This week</span>
+        <h3>Validate the market gap with real conversations</h3>
+        <p>Talk to 5–10 Bangalore homeowners who have built or are planning a custom home. Ask: How did you coordinate? What was the hardest part? What tools did you use? What would you pay for? Record every answer — this becomes your product spec.</p>
+      </div>
+      <div class="card">
+        <span class="tag">This week</span>
+        <h3>Wire the site for email capture</h3>
+        <p>Add a "Building a home? Get the playbook" email signup on the public site. Start building the audience of homeowners-in-planning. This is zero-cost validation: if nobody signs up, the problem isn't real enough.</p>
+      </div>
+      <div class="card">
+        <span class="tag">This sprint</span>
+        <h3>Audit the codebase for multi-tenancy</h3>
+        <p>Walk through every file that imports from <code>data/*.ts</code> and identify what needs to change for multi-tenant. The repository abstraction means most pages won't change — but you need a concrete migration plan before starting Phase 0.</p>
+      </div>
+      <div class="card">
+        <span class="tag">This sprint</span>
+        <h3>Talk to Studio Anagami</h3>
+        <p>Your architect is your first potential Studio OS (idea 6) customer. Ask: Would you use a tool like this to manage your projects and share progress with clients? What features would you need? What would you pay?</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    Living document — built from the Kalaimalai Residence codebase and market research. Internal strategy, not published on the live site.
+  </div>
+</footer>
+
+</body>
+</html>

@@ -5,6 +5,7 @@ from app.shared.camel import CamelModel
 
 
 class NotificationResponse(CamelModel):
+    project_id: str
     id: str
     channel: str
     recipient: str
@@ -16,6 +17,7 @@ class NotificationResponse(CamelModel):
 
 
 class NotificationCreate(CamelModel):
+    project_id: str
     channel: str = "log"
     recipient: str
     subject: str = ""

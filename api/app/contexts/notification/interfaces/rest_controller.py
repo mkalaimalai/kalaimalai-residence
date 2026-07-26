@@ -1,7 +1,7 @@
 """Notification REST controller — audit log read + manual send (admin)."""
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.contexts.notification.application.use_cases import ListNotifications
@@ -30,8 +30,11 @@ def _repo(session: AsyncSession = Depends(get_session)):
 
 @router.get("", response_model=list[NotificationResponse],
             dependencies=[Depends(require_user)])
-async def list_notifications(repo=Depends(_repo)):
-    return [NotificationResponse.model_validate(n) for n in await ListNotifications(repo)()]
+async def list_notifications(
+    repo=Depends(_repo), project_id: str | None = Query(None, alias="projectId")
+):
+    items = await ListNotifications(repo)(project_id)
+    return [NotificationResponse.model_validate(n) for n in items]
 
 
 @router.post("", response_model=NotificationResponse,

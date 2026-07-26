@@ -6,6 +6,7 @@ from app.shared.camel import CamelModel
 
 # --- Drawing -----------------------------------------------------------------------
 class DrawingResponse(CamelModel):
+    project_id: str
     id: str
     title: str
     domain_id: str
@@ -19,6 +20,7 @@ class DrawingResponse(CamelModel):
 
 
 class DrawingCreate(CamelModel):
+    project_id: str
     title: str
     domain_id: str = ""
     space_id: str = ""
@@ -44,6 +46,7 @@ class DrawingUpdate(CamelModel):
 
 # --- GalleryItem -------------------------------------------------------------------
 class GalleryResponse(CamelModel):
+    project_id: str
     id: str
     title: str
     category: str
@@ -54,6 +57,7 @@ class GalleryResponse(CamelModel):
 
 
 class GalleryCreate(CamelModel):
+    project_id: str
     title: str
     category: str = "render"
     image: str = ""
@@ -80,6 +84,7 @@ class LessonImpact(CamelModel):
 
 
 class LessonResponse(CamelModel):
+    project_id: str
     id: str
     title: str
     category: str
@@ -90,6 +95,7 @@ class LessonResponse(CamelModel):
 
 
 class LessonCreate(CamelModel):
+    project_id: str
     title: str
     category: str = ""
     summary: str = ""

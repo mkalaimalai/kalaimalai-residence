@@ -2,6 +2,7 @@ import type { Material } from "@/types";
 
 export const materials: Material[] = [
   {
+    projectId: "proj-kr",
     id: "mat-microcement",
     name: "Microcement (warm taupe)",
     category: "Wall & Floor Finish",
@@ -12,6 +13,7 @@ export const materials: Material[] = [
     notes: "Seamless troweled finish; monolithic look for wet areas and feature walls.",
   },
   {
+    projectId: "proj-kr",
     id: "mat-marble",
     name: "Italian Marble (book-matched)",
     category: "Stone Flooring",
@@ -22,6 +24,7 @@ export const materials: Material[] = [
     notes: "Hero flooring for the living volume and courtyard edge.",
   },
   {
+    projectId: "proj-kr",
     id: "mat-teak-veneer",
     name: "Teak Veneer (vertical grain)",
     category: "Joinery",
@@ -32,6 +35,7 @@ export const materials: Material[] = [
     notes: "Feature walls, wardrobes and media units.",
   },
   {
+    projectId: "proj-kr",
     id: "mat-wood-slat",
     name: "Exterior Teak Slat Screen",
     category: "Facade",
@@ -42,6 +46,7 @@ export const materials: Material[] = [
     notes: "Vertical slat screens on the concrete volumes; sun control + privacy.",
   },
   {
+    projectId: "proj-kr",
     id: "mat-quartz",
     name: "Engineered Quartz (kitchen)",
     category: "Countertop",

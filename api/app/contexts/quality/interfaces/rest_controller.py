@@ -89,7 +89,7 @@ project_nested_router = APIRouter(prefix="/projects", tags=["quality"])
 )
 async def project_snags(project_id: str, session: AsyncSession = Depends(get_session)):
     repo = SqlAlchemySnagRepository(session)
-    return [s.SnagResponse.model_validate(x) for x in await repo.list_all()]
+    return [s.SnagResponse.model_validate(x) for x in await repo.list_all(project_id)]
 
 
 @project_nested_router.get(
@@ -100,7 +100,7 @@ async def project_inspections(
     project_id: str, session: AsyncSession = Depends(get_session)
 ):
     repo = SqlAlchemyInspectionRepository(session)
-    return [s.InspectionResponse.model_validate(x) for x in await repo.list_all()]
+    return [s.InspectionResponse.model_validate(x) for x in await repo.list_all(project_id)]
 
 
 routers = [

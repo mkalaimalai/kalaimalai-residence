@@ -7,6 +7,7 @@ import type { ProcurementItem } from "@/types";
  */
 export const procurement: ProcurementItem[] = [
   {
+    projectId: "proj-kr",
     id: "proc-sofa",
     item: "Modular Living Sofa",
     category: "Furniture",
@@ -27,6 +28,7 @@ export const procurement: ProcurementItem[] = [
     notes: "Ex-works EUR. Landed INR computed at render.",
   },
   {
+    projectId: "proj-kr",
     id: "proc-diningtable",
     item: "Solid Wood Dining Table",
     category: "Furniture",
@@ -47,6 +49,7 @@ export const procurement: ProcurementItem[] = [
     notes: "Seats 6. Ex-works EUR.",
   },
   {
+    projectId: "proj-kr",
     id: "proc-bed",
     item: "Upholstered King Bed",
     category: "Furniture",
@@ -67,6 +70,7 @@ export const procurement: ProcurementItem[] = [
     notes: "Ex-works EUR.",
   },
   {
+    projectId: "proj-kr",
     id: "proc-lounge-turkey",
     item: "Outdoor Lounge Set",
     category: "Furniture",
@@ -87,6 +91,7 @@ export const procurement: ProcurementItem[] = [
     notes: "Weatherproof; INR landed quote.",
   },
   {
+    projectId: "proj-kr",
     id: "proc-dining-chairs",
     item: "Upholstered Dining Chairs",
     category: "Furniture",
@@ -107,6 +112,7 @@ export const procurement: ProcurementItem[] = [
     notes: "Set of 6. INR each.",
   },
   {
+    projectId: "proj-kr",
     id: "proc-pendants",
     item: "Statement Pendant Cluster",
     category: "Lighting",

@@ -6,6 +6,7 @@ from app.shared.camel import CamelModel
 
 # --- BOQ ---------------------------------------------------------------------------
 class BOQResponse(CamelModel):
+    project_id: str
     id: str
     vendor_id: str
     category: str
@@ -20,6 +21,7 @@ class BOQResponse(CamelModel):
 
 
 class BOQCreate(CamelModel):
+    project_id: str
     vendor_id: str = ""
     category: str = ""
     quote_date: str = ""
@@ -47,6 +49,7 @@ class BOQUpdate(CamelModel):
 
 # --- ProcurementItem ---------------------------------------------------------------
 class ProcurementResponse(CamelModel):
+    project_id: str
     id: str
     item: str
     category: str
@@ -68,6 +71,7 @@ class ProcurementResponse(CamelModel):
 
 
 class ProcurementCreate(CamelModel):
+    project_id: str
     item: str
     category: str = ""
     space_id: str = ""
@@ -109,6 +113,7 @@ class ProcurementUpdate(CamelModel):
 
 # --- Material ----------------------------------------------------------------------
 class MaterialResponse(CamelModel):
+    project_id: str
     id: str
     name: str
     category: str
@@ -120,6 +125,7 @@ class MaterialResponse(CamelModel):
 
 
 class MaterialCreate(CamelModel):
+    project_id: str
     name: str
     category: str = ""
     space_ids: list[str] = []
@@ -187,6 +193,7 @@ class QuoteActionNote(CamelModel):
 
 
 class QuoteLineItemResponse(CamelModel):
+    project_id: str
     id: str
     quote_id: str
     boq_line_id: str
@@ -203,6 +210,7 @@ class QuoteLineItemResponse(CamelModel):
 
 
 class QuoteLineItemCreate(CamelModel):
+    project_id: str
     quote_id: str
     boq_line_id: str = ""
     description: str = ""
@@ -245,6 +253,7 @@ class PurchaseOrderStatus(CamelModel):
 
 
 class QuoteApprovalResponse(CamelModel):
+    project_id: str
     quote: QuoteResponse
     purchase_order: PurchaseOrderResponse
     message: str = "Quote approved and purchase order created successfully."

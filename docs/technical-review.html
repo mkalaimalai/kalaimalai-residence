@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Technical Review — Kalaimalai Residence → Product</title>
+<meta name="robots" content="noindex, nofollow" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #faf8f4;
+    --surface: #ffffff;
+    --surface-2: #f4efe7;
+    --text: #2b2a27;
+    --muted: #6f6a62;
+    --accent: #b07a4f;
+    --accent-soft: #efe6db;
+    --border: #e7e1d6;
+    --green: #4e7c59;
+    --warn: #b4632a;
+    --red: #b13e3e;
+    --serif: "Fraunces", Georgia, "Times New Roman", serif;
+    --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: var(--sans); line-height: 1.6; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+
+  header.hero { padding: 72px 0 40px; border-bottom: 1px solid var(--border); }
+  .eyebrow {
+    font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600; margin: 0 0 14px;
+  }
+  h1 {
+    font-family: var(--serif); font-weight: 500;
+    font-size: clamp(2.1rem, 5vw, 3.2rem); line-height: 1.08;
+    margin: 0 0 16px; letter-spacing: -0.01em;
+  }
+  .lede { font-size: 1.12rem; color: var(--muted); max-width: 68ch; margin: 0; }
+  .meta { margin-top: 22px; font-size: 13px; color: var(--muted); }
+  .meta span { color: var(--text); font-weight: 500; }
+
+  section { padding: 46px 0; border-bottom: 1px solid var(--border); }
+  h2 {
+    font-family: var(--serif); font-weight: 500;
+    font-size: clamp(1.5rem, 3.5vw, 2rem); margin: 0 0 6px; letter-spacing: -0.01em;
+  }
+  h2 .num { font-size: 0.7em; color: var(--accent); font-weight: 600; font-family: var(--sans); margin-right: 10px; letter-spacing: 0.05em; }
+  .section-sub { color: var(--muted); margin: 0 0 24px; max-width: 68ch; }
+  .section-sub-wide { color: var(--muted); margin: 0 0 24px; max-width: 80ch; }
+  h3 { font-family: var(--serif); font-weight: 500; font-size: 1.25rem; margin: 28px 0 6px; }
+  h3:first-child { margin-top: 0; }
+  h4 { font-family: var(--sans); font-weight: 600; font-size: 0.95rem; margin: 20px 0 4px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+  p { margin: 0 0 14px; }
+  a { color: var(--accent); }
+  ul { margin: 4px 0 14px; padding-left: 20px; }
+  li { margin-bottom: 6px; }
+  code {
+    font-family: var(--mono); font-size: 0.85em;
+    background: var(--accent-soft); color: #8a5c37;
+    padding: 1px 5px; border-radius: 4px;
+  }
+
+  .callout {
+    background: var(--surface-2); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 12px; padding: 20px 24px; margin: 8px 0 0;
+  }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout.green { border-left-color: var(--green); }
+  .callout.red { border-left-color: var(--red); }
+  .callout.warn { border-left-color: var(--warn); }
+
+  .table-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; margin: 6px 0 0; }
+  .table-scroll table { margin: 0; width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  .table-scroll thead th:first-child, .table-scroll tbody td:first-child { padding-left: 16px; }
+  th, td { text-align: left; padding: 11px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  thead th { color: var(--muted); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; background: var(--surface-2); }
+  tbody tr:hover { background: var(--surface-2); }
+  .icon-y { color: var(--green); font-weight: 600; }
+  .icon-n { color: var(--red); }
+  .icon-p { color: var(--warn); }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 22px 24px;
+  }
+  .cards { display: grid; gap: 16px; }
+
+  /* verdict strip */
+  .verdict { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-top: 26px; }
+  .v-item { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; }
+  .v-item .k { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  .v-item .val { font-family: var(--serif); font-size: 1.05rem; margin-top: 4px; display: block; }
+  .v-item .val.ok { color: var(--green); }
+  .v-item .val.bad { color: var(--red); }
+
+  /* gaps */
+  .gap {
+    position: relative; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 24px 26px 24px 30px; overflow: hidden; margin-bottom: 18px;
+  }
+  .gap::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: var(--muted); }
+  .gap.sev-1::before { background: var(--red); }
+  .gap.sev-2::before { background: var(--warn); }
+  .gap.sev-3::before { background: var(--accent); }
+  .gap-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; margin-bottom: 10px; }
+  .gap-title { font-family: var(--serif); font-size: 1.3rem; font-weight: 500; margin: 0; }
+  .sev {
+    margin-left: auto; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border); color: var(--muted); background: var(--surface-2);
+  }
+  .sev.blocker { color: #fff; background: var(--red); border-color: var(--red); }
+  .sev.high { color: #fff; background: var(--warn); border-color: var(--warn); }
+
+  /* phases */
+  .phases { display: grid; gap: 18px; }
+  .phase {
+    position: relative; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 16px; padding: 24px 26px 24px 30px; overflow: hidden;
+  }
+  .phase::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: var(--accent); }
+  .phase-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; margin-bottom: 10px; }
+  .phase-num { font-family: var(--serif); font-size: 1.05rem; color: var(--accent); font-weight: 600; }
+  .phase-title { font-family: var(--serif); font-size: 1.35rem; font-weight: 500; margin: 0; }
+  .badge {
+    margin-left: auto; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border); color: var(--muted); background: var(--surface-2);
+  }
+  .badge.now { color: #fff; background: var(--accent); border-color: var(--accent); }
+  .phase ul { margin: 4px 0 0; padding-left: 18px; }
+  .phase li { margin-bottom: 5px; font-size: 0.93rem; }
+
+  .ctx-block {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 18px 20px; font-family: var(--mono); font-size: 0.82rem; line-height: 1.8;
+    overflow-x: auto; white-space: pre; color: var(--text);
+  }
+  .ctx-block b { color: var(--accent); font-weight: 500; }
+
+  .checklist { list-style: none; padding: 0; margin: 6px 0 0; }
+  .checklist li {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 16px 12px 42px; margin-bottom: 9px; position: relative; font-size: 0.93rem;
+  }
+  .checklist li::before {
+    content: ""; position: absolute; left: 16px; top: 15px;
+    width: 13px; height: 13px; border: 1.5px solid var(--accent); border-radius: 3px;
+  }
+
+  footer { padding: 40px 0 64px; color: var(--muted); font-size: 13px; }
+
+  @media (max-width: 560px) {
+    .verdict { grid-template-columns: 1fr; }
+  }
+  @media print {
+    body { background: #fff; }
+    section, header.hero { border-color: #ddd; }
+    .phase, .card, .callout, .gap { break-inside: avoid; }
+    a { color: var(--text); text-decoration: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Kalaimalai Residence · Technical Review</p>
+    <h1>From Family Home Docs to a Product Someone Pays For</h1>
+    <p class="lede">A full review of the codebase as it stands — what's genuinely good, what blocks it from serving a second customer, and the narrowest path from here to validated demand.</p>
+    <p class="meta">Reviewed: <span>26 July 2026</span> · Scope: frontend 1.0 + 2.0, <span>api/</span>, seed data, strategy docs · Verified: <span>typecheck &amp; verify pass clean</span></p>
+  </div>
+</header>
+
+<main>
+
+<!-- ===== 01 ===== -->
+<section id="state">
+  <div class="wrap">
+    <h2><span class="num">01</span>What exists today</h2>
+    <p class="section-sub">Three things live in this repo, and they are at very different maturity levels.</p>
+
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th>Layer</th><th>State</th><th>Assessment</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Public site</strong> <code>app/</code> (1.0)</td>
+            <td class="icon-y">Complete — shipping to GitHub Pages</td>
+            <td>Production-quality. Server Components → <code>lib/repository.ts</code> → typed seed.</td>
+          </tr>
+          <tr>
+            <td><strong>Private portal</strong> <code>app/portal/**</code></td>
+            <td class="icon-y">Complete</td>
+            <td>Real Supabase Auth, client-side fetch via <code>lib/api-client.ts</code>, admin CRUD.</td>
+          </tr>
+          <tr>
+            <td><strong>Backend</strong> <code>api/</code></td>
+            <td class="icon-p">Complete for one project — <strong>not multi-tenant</strong></td>
+            <td>DDD/hexagonal FastAPI over Postgres. 7 bounded contexts, 26 controllers.</td>
+          </tr>
+          <tr>
+            <td><strong>Frontend 2.0</strong> <code>app/2.0/</code></td>
+            <td class="icon-p">Uncommitted — 13 files</td>
+            <td>API-first, multi-project picker. This is the real product prototype.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="verdict">
+      <div class="v-item"><span class="k">Typecheck</span><span class="val ok">Passes clean</span></div>
+      <div class="v-item"><span class="k">Data verify</span><span class="val ok">All relations resolve</span></div>
+      <div class="v-item"><span class="k">Test suite</span><span class="val bad">None — anywhere</span></div>
+      <div class="v-item"><span class="k">Tenancy</span><span class="val bad">Not implemented</span></div>
+    </div>
+
+    <h3>The architecture is genuinely good</h3>
+    <p>Three rules make this reusable as a product rather than a one-off site:</p>
+    <ul>
+      <li><strong>The repository is the only data door</strong> (<code>lib/repository.ts</code>) — swapping seed → API was a config flag (<code>DATA_SOURCE=api</code>), not a rewrite. That already happened successfully, which is the proof.</li>
+      <li><strong>Relations by ID, never by name</strong> — every cross-reference is <code>*Ids: string[]</code> resolved at render time. A rename never severs a link.</li>
+      <li><strong><code>types/index.ts</code> is a locked contract</strong> — 14 entities shared by the seed, the API (camelCase-mapped), and both frontends.</li>
+    </ul>
+
+    <div class="callout green">
+      <p><strong>This is the head start.</strong> Most people building in this space start with a CRUD app and discover the domain model 18 months in. You have a domain model derived from actually building a house.</p>
+    </div>
+
+    <h3>The backend has already outgrown the seed</h3>
+    <p>Worth stating explicitly, because it isn't in <code>CLAUDE.md</code>: <code>api/</code> models entities that <strong>do not exist in <code>data/*.ts</code></strong> —</p>
+    <ul>
+      <li><code>Quote</code>, <code>QuoteLineItem</code> — vendor quoting workflow</li>
+      <li><code>PurchaseOrder</code>, <code>Delivery</code> — procurement execution</li>
+      <li><code>BOQLineItem</code>, <code>boq-packages</code> — BOQ decomposition</li>
+      <li><code>Inspection</code> — quality workflow beyond ad-hoc snags</li>
+      <li><code>Notification</code> — an eventing surface</li>
+    </ul>
+    <div class="callout">
+      <p>That is no longer "a documentation site's backend." That is the skeleton of a construction-management SaaS. <strong>The seed is now the smaller of the two models.</strong></p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 02 ===== -->
+<section id="contexts">
+  <div class="wrap">
+    <h2><span class="num">02</span>Bounded contexts as they stand</h2>
+    <p class="section-sub">Each context carries the full hexagonal stack — domain entities, repository port, use cases, ORM + repository implementation, REST controller.</p>
+
+    <div class="ctx-block"><b>project</b>      Space, Domain, ProgressEntry, Project
+<b>commercial</b>   BOQ, BOQLineItem, ProcurementItem, Material, Quote,
+             QuoteLineItem, PurchaseOrder, Delivery      ← richest context
+<b>quality</b>      Snag, Inspection, Decision
+<b>document</b>     Drawing, GalleryItem, Lesson
+<b>vendor</b>       Vendor
+<b>handover</b>     Warranty
+<b>notification</b> Notification</div>
+
+    <p style="margin-top:16px">A shared <code>crud.py</code> factory generates the standard routes with a <code>public_read</code> flag per resource — that flag is what keeps portal data out of the public build. Clean separation, and the single highest-leverage file in the backend.</p>
+  </div>
+</section>
+
+<!-- ===== 03 ===== -->
+<section id="gaps">
+  <div class="wrap">
+    <h2><span class="num">03</span>The blocking gaps</h2>
+    <p class="section-sub">Ranked by what actually stops this becoming an app. Everything else is secondary.</p>
+
+    <div class="gap sev-1">
+      <div class="gap-head">
+        <h3 class="gap-title">There is no tenancy model</h3>
+        <span class="sev blocker">Blocker</span>
+      </div>
+      <p>Verified by inspection:</p>
+      <ul>
+        <li><code>project_id</code> exists on <strong>only 4 ORM models</strong> (<code>orm.py:75,116,132,147</code> — the new commercial ones). <code>Space</code>, <code>Domain</code>, <code>Drawing</code>, <code>Snag</code>, <code>Vendor</code>, <code>Warranty</code>, <code>Decision</code>, <code>ProgressEntry</code> have <strong>no <code>project_id</code> at all</strong>.</li>
+        <li><code>api/app/shared/auth.py</code> resolves a <strong>global</strong> role — <code>admin</code> or <code>viewer</code>, read from <code>user_metadata.role</code>. No organisation, no membership table, no per-project authorization.</li>
+        <li>No row-level security anywhere in the codebase.</li>
+      </ul>
+      <div class="callout red">
+        <p><strong>Consequence:</strong> any authenticated admin can read and write every project's data. Today that is fine — one project, one family. The moment there is a second customer it is a data breach. <code>app/2.0</code>'s project picker is currently a client-side filter over a shared pool, not an isolation boundary.</p>
+        <p>This is not a refactor you can defer. Retrofitting tenancy after customer data exists is the single most expensive migration in SaaS.</p>
+      </div>
+    </div>
+
+    <div class="gap sev-2">
+      <div class="gap-head">
+        <h3 class="gap-title">Sensitive data has nowhere safe to live, by design</h3>
+        <span class="sev high">High</span>
+      </div>
+      <p><code>next.config.ts</code> sets <code>output: "export"</code>. There is no server. Anything in <code>data/*.ts</code> ships to every visitor. The constitution correctly bans real prices from the seed — but that means the product's most valuable feature, <strong>cost transparency and benchmarking</strong>, is structurally impossible in the current deployment target.</p>
+      <p>Static export was the right call for a case-study site and is the wrong call for the app.</p>
+    </div>
+
+    <div class="gap sev-3">
+      <div class="gap-head">
+        <h3 class="gap-title">No tests, anywhere</h3>
+        <span class="sev">Medium</span>
+      </div>
+      <p><code>npm run verify</code> is a data-integrity script, not a test suite — and <code>CLAUDE.md</code> is honest about this ("There is no test runner"). For a documentation site that's a defensible trade. For a product handling payment milestones and BOQ figures, an untested <code>commercial</code> context is a liability. There is no pytest suite for the API either.</p>
+    </div>
+
+    <div class="gap sev-3">
+      <div class="gap-head">
+        <h3 class="gap-title">Two frontends, one team</h3>
+        <span class="sev">Medium</span>
+      </div>
+      <p><code>app/</code> (Server Components, seed) and <code>app/2.0/</code> (client-side, API) render the same content by different means. Shared presentational components keep the cost down, but every feature is currently a decision about which tree gets it. Fine as a transition; expensive if it lasts.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 04 ===== -->
+<section id="docs-review">
+  <div class="wrap">
+    <h2><span class="num">04</span>What the strategy docs get right — and what they miss</h2>
+    <p class="section-sub-wide"><code>docs/business-brainstorm.html</code> and <code>docs/product-vision.html</code> are strong work. The market read is sound: the volume-interiors segment is a consolidating duopoly, tech-enabled contracting is being locked up, and the owner-side coordination layer is genuinely unserved.</p>
+
+    <div class="callout warn">
+      <p><strong>The gap is scope.</strong> The product vision outruns build capacity by roughly an order of magnitude. It names eight pillars — RERA engine, WhatsApp-native, 8 languages, payment/escrow, procurement marketplace, computer-vision site intelligence, snag lifecycle, 10-year Home OS. <strong>Each is a company.</strong> Attempting all eight is the most reliable way to ship none.</p>
+    </div>
+    <p style="margin-top:16px">This review's contribution is narrowing.</p>
+  </div>
+</section>
+
+<!-- ===== 05 ===== -->
+<section id="moat">
+  <div class="wrap">
+    <h2><span class="num">05</span>Where the unique Indian problem actually is</h2>
+    <p class="section-sub-wide">The vision doc lists many India-specific gaps. Only some are <em>defensible</em> — a gap is only a moat if a well-funded competitor can't close it in a quarter.</p>
+
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Candidate</th><th>Defensible?</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr><td>Multi-language</td><td class="icon-n">✗</td><td>Localisation is a sprint for anyone funded. Table stakes, not a moat.</td></tr>
+          <tr><td>WhatsApp-native</td><td class="icon-p">◐</td><td>Correct channel insight, but the API is available to everyone. A distribution choice, not a moat.</td></tr>
+          <tr><td>Computer-vision site intelligence</td><td class="icon-n">✗ (now)</td><td>Needs a labelled dataset you don't have. A year-3 feature that presupposes the data flywheel.</td></tr>
+          <tr><td>Procurement marketplace</td><td class="icon-n">✗ (now)</td><td>Demand aggregation requires demand. Capital-intensive and wrong-ordered.</td></tr>
+          <tr><td><strong>RERA / approvals + milestone payments</strong></td><td class="icon-y">✓</td><td>State-by-state regulatory logic is slow, boring, and compounding. Once approvals live in the system, switching cost is near-infinite.</td></tr>
+          <tr><td><strong>Owner-side cost benchmarking</strong></td><td class="icon-y">✓</td><td>Every project adds a real quote to the corpus. Value grows with usage, and nobody owns it because everyone else is supply-side.</td></tr>
+          <tr><td><strong>Multi-vendor coordination (premium builds)</strong></td><td class="icon-y">✓</td><td>The pain you personally lived, and the entity model already encodes it.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout green" style="margin-top:20px">
+      <p><strong>The honest read.</strong> Your moat is a <strong>data asset</strong> — real BOQs and quotes, benchmarked — <strong>plus regulatory depth</strong>. Not features. Both compound. Neither can be bought.</p>
+    </div>
+
+    <div class="callout" style="margin-top:14px">
+      <p><strong>The sharpest positioning insight</strong> is one your own docs contain but understate: <em>every existing player is supply-side.</em> Livspace, HomeLane and Brick &amp; Bolt all sell to you while representing themselves. <strong>There is no homeowner-side advocate in India.</strong> That is the wedge — and the reason the product should stay owner-first even when it becomes commercially tempting to sell seats to builders.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 06 ===== -->
+<section id="next">
+  <div class="wrap">
+    <h2><span class="num">06</span>Recommended next step</h2>
+    <p class="section-sub-wide">Do not build BuildHome. Build the smallest thing that proves a stranger will pay.</p>
+
+    <div class="callout" style="margin-bottom:26px">
+      <p><strong>The claim to test:</strong> a homeowner building a ₹1–5 Cr house in Bengaluru will pay for a system that tells them whether their quotes are fair and keeps their vendors coordinated.</p>
+      <p>You have exactly one data point (yourself), and it's the most biased one available. Everything below is designed to get the second through tenth.</p>
+    </div>
+
+    <div class="phases">
+
+      <div class="phase">
+        <div class="phase-head">
+          <span class="phase-num">Phase 0</span>
+          <h3 class="phase-title">Make the platform multi-tenant</h3>
+          <span class="badge now">Do this first · 2–3 weeks</span>
+        </div>
+        <p>Non-negotiable prerequisite. Nothing else is safe to build on top.</p>
+        <ul>
+          <li>Add <code>organizations</code> and <code>memberships</code> (<code>user_id</code>, <code>org_id</code>, <code>role</code>) tables. Projects belong to orgs.</li>
+          <li>Add <code>project_id</code> to <strong>every</strong> entity — the 10 that lack it, not just the commercial 4.</li>
+          <li>Replace the global <code>admin</code>/<code>viewer</code> check in <code>shared/auth.py</code> with a scoped resolution: <code>(user, project) → role</code>. Enforce it in <code>shared/crud.py</code> so every generated route inherits it — that factory is the leverage point; one change covers 26 controllers.</li>
+          <li>Add Postgres RLS as defence in depth. Application-layer checks alone are one forgotten <code>WHERE</code> clause from a leak.</li>
+          <li><strong>Write the tenancy tests.</strong> If exactly one part of this codebase has tests, it must be this part. <code>pytest</code> + one fixture per role, asserting cross-tenant reads 404.</li>
+        </ul>
+      </div>
+
+      <div class="phase">
+        <div class="phase-head">
+          <span class="phase-num">Phase 1</span>
+          <h3 class="phase-title">Ship the cost-benchmark tool as a public utility</h3>
+          <span class="badge">3–4 weeks</span>
+        </div>
+        <p>The lead magnet, and the data flywheel's first turn.</p>
+        <ul>
+          <li>A free <strong>"Is my quote fair?"</strong> tool. User enters category, city, spec, quoted price. Returns a range with sample size and a confidence caveat.</li>
+          <li>Seed the corpus with your own real BOQ and quotes — anonymised, and this time <strong>behind the API, not in <code>data/*.ts</code></strong>.</li>
+          <li>Every submission enriches the corpus. Value compounds per user, which is what the site cannot currently do.</li>
+          <li>Requires moving off static export to a Node runtime. Keep the case-study site on Pages if you like the URL; the app needs a server.</li>
+        </ul>
+        <p style="margin-top:10px"><strong>Why first:</strong> it's the only feature that acquires users and builds the moat simultaneously. Kukun proved the pattern; your vision doc already identifies it.</p>
+      </div>
+
+      <div class="phase">
+        <div class="phase-head">
+          <span class="phase-num">Phase 2</span>
+          <h3 class="phase-title">Sell the owner's-rep service manually to 5 homeowners</h3>
+          <span class="badge">8–12 weeks · overlapping</span>
+        </div>
+        <div class="callout red" style="margin-bottom:14px">
+          <p><strong>This is the actual validation step, and it is not a coding task.</strong></p>
+        </div>
+        <p>Take five paying projects. Run coordination yourself using <code>app/2.0</code> as the internal tool. Charge — ₹50k–2L per project, whatever clears. The number matters less than the fact that money changes hands.</p>
+        <p>You will learn three things no amount of building reveals:</p>
+        <ul>
+          <li>Whether homeowners pay for coordination, or only complain about its absence</li>
+          <li>Which of the eight pillars they ask for unprompted</li>
+          <li>What the service costs you to deliver — which determines whether software can ever make it profitable</li>
+        </ul>
+        <p style="margin-top:10px">Software follows demonstrated demand. Not before.</p>
+      </div>
+
+      <div class="phase">
+        <div class="phase-head">
+          <span class="phase-num">Phase 3</span>
+          <h3 class="phase-title">Productise what the service proved</h3>
+          <span class="badge">Post-validation</span>
+        </div>
+        <p>Only now pick from the eight pillars, ordered by what the five customers actually demanded. Likely — but do not assume — RERA milestones and snag lifecycle. Let the evidence choose.</p>
+      </div>
+
+    </div>
+
+    <h3 style="margin-top:32px">What to explicitly defer</h3>
+    <div class="callout warn">
+      <p>Computer vision. Procurement marketplace. Eight languages. Escrow. Financing. Every one is a real opportunity, and every one is fatal as a starting point. <strong>Revisit at 50+ projects.</strong></p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 07 ===== -->
+<section id="hygiene">
+  <div class="wrap">
+    <h2><span class="num">07</span>Immediate engineering hygiene</h2>
+    <p class="section-sub">Independent of strategy, worth doing this week.</p>
+    <ul class="checklist">
+      <li>Commit or delete <code>app/2.0/</code> — 13 untracked files including the multi-project prototype is a real risk of loss</li>
+      <li>Commit or revert the 8 modified files (<code>data/project.ts</code> alone is +202 lines of uncommitted work)</li>
+      <li>Add <code>pytest</code> to <code>api/</code>, with tenancy tests as the first suite</li>
+      <li><code>docs/research.md</code> is 1 line and <code>docs/sources.md</code> is empty — fill or remove</li>
+      <li>Decide the 1.0 / 2.0 endgame and write it into <code>CLAUDE.md</code>, so feature work stops being a per-task judgment call</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===== 08 ===== -->
+<section id="summary">
+  <div class="wrap">
+    <h2><span class="num">08</span>Summary</h2>
+    <div class="cards">
+      <div class="card">
+        <h3>What you have</h3>
+        <p>A well-architected single-tenant construction-documentation platform with an unusually good domain model, a backend that has quietly grown into a procurement system, and market research that correctly identifies an unserved segment.</p>
+      </div>
+      <div class="card">
+        <h3>What stands between it and a product</h3>
+        <p>Tenancy, a server runtime, tests — and most of all, evidence that someone other than you will pay.</p>
+      </div>
+      <div class="card">
+        <h3>The one thing to do next</h3>
+        <p><strong>Phase 0.</strong> Multi-tenancy is the only work that is <em>certainly</em> required no matter which of the eight pillars wins. Everything else should wait for five paying customers to tell you what to build.</p>
+      </div>
+    </div>
+
+    <div class="callout green" style="margin-top:22px">
+      <p>The moat is the benchmark corpus and regulatory depth. Both compound with use, neither can be bought, and both are only reachable through projects that aren't your own.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    Technical review of the Kalaimalai Residence codebase, 26 July 2026. Companion to <code>docs/product-vision.html</code> and <code>docs/business-brainstorm.html</code>. Internal — not published on the live site.
+  </div>
+</footer>
+
+</body>
+</html>

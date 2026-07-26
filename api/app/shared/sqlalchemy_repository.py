@@ -9,10 +9,13 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Generic, TypeVar
 
+from asyncpg.exceptions import ForeignKeyViolationError
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.shared.db import Base
+from app.shared.errors import ValidationError
 
 TOrm = TypeVar("TOrm", bound=Base)
 TEntity = TypeVar("TEntity")
@@ -31,8 +34,31 @@ class SqlAlchemyCrud(Generic[TOrm, TEntity]):
         self._to_entity = to_entity
         self._to_columns = to_columns
 
-    async def list_all(self) -> list[TEntity]:
-        result = await self._session.execute(select(self._orm))
+    async def _commit(self) -> None:
+        """Commit, translating FK violations into a domain ValidationError.
+
+        Writing an entity whose `project_id` (or any other FK) names a row that does not
+        exist is a bad request, not a server fault — without this the driver's
+        IntegrityError escapes the router as a bare 500.
+        """
+        try:
+            await self._session.commit()
+        except IntegrityError as exc:
+            await self._session.rollback()
+            if isinstance(exc.orig, ForeignKeyViolationError) or "ForeignKeyViolation" in str(
+                exc.orig
+            ):
+                raise ValidationError(
+                    "references a row that does not exist: "
+                    f"{getattr(exc.orig, 'detail', None) or exc.orig}"
+                ) from exc
+            raise
+
+    async def list_all(self, project_id: str | None = None) -> list[TEntity]:
+        stmt = select(self._orm)
+        if project_id is not None:
+            stmt = stmt.where(self._orm.project_id == project_id)
+        result = await self._session.execute(stmt)
         return [self._to_entity(row) for row in result.scalars().all()]
 
     async def get(self, entity_id: str) -> TEntity | None:
@@ -45,7 +71,7 @@ class SqlAlchemyCrud(Generic[TOrm, TEntity]):
     async def add(self, entity: TEntity) -> TEntity:
         row = self._orm(**self._to_columns(entity))
         self._session.add(row)
-        await self._session.commit()
+        await self._commit()
         await self._session.refresh(row)
         return self._to_entity(row)
 
@@ -55,7 +81,7 @@ class SqlAlchemyCrud(Generic[TOrm, TEntity]):
             return None
         for column, value in changes.items():
             setattr(row, column, value)
-        await self._session.commit()
+        await self._commit()
         await self._session.refresh(row)
         return self._to_entity(row)
 

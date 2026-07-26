@@ -14,3 +14,7 @@ class Notification:
     status: str  # Queued | Sent | Failed
     related_entity: str  # e.g. "quote:quote_789" — what triggered it
     created_at: str
+    # Tenant boundary (migrations/002_project_scope.sql). Defaulted only because
+    # dataclass ordering forbids a required field after defaulted ones;
+    # CrudService.create rejects an empty value before it reaches the FK.
+    project_id: str = ""

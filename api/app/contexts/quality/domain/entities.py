@@ -17,6 +17,10 @@ class Snag:
     target_closure_date: str
     actual_closure_date: str
     notes: str
+    # Tenant boundary (migrations/002_project_scope.sql). Defaulted only because
+    # dataclass ordering forbids a required field after defaulted ones;
+    # CrudService.create rejects an empty value before it reaches the FK.
+    project_id: str = ""
 
 
 @dataclass
@@ -28,6 +32,10 @@ class Inspection:
     inspection_date: str = ""
     result: str = "Pending"  # Pending|Pass|Fail
     notes: str = ""
+    # Tenant boundary (migrations/002_project_scope.sql). Defaulted only because
+    # dataclass ordering forbids a required field after defaulted ones;
+    # CrudService.create rejects an empty value before it reaches the FK.
+    project_id: str = ""
 
 
 @dataclass
@@ -46,3 +54,7 @@ class Decision:
     date: str = ""
     owner: str = ""
     status: str = "Open"
+    # Tenant boundary (migrations/002_project_scope.sql). Defaulted only because
+    # dataclass ordering forbids a required field after defaulted ones;
+    # CrudService.create rejects an empty value before it reaches the FK.
+    project_id: str = ""

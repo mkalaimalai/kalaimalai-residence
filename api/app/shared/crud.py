@@ -25,7 +25,7 @@ from abc import ABC
 from collections.abc import Awaitable, Callable
 from typing import Generic, TypeVar
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.shared.auth import require_admin, require_user
@@ -54,7 +54,7 @@ def make_mappers(
 
 # --- domain port -------------------------------------------------------------------
 class CrudRepository(ABC, Generic[TEntity]):
-    async def list_all(self) -> list[TEntity]: ...
+    async def list_all(self, project_id: str | None = None) -> list[TEntity]: ...
     async def get(self, entity_id: str) -> TEntity | None: ...
     async def exists(self, entity_id: str) -> bool: ...
     async def add(self, entity: TEntity) -> TEntity: ...
@@ -69,8 +69,8 @@ class SqlAlchemyCrudRepository(CrudRepository[TEntity]):
             session, orm_cls, to_entity, to_columns
         )
 
-    async def list_all(self) -> list[TEntity]:
-        return await self._crud.list_all()
+    async def list_all(self, project_id: str | None = None) -> list[TEntity]:
+        return await self._crud.list_all(project_id)
 
     async def get(self, entity_id: str) -> TEntity | None:
         return await self._crud.get(entity_id)
@@ -104,8 +104,8 @@ class CrudService(Generic[TEntity]):
         self._id_prefix = id_prefix
         self._validate_refs = validate_refs
 
-    async def list_all(self) -> list[TEntity]:
-        return await self._repo.list_all()
+    async def list_all(self, project_id: str | None = None) -> list[TEntity]:
+        return await self._repo.list_all(project_id)
 
     async def get(self, entity_id: str) -> TEntity:
         entity = await self._repo.get(entity_id)
@@ -116,6 +116,12 @@ class CrudService(Generic[TEntity]):
     async def create(self, fields: dict) -> TEntity:
         fields = dict(fields)
         fields.setdefault("id", new_id(self._id_prefix))
+        # Entity dataclasses default project_id to "" (ordering constraint), so an
+        # omitted tenant would otherwise reach Postgres as an FK violation — a 500.
+        # Catch it here as a 422 instead. `projects` itself has no project_id field.
+        if "project_id" in {f.name for f in dataclasses.fields(self._entity_cls)}:
+            if not fields.get("project_id"):
+                raise ValidationError("projectId is required")
         if self._validate_refs:
             await self._validate_refs(fields)
         entity = self._entity_cls(**fields)
@@ -171,8 +177,17 @@ def make_crud_router(
     read_guard = [] if public_read else [Depends(require_user)]
 
     @router.get("", response_model=list[response_model], dependencies=read_guard)
-    async def _list(service: CrudService = Depends(_service)):
-        return [response_model.model_validate(e) for e in await service.list_all()]
+    async def _list(
+        service: CrudService = Depends(_service),
+        project_id: str | None = Query(
+            None,
+            alias="projectId",
+            description="Restrict to one project. Omitted returns every project's rows.",
+        ),
+    ):
+        return [
+            response_model.model_validate(e) for e in await service.list_all(project_id)
+        ]
 
     @router.get("/{entity_id}", response_model=response_model, dependencies=read_guard)
     async def _get(entity_id: str, service: CrudService = Depends(_service)):

@@ -4,10 +4,10 @@ from __future__ import annotations
 from sqlalchemy import String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.shared.db import Base
+from app.shared.db import Base, ProjectScoped
 
 
-class NotificationModel(Base):
+class NotificationModel(ProjectScoped, Base):
     __tablename__ = "notifications"
 
     id: Mapped[str] = mapped_column(String, primary_key=True)

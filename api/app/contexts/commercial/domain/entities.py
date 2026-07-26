@@ -17,6 +17,10 @@ class BOQ:
     payment_status: str
     file_url: str
     notes: str
+    # Tenant boundary (migrations/002_project_scope.sql). Defaulted only because
+    # dataclass ordering forbids a required field after defaulted ones;
+    # CrudService.create rejects an empty value before it reaches the FK.
+    project_id: str = ""
 
 
 @dataclass
@@ -39,6 +43,10 @@ class ProcurementItem:
     installation_date: str
     warranty: str
     notes: str
+    # Tenant boundary (migrations/002_project_scope.sql). Defaulted only because
+    # dataclass ordering forbids a required field after defaulted ones;
+    # CrudService.create rejects an empty value before it reaches the FK.
+    project_id: str = ""
 
 
 @dataclass
@@ -51,6 +59,10 @@ class Material:
     status: str = ""
     image: str = ""
     notes: str = ""
+    # Tenant boundary (migrations/002_project_scope.sql). Defaulted only because
+    # dataclass ordering forbids a required field after defaulted ones;
+    # CrudService.create rejects an empty value before it reaches the FK.
+    project_id: str = ""
 
 
 @dataclass
@@ -92,6 +104,10 @@ class QuoteLineItem:
     inclusions: str = ""
     exclusions: str = ""
     negotiation_target_price: float = 0
+    # Tenant boundary (migrations/002_project_scope.sql). Defaulted only because
+    # dataclass ordering forbids a required field after defaulted ones;
+    # CrudService.create rejects an empty value before it reaches the FK.
+    project_id: str = ""
 
 
 @dataclass

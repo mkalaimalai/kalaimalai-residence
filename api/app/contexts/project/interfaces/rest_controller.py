@@ -123,6 +123,16 @@ async def create_project(body: s.ProjectCreate, repo=Depends(_project_repo)):
     return s.FullProject.model_validate(project)
 
 
+# Anonymized counterpart to the gated list above, mirroring the `/project` vs
+# `/project/full` split: the public 2.0 index needs every project's cover image and
+# title, but must not leak the internal name/address that `FullProject` carries.
+# MUST stay declared above `/{project_id}` — FastAPI matches in declaration order, so
+# the path param would otherwise capture "public" and 401 on a missing token.
+@projects_router.get("/public", response_model=list[s.PublicProject])
+async def list_public_projects(repo=Depends(_project_repo)):
+    return [s.PublicProject.model_validate(p) for p in await repo.list_all()]
+
+
 @projects_router.get(
     "/{project_id}", response_model=s.FullProject, dependencies=[Depends(require_user)]
 )
@@ -153,7 +163,7 @@ async def list_project_spaces(
     project_id: str, session: AsyncSession = Depends(get_session)
 ):
     repo = SqlAlchemySpaceRepository(session)
-    return [s.SpaceResponse.model_validate(sp) for sp in await repo.list_all()]
+    return [s.SpaceResponse.model_validate(sp) for sp in await repo.list_all(project_id)]
 
 
 @projects_router.post(

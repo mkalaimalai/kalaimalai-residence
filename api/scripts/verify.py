@@ -40,7 +40,7 @@ from app.shared.db import SessionFactory
 
 EXPECTED = {
     "spaces": 16, "domains": 14, "vendors": 8, "procurement": 6, "drawings": 6,
-    "gallery": 8, "materials": 5, "project": 1, "decisions": 3, "snags": 3,
+    "gallery": 29, "materials": 5, "project": 8, "decisions": 3, "snags": 3,
     "progress": 3, "boqs": 3, "warranties": 3, "lessons": 3,
 }
 

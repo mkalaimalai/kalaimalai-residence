@@ -5,6 +5,7 @@ from app.shared.camel import CamelModel
 
 
 class WarrantyResponse(CamelModel):
+    project_id: str
     id: str
     item: str
     category: str
@@ -20,6 +21,7 @@ class WarrantyResponse(CamelModel):
 
 
 class WarrantyCreate(CamelModel):
+    project_id: str
     item: str
     category: str = ""
     vendor_id: str = ""

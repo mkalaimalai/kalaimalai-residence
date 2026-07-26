@@ -6,6 +6,7 @@ from app.shared.camel import CamelModel
 
 # --- Snag --------------------------------------------------------------------------
 class SnagResponse(CamelModel):
+    project_id: str
     id: str
     space_id: str
     category: str
@@ -20,6 +21,7 @@ class SnagResponse(CamelModel):
 
 
 class SnagCreate(CamelModel):
+    project_id: str
     space_id: str = ""
     category: str = ""
     description: str = ""
@@ -47,6 +49,7 @@ class SnagUpdate(CamelModel):
 
 # --- Decision ----------------------------------------------------------------------
 class DecisionResponse(CamelModel):
+    project_id: str
     id: str
     title: str
     domain_id: str
@@ -64,6 +67,7 @@ class DecisionResponse(CamelModel):
 
 
 class DecisionCreate(CamelModel):
+    project_id: str
     title: str
     domain_id: str = ""
     space_id: str = ""
@@ -80,6 +84,7 @@ class DecisionCreate(CamelModel):
 
 
 class InspectionResponse(CamelModel):
+    project_id: str
     id: str
     space_id: str
     work_package_id: str
@@ -90,6 +95,7 @@ class InspectionResponse(CamelModel):
 
 
 class InspectionCreate(CamelModel):
+    project_id: str
     space_id: str = ""
     work_package_id: str = ""
     inspector: str = ""

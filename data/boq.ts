@@ -6,6 +6,7 @@ import type { BOQ } from "@/types";
  */
 export const boqs: BOQ[] = [
   {
+    projectId: "proj-kr",
     id: "boq-paint",
     vendorId: "ven-paint",
     category: "Painting & Microcement",
@@ -19,6 +20,7 @@ export const boqs: BOQ[] = [
     notes: "Whole-house painting + microcement to living, baths, master.",
   },
   {
+    projectId: "proj-kr",
     id: "boq-steel",
     vendorId: "ven-steel",
     category: "Steel Staircase Fabrication",
@@ -32,6 +34,7 @@ export const boqs: BOQ[] = [
     notes: "Folded-plate steel stair + terrace pergola fabrication & install.",
   },
   {
+    projectId: "proj-kr",
     id: "boq-lighting",
     vendorId: "ven-lighting",
     category: "Architectural Lighting",

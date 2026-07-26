@@ -5,7 +5,7 @@ the ApproveQuote use case depends on — the §5/§9 Quote-approval → Purchase
 """
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.contexts.commercial.application.quote_use_cases import (
@@ -45,6 +45,10 @@ from app.shared.crud import CrudService, make_crud_router
 from app.shared.db import get_session
 from app.shared.errors import NotFoundError, ValidationError
 
+# Shared query param: restrict a collection to one project (see shared/crud.py).
+_PROJECT_Q = Query(None, alias="projectId")
+
+
 # --- Quotes ------------------------------------------------------------------------
 quotes_router = APIRouter(prefix="/quotes", tags=["commercial"])
 
@@ -56,8 +60,8 @@ def _quotes(session: AsyncSession = Depends(get_session)):
 @quotes_router.get(
     "", response_model=list[s.QuoteResponse], dependencies=[Depends(require_user)]
 )
-async def list_quotes(repo=Depends(_quotes)):
-    return [s.QuoteResponse.model_validate(q) for q in await repo.list_all()]
+async def list_quotes(repo=Depends(_quotes), project_id: str | None = _PROJECT_Q):
+    return [s.QuoteResponse.model_validate(q) for q in await repo.list_all(project_id)]
 
 
 @quotes_router.post(
@@ -172,8 +176,8 @@ def _pos(session: AsyncSession = Depends(get_session)):
     "", response_model=list[s.PurchaseOrderResponse],
     dependencies=[Depends(require_user)],
 )
-async def list_purchase_orders(repo=Depends(_pos)):
-    return [s.PurchaseOrderResponse.model_validate(p) for p in await repo.list_all()]
+async def list_purchase_orders(repo=Depends(_pos), project_id: str | None = _PROJECT_Q):
+    return [s.PurchaseOrderResponse.model_validate(p) for p in await repo.list_all(project_id)]
 
 
 @po_router.post(

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Plus } from "lucide-react";
-import { apiGet, apiPatch, apiPost, ApiError } from "@/lib/api-client";
+import { apiGet, apiPatch, apiPost, ApiError, withProject, scopedPath } from "@/lib/api-client";
 import {
   ENTITIES,
   ENTITY_BY_KEY,
@@ -37,7 +37,7 @@ export default function AdminPage() {
     const entries = await Promise.all(
       REF_KEYS.map(async (key) => {
         const def = ENTITY_BY_KEY[key];
-        const data = await apiGet<Row[]>(def.endpoint);
+        const data = await apiGet<Row[]>(scopedPath(def.endpoint));
         const mapped = data.map((r) => ({
           id: String(r.id),
           name: String(r[def.titleField] ?? r.id),
@@ -52,7 +52,7 @@ export default function AdminPage() {
     setListLoading(true);
     setListError(null);
     try {
-      setRows(await apiGet<Row[]>(def.endpoint));
+      setRows(await apiGet<Row[]>(scopedPath(def.endpoint)));
     } catch (err) {
       setListError(err instanceof Error ? err.message : "Failed to load");
     } finally {
@@ -78,7 +78,7 @@ export default function AdminPage() {
       if (editing && editing !== "new") {
         await apiPatch(`${entity.endpoint}/${editing.id}`, payload);
       } else {
-        await apiPost(entity.endpoint, payload);
+        await apiPost(entity.endpoint, withProject(payload));
       }
       setEditing(null);
       await Promise.all([loadRows(entity), loadRefs()]);

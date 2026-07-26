@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kalaimalai Residence — Project Overview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,500;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #faf7f2;
+      --fg: #2b2a27;
+      --muted: #7a7874;
+      --accent: #bfa98a;
+      --accent-light: #e8dfd4;
+      --card: #ffffff;
+      --border: #e5e0d8;
+      --green: #4a7c59;
+      --blue: #5b7fa0;
+      --red: #b85c4a;
+      --font-serif: 'IBM Plex Serif', Georgia, serif;
+      --font-sans: 'Inter', system-ui, sans-serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.6;
+      padding: 2rem;
+    }
+    .container { max-width: 960px; margin: 0 auto; }
+
+    /* Header */
+    .hero {
+      padding: 3rem 0 2rem;
+      border-bottom: 2px solid var(--accent-light);
+      margin-bottom: 2.5rem;
+    }
+    .hero h1 {
+      font-family: var(--font-serif);
+      font-weight: 600;
+      font-size: 2.5rem;
+      color: var(--fg);
+      letter-spacing: -0.02em;
+    }
+    .hero .subtitle {
+      font-family: var(--font-serif);
+      font-style: italic;
+      color: var(--muted);
+      font-size: 1.15rem;
+      margin-top: 0.25rem;
+    }
+    .hero .meta {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 0.75rem;
+      font-size: 0.875rem;
+      color: var(--muted);
+    }
+    .hero .meta span { display: flex; align-items: center; gap: 0.35rem; }
+
+    /* Section */
+    section { margin-bottom: 2.5rem; }
+    h2 {
+      font-family: var(--font-serif);
+      font-weight: 500;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid var(--border);
+    }
+    h3 {
+      font-family: var(--font-serif);
+      font-weight: 500;
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+      color: var(--fg);
+    }
+
+    /* Cards */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+    }
+    .card h4 {
+      font-family: var(--font-serif);
+      font-weight: 500;
+      font-size: 1rem;
+      margin-bottom: 0.25rem;
+    }
+    .card p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .card .badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 500;
+      padding: 0.15rem 0.5rem;
+      border-radius: 99px;
+      margin-top: 0.4rem;
+    }
+    .badge.public { background: #e3f0e7; color: var(--green); }
+    .badge.portal { background: #e3eaf0; color: var(--blue); }
+    .badge.both { background: #f0ebe3; color: #8a7a5c; }
+
+    /* Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    th, td {
+      text-align: left;
+      padding: 0.6rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      background: var(--accent-light);
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--fg);
+    }
+    tr:last-child td { border-bottom: none; }
+
+    /* Arch rules */
+    .rules {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+    }
+    .rules ol {
+      padding-left: 1.25rem;
+      font-size: 0.9rem;
+    }
+    .rules ol li { margin-bottom: 0.5rem; }
+    .rules ol li strong { color: var(--red); }
+
+    /* Flow */
+    .flow {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin: 1rem 0;
+    }
+    .flow-step {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    .flow-arrow { color: var(--accent); font-size: 1.2rem; }
+
+    /* Tech stack */
+    .tech-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 0.5rem 1.5rem;
+    }
+    .tech-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.35rem 0;
+      border-bottom: 1px dashed var(--border);
+      font-size: 0.85rem;
+    }
+    .tech-item .label { color: var(--muted); }
+    .tech-item .value { font-weight: 500; }
+
+    /* Stats */
+    .stat-row {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin: 1rem 0;
+    }
+    .stat {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.5rem;
+      text-align: center;
+      flex: 1;
+      min-width: 100px;
+    }
+    .stat .num {
+      font-family: var(--font-serif);
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: var(--fg);
+    }
+    .stat .desc {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-top: 0.15rem;
+    }
+
+    /* tagged list */
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin: 0.5rem 0;
+    }
+    .tag {
+      background: var(--accent-light);
+      border-radius: 4px;
+      padding: 0.2rem 0.6rem;
+      font-size: 0.8rem;
+      color: var(--fg);
+    }
+
+    hr { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+
+    p.desc { font-size: 0.9rem; color: var(--muted); margin-bottom: 0.75rem; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Hero -->
+  <header class="hero">
+    <h1>Kalaimalai Residence</h1>
+    <div class="subtitle">A Contemporary Zen Residence in Bengaluru</div>
+    <div class="meta">
+      <span>Next.js 16 + Tailwind v4</span>
+      <span>GitHub Pages · Static Export</span>
+      <span>TypeScript Strict</span>
+    </div>
+    <div class="stat-row">
+      <div class="stat"><div class="num">18</div><div class="desc">Public Pages</div></div>
+      <div class="stat"><div class="num">12</div><div class="desc">Portal Routes</div></div>
+      <div class="stat"><div class="num">16</div><div class="desc">Data Modules</div></div>
+      <div class="stat"><div class="num">14</div><div class="desc">Entity Types</div></div>
+      <div class="stat"><div class="num">33</div><div class="desc">Components</div></div>
+    </div>
+  </header>
+
+  <!-- What It Is -->
+  <section>
+    <h2>What It Is</h2>
+    <p class="desc">
+      A two-part Next.js App Router site documenting the design and construction of a family home
+      in Bengaluru, designed by <strong>Studio Anagami</strong>.
+    </p>
+    <div class="card-grid">
+      <div class="card">
+        <h4>Public Editorial Site</h4>
+        <p>An anonymized case study covering vision, spaces, domains, materials, build journey, gallery, and lessons learned.</p>
+        <span class="badge public">Public</span>
+      </div>
+      <div class="card">
+        <h4>Private Portal</h4>
+        <p>Supabase-authenticated control center with room matrix and 10 data tables — drawings, vendors, procurement, BOQ, decisions, progress, snags, warranties, and admin CRUD.</p>
+        <span class="badge portal">Portal</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tech Stack -->
+  <section>
+    <h2>Tech Stack</h2>
+    <div class="tech-grid">
+      <div class="tech-item"><span class="label">Framework</span><span class="value">Next.js 16 (App Router)</span></div>
+      <div class="tech-item"><span class="label">Language</span><span class="value">TypeScript 5 (strict)</span></div>
+      <div class="tech-item"><span class="label">Styling</span><span class="value">Tailwind CSS v4</span></div>
+      <div class="tech-item"><span class="label">UI Kit</span><span class="value">shadcn/ui (new-york)</span></div>
+      <div class="tech-item"><span class="label">Icons</span><span class="value">lucide-react</span></div>
+      <div class="tech-item"><span class="label">Fonts</span><span class="value">Fraunces + Inter</span></div>
+      <div class="tech-item"><span class="label">Auth</span><span class="value">Supabase Auth</span></div>
+      <div class="tech-item"><span class="label">Backend</span><span class="value">FastAPI (DDD/Hex, opt-in)</span></div>
+      <div class="tech-item"><span class="label">Database</span><span class="value">Supabase Postgres (opt-in)</span></div>
+      <div class="tech-item"><span class="label">Deploy</span><span class="value">GitHub Pages</span></div>
+      <div class="tech-item"><span class="label">CI/CD</span><span class="value">GitHub Actions</span></div>
+      <div class="tech-item"><span class="label">Linting</span><span class="value">ESLint 9 (flat config)</span></div>
+    </div>
+  </section>
+
+  <!-- Data Flow -->
+  <section>
+    <h2>Data Flow</h2>
+    <p class="desc">The repository is the only data door. All pages go through <code>lib/repository.ts</code>.</p>
+    <div class="flow">
+      <span class="flow-step">data/*.ts</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">lib/repository.ts</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">app/**/page.tsx</span>
+      <span class="flow-arrow">↓</span>
+      <span class="flow-step">lib/relations.ts</span>
+    </div>
+    <p class="desc" style="margin-top:-0.5rem">When <code>DATA_SOURCE=api</code>, the repository fetches from the FastAPI backend instead.</p>
+  </section>
+
+  <!-- Non-negotiable Rules -->
+  <section>
+    <h2>Architecture Rules</h2>
+    <div class="rules">
+      <ol>
+        <li><strong>Repository is the only data door.</strong> Pages never import from <code>data/</code> directly.</li>
+        <li><strong>Relations are by ID, never by display name.</strong> Every cross-reference is an <code>*Ids: string[]</code> field, resolved at render time via <code>lib/relations</code>.</li>
+        <li><strong>Only render a link if its public page exists.</strong> Spaces/domains/lessons/gallery → clickable. Vendors/drawings/decisions → read-only chips.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- Public Pages -->
+  <section>
+    <h2>Public Pages</h2>
+    <table>
+      <tr><th>Route</th><th>Description</th><th>Type</th></tr>
+      <tr><td>/</td><td>Home — hero, stats, teaser cards</td><td>Server</td></tr>
+      <tr><td>/vision</td><td>Design philosophy &amp; 6 guiding pillars</td><td>Server</td></tr>
+      <tr><td>/spaces</td><td>Grid of all 12 rooms</td><td>Server</td></tr>
+      <tr><td>/spaces/[slug]</td><td>Room detail page (12 generated statically)</td><td>Server</td></tr>
+      <tr><td>/domains</td><td>Grid of all 14 work domains</td><td>Server</td></tr>
+      <tr><td>/domains/[slug]</td><td>Domain detail with rendering + drawing tabs</td><td>Server</td></tr>
+      <tr><td>/materials</td><td>Filterable material library</td><td>Client</td></tr>
+      <tr><td>/journey</td><td>13-stage build timeline + recent progress</td><td>Server</td></tr>
+      <tr><td>/gallery</td><td>Filterable masonry gallery</td><td>Client</td></tr>
+      <tr><td>/lessons</td><td>3 lessons with impact cards</td><td>Server</td></tr>
+    </table>
+  </section>
+
+  <!-- Portal Pages -->
+  <section>
+    <h2>Portal Pages</h2>
+    <table>
+      <tr><th>Route</th><th>Description</th><th>Auth</th></tr>
+      <tr><td>/portal</td><td>Dashboard — metric cards + recent updates</td><td>Supabase</td></tr>
+      <tr><td>/portal/drawings</td><td>Drawings table</td><td>Supabase</td></tr>
+      <tr><td>/portal/room-matrix</td><td>Space × domain matrix</td><td>Supabase</td></tr>
+      <tr><td>/portal/vendors</td><td>Vendors table</td><td>Supabase</td></tr>
+      <tr><td>/portal/procurement</td><td>Procurement table</td><td>Supabase</td></tr>
+      <tr><td>/portal/boq</td><td>Bill of Quantities table</td><td>Supabase</td></tr>
+      <tr><td>/portal/decisions</td><td>Decisions table</td><td>Supabase</td></tr>
+      <tr><td>/portal/progress</td><td>Progress entries table</td><td>Supabase</td></tr>
+      <tr><td>/portal/snags</td><td>Snags table</td><td>Supabase</td></tr>
+      <tr><td>/portal/warranties</td><td>Warranties table</td><td>Supabase</td></tr>
+      <tr><td>/portal/admin</td><td>Admin CRUD (admin role only)</td><td>Supabase + Role</td></tr>
+    </table>
+  </section>
+
+  <!-- Entity Model -->
+  <section>
+    <h2>Entity Model (14 Types)</h2>
+    <p class="desc">Defined in <code>types/index.ts</code> — the locked contract. All relations use string IDs.</p>
+    <table>
+      <tr><th>Entity</th><th>Key Relations</th><th>Seed Records</th></tr>
+      <tr><td>Project</td><td>— (singleton)</td><td>1</td></tr>
+      <tr><td>Space</td><td>domainIds, materialIds, vendorIds, drawingIds, decisionIds, lessonIds</td><td>14</td></tr>
+      <tr><td>Domain</td><td>spaceIds, drawingIds, vendorIds, lessonIds</td><td>14</td></tr>
+      <tr><td>Drawing</td><td>domainId, spaceId</td><td>6</td></tr>
+      <tr><td>Vendor</td><td>Referenced by ID</td><td>8</td></tr>
+      <tr><td>ProcurementItem</td><td>spaceId, vendorId</td><td>6</td></tr>
+      <tr><td>Decision</td><td>domainId, spaceId</td><td>3</td></tr>
+      <tr><td>Snag</td><td>spaceId</td><td>3</td></tr>
+      <tr><td>BOQ</td><td>vendorId</td><td>3</td></tr>
+      <tr><td>Material</td><td>spaceIds, vendorId</td><td>5</td></tr>
+      <tr><td>Lesson</td><td>domainId, spaceId</td><td>3</td></tr>
+      <tr><td>ProgressEntry</td><td>spaceId</td><td>3</td></tr>
+      <tr><td>Warranty</td><td>vendorId</td><td>3</td></tr>
+      <tr><td>GalleryItem</td><td>spaceId, domainId</td><td>8</td></tr>
+    </table>
+  </section>
+
+  <!-- Key Components -->
+  <section>
+    <h2>Key Components</h2>
+    <div class="card-grid">
+      <div class="card">
+        <h4>SiteHeader</h4>
+        <p>Sticky header with desktop nav, mobile hamburger, theme toggle.</p>
+        <span class="badge public">Client</span>
+      </div>
+      <div class="card">
+        <h4>DataTable</h4>
+        <p>Generic sortable/filterable/searchable table (portal).</p>
+        <span class="badge portal">Client</span>
+      </div>
+      <div class="card">
+        <h4>GalleryGrid</h4>
+        <p>Filterable masonry gallery with category tabs.</p>
+        <span class="badge public">Client</span>
+      </div>
+      <div class="card">
+        <h4>MaterialsLibrary</h4>
+        <p>Filterable material grid with category buttons.</p>
+        <span class="badge public">Client</span>
+      </div>
+      <div class="card">
+        <h4>DomainMediaTabs</h4>
+        <p>Tabbed rendering/drawing galleries.</p>
+        <span class="badge public">Client</span>
+      </div>
+      <div class="card">
+        <h4>SupabaseAuthGate</h4>
+        <p>Auth gate with email/password sign-in + admin detection.</p>
+        <span class="badge portal">Client</span>
+      </div>
+      <div class="card">
+        <h4>EntityForm</h4>
+        <p>Generic form driven by admin-schema field definitions.</p>
+        <span class="badge portal">Client</span>
+      </div>
+      <div class="card">
+        <h4>Timeline</h4>
+        <p>Vertical timeline with numbered stages and status dots.</p>
+        <span class="badge public">Server</span>
+      </div>
+      <div class="card">
+        <h4>ThemeToggle</h4>
+        <p>Sun/moon toggle using useSyncExternalStore + MutationObserver.</p>
+        <span class="badge public">Client</span>
+      </div>
+      <div class="card">
+        <h4>RoomMatrix</h4>
+        <p>Space × domain matrix table (portal).</p>
+        <span class="badge portal">Client</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Data Modules -->
+  <section>
+    <h2>Data Modules (16 files)</h2>
+    <table>
+      <tr><th>File</th><th>Records</th><th>Content</th></tr>
+      <tr><td>project.ts</td><td>1</td><td>Single project with public + portal-only fields</td></tr>
+      <tr><td>spaces.ts</td><td>14</td><td>Rooms: Living, Dining, Kitchen, Bedrooms, Baths, Terrace, etc.</td></tr>
+      <tr><td>domains.ts</td><td>14</td><td>Architecture, Interior, Civil, Plumbing, Electrical, etc.</td></tr>
+      <tr><td>materials.ts</td><td>5</td><td>Microcement, Italian Marble, Teak Veneer, etc.</td></tr>
+      <tr><td>vendors.ts</td><td>8</td><td>Painting, Steel Fabrication, KNX, Furniture, Marble, etc.</td></tr>
+      <tr><td>drawings.ts</td><td>6</td><td>Floor plans, elevations, interior details</td></tr>
+      <tr><td>decisions.ts</td><td>3</td><td>Home automation, flooring, staircase</td></tr>
+      <tr><td>procurement.ts</td><td>6</td><td>Sofa, dining table, bed, lounge, chairs, pendant</td></tr>
+      <tr><td>boq.ts</td><td>3</td><td>Painting, staircase, lighting BOQs</td></tr>
+      <tr><td>progress.ts</td><td>3</td><td>RCC frame, blockwork, waterproofing</td></tr>
+      <tr><td>snags.ts</td><td>3</td><td>Microcement crack, shower valve, kitchen shutter</td></tr>
+      <tr><td>lessons.ts</td><td>3</td><td>Automation negotiation, import costs, quote normalization</td></tr>
+      <tr><td>warranties.ts</td><td>3</td><td>Lighting, KNX, kitchen appliances</td></tr>
+      <tr><td>gallery.ts</td><td>8</td><td>Curated gallery items</td></tr>
+      <tr><td>renderings.ts</td><td>~120+</td><td>Auto-generated rendering image paths by domain</td></tr>
+      <tr><td>drawingSheets.ts</td><td>Manual</td><td>Technical drawing sheet paths as WebP</td></tr>
+    </table>
+  </section>
+
+  <!-- Portal Security Note -->
+  <section>
+    <h2>Security Model</h2>
+    <div class="rules" style="border-left: 4px solid var(--red);">
+      <p style="font-size:0.9rem">
+        <strong>Supabase Auth</strong> (email/password) replaced the old browser-only password gate.
+        The public site remains a <strong>static export</strong> on GitHub Pages — seed data ships in the bundle.
+        Genuinely sensitive figures (negotiated prices, payment details) stay out of <code>data/</code> entirely.
+      </p>
+    </div>
+  </section>
+
+  <!-- Commands -->
+  <section>
+    <h2>Key Commands</h2>
+    <table>
+      <tr><th>Command</th><th>Purpose</th></tr>
+      <tr><td><code>npm run dev</code></td><td>Start dev server → localhost:3000</td></tr>
+      <tr><td><code>npm run verify</code></td><td>Data integrity check (run after any data/ edit)</td></tr>
+      <tr><td><code>npm run typecheck</code></td><td>TypeScript strict check (must pass clean)</td></tr>
+      <tr><td><code>npm run lint</code></td><td>ESLint</td></tr>
+      <tr><td><code>npm run build</code></td><td>Static export to <code>out/</code></td></tr>
+    </table>
+  </section>
+
+  <hr>
+  <p style="text-align:center;font-size:0.8rem;color:var(--muted)">
+    Kalaimalai Residence · Built with Next.js 16 · Studio Anagami
+  </p>
+
+</div>
+</body>
+</html>

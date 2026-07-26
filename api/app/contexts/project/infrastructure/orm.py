@@ -5,12 +5,12 @@ from sqlalchemy import Integer, String, Text
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.shared.db import Base
+from app.shared.db import Base, ProjectScoped
 
 _STR_ARRAY = ARRAY(String)
 
 
-class SpaceModel(Base):
+class SpaceModel(ProjectScoped, Base):
     __tablename__ = "spaces"
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
@@ -30,7 +30,7 @@ class SpaceModel(Base):
     lesson_ids: Mapped[list[str]] = mapped_column(_STR_ARRAY, default=list)
 
 
-class DomainModel(Base):
+class DomainModel(ProjectScoped, Base):
     __tablename__ = "domains"
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
@@ -44,7 +44,7 @@ class DomainModel(Base):
     lesson_ids: Mapped[list[str]] = mapped_column(_STR_ARRAY, default=list)
 
 
-class ProgressModel(Base):
+class ProgressModel(ProjectScoped, Base):
     __tablename__ = "progress_entries"
 
     id: Mapped[str] = mapped_column(String, primary_key=True)

@@ -5,10 +5,10 @@ from sqlalchemy import String, Text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.shared.db import Base
+from app.shared.db import Base, ProjectScoped
 
 
-class DrawingModel(Base):
+class DrawingModel(ProjectScoped, Base):
     __tablename__ = "drawings"
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
@@ -23,7 +23,7 @@ class DrawingModel(Base):
     notes: Mapped[str] = mapped_column(Text, default="")
 
 
-class GalleryModel(Base):
+class GalleryModel(ProjectScoped, Base):
     __tablename__ = "gallery_items"
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
@@ -35,7 +35,7 @@ class GalleryModel(Base):
     caption: Mapped[str] = mapped_column(Text, default="")
 
 
-class LessonModel(Base):
+class LessonModel(ProjectScoped, Base):
     __tablename__ = "lessons"
 
     id: Mapped[str] = mapped_column(String, primary_key=True)

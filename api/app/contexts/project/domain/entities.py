@@ -21,6 +21,10 @@ class Space:
     decision_ids: list[str] = field(default_factory=list)
     status: str = "Concept"
     lesson_ids: list[str] = field(default_factory=list)
+    # Tenant boundary (migrations/002_project_scope.sql). Defaulted only because
+    # dataclass ordering forbids a required field after defaulted ones;
+    # CrudService.create rejects an empty value before it reaches the FK.
+    project_id: str = ""
 
 
 @dataclass
@@ -34,6 +38,10 @@ class Domain:
     vendor_ids: list[str] = field(default_factory=list)
     status: str = "Not Started"
     lesson_ids: list[str] = field(default_factory=list)
+    # Tenant boundary (migrations/002_project_scope.sql). Defaulted only because
+    # dataclass ordering forbids a required field after defaulted ones;
+    # CrudService.create rejects an empty value before it reaches the FK.
+    project_id: str = ""
 
 
 @dataclass
@@ -48,6 +56,10 @@ class ProgressEntry:
     next_action: str = ""
     owner: str = ""
     status: str = ""
+    # Tenant boundary (migrations/002_project_scope.sql). Defaulted only because
+    # dataclass ordering forbids a required field after defaulted ones;
+    # CrudService.create rejects an empty value before it reaches the FK.
+    project_id: str = ""
 
 
 @dataclass

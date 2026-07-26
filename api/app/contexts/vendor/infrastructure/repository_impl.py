@@ -16,8 +16,8 @@ class SqlAlchemyVendorRepository(VendorRepository):
             session, VendorModel, mappers.to_entity, mappers.to_columns
         )
 
-    async def list_all(self) -> list[Vendor]:
-        return await self._crud.list_all()
+    async def list_all(self, project_id: str | None = None) -> list[Vendor]:
+        return await self._crud.list_all(project_id)
 
     async def get(self, vendor_id: str) -> Vendor | None:
         return await self._crud.get(vendor_id)
