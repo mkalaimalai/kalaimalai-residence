@@ -1,12 +1,15 @@
-/** Public navigation — only routes that exist, so no link 404s. */
+/**
+ * Public navigation for the 1.0 tree — only routes that exist, so no link 404s.
+ * The 1.0 site lives under `/1.0`; `/` is the multi-project portfolio index.
+ */
 export const PUBLIC_NAV = [
-  { label: "Vision", href: "/vision" },
-  { label: "Spaces", href: "/spaces" },
-  { label: "Domains", href: "/domains" },
-  { label: "Materials", href: "/materials" },
-  { label: "Journey", href: "/journey" },
-  { label: "Gallery", href: "/gallery" },
-  { label: "Lessons", href: "/lessons" },
+  { label: "Vision", href: "/1.0/vision" },
+  { label: "Spaces", href: "/1.0/spaces" },
+  { label: "Domains", href: "/1.0/domains" },
+  { label: "Materials", href: "/1.0/materials" },
+  { label: "Journey", href: "/1.0/journey" },
+  { label: "Gallery", href: "/1.0/gallery" },
+  { label: "Lessons", href: "/1.0/lessons" },
 ] as const;
 
 export const PORTAL_LINK = { label: "Private Portal", href: "/portal" } as const;

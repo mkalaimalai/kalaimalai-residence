@@ -3,10 +3,10 @@ import { ArrowUpRight } from "lucide-react";
 import type { Domain } from "@/types";
 import { StatusBadge } from "@/components/StatusBadge";
 
-export function DomainCard({ domain }: { domain: Domain }) {
+export function DomainCard({ domain, basePath = "" }: { domain: Domain; basePath?: string }) {
   return (
     <Link
-      href={`/domains/${domain.slug}`}
+      href={`${basePath}/domains/${domain.slug}`}
       className="group flex flex-col justify-between gap-4 rounded-xl border border-border bg-card p-6 transition-colors hover:border-foreground/20 hover:bg-accent/20"
     >
       <div className="space-y-2">

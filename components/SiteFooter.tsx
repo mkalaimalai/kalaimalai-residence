@@ -6,7 +6,7 @@ import { PUBLIC_NAV } from "@/lib/nav";
 
 export function SiteFooter() {
   const pathname = usePathname();
-  if (pathname.startsWith("/2.0")) return null;
+  if (!pathname.startsWith("/1.0") && !pathname.startsWith("/portal")) return null;
 
   return (
     <footer className="mt-24 border-t border-border bg-surface">

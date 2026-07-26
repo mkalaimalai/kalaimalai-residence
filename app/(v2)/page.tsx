@@ -7,18 +7,27 @@ import { api, type PublicProject } from "@/lib/api-v2";
 import { SectionHeading } from "@/components/SectionHeading";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { SignOutButton } from "@/components/v2/SignOutButton";
 
 export default function V2Projects() {
   const [projects, setProjects] = useState<PublicProject[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [who, setWho] = useState<string | null>(null);
 
   useEffect(() => {
     api.publicProjects().then(setProjects).catch((e) => setError(e.message));
+    // Who is signed in. Cosmetic, so a failure just leaves the label off rather than
+    // surfacing an error over a page that otherwise loaded fine.
+    api.me()
+      .then((p) => setWho(p.displayName || p.email))
+      .catch(() => undefined);
   }, []);
 
-  // The portfolio index carries no site chrome, so it owns the theme switcher itself.
+  // The portfolio index carries no site chrome, so it owns these itself.
   const themeBar = (
-    <div className="mx-auto flex w-full max-w-6xl justify-end px-6 pt-6">
+    <div className="mx-auto flex w-full max-w-6xl items-center justify-end gap-4 px-6 pt-6">
+      {who && <span className="text-sm text-muted-foreground">{who}</span>}
+      <SignOutButton />
       <ThemeToggle />
     </div>
   );

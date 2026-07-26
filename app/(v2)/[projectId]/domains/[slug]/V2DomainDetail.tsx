@@ -4,12 +4,14 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import type { Space, Domain, Drawing, Vendor, Lesson } from "@/types";
-import { api } from "@/lib/api-v2";
+import { api, type MediaSet } from "@/lib/api-v2";
 import { useProject } from "../../V2ProjectChrome";
 import { byIds, drawingsByIds, vendorsByIds, lessonsByIds } from "@/lib/relations";
 import { SectionHeading } from "@/components/SectionHeading";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Chip, ChipGroup } from "@/components/Chip";
+import { DomainMediaTabs } from "@/components/DomainMediaTabs";
+import { splitByKind } from "@/lib/media";
 
 interface SeedData {
   spaces: Space[]; domains: Domain[]; drawings: Drawing[]; vendors: Vendor[]; lessons: Lesson[];
@@ -18,11 +20,25 @@ interface SeedData {
 export function V2DomainDetail({ slug, seed }: { slug: string; seed: SeedData }) {
   const { selectedId } = useProject();
   const [domain, setDomain] = useState<Domain | undefined>(seed.domains.find(d => d.slug === slug));
+  const [media, setMedia] = useState<MediaSet[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     api.domainBySlug(slug, selectedId).then(d => { if (d) setDomain(d); }).catch((e) => setError(e.message));
   }, [slug, selectedId]);
+
+  // Media is fetched by the resolved domain **id**, not the slug: slugs are unique only
+  // per project. Kept separate from the domain fetch so a media failure — the endpoint
+  // is behind require_user — leaves the rest of the page intact rather than blanking it.
+  useEffect(() => {
+    if (!domain) return;
+    let live = true;
+    api
+      .mediaSets({ projectId: selectedId, domainId: domain.id })
+      .then((sets) => { if (live) setMedia(sets); })
+      .catch(() => { if (live) setMedia([]); });
+    return () => { live = false; };
+  }, [domain, selectedId]);
 
   if (error) return <p className="p-6 text-destructive">{error}</p>;
   if (!domain) return null;
@@ -32,6 +48,7 @@ export function V2DomainDetail({ slug, seed }: { slug: string; seed: SeedData })
   const relDrawings = drawingsByIds(domain.drawingIds, drawings);
   const relVendors = vendorsByIds(domain.vendorIds, vendors);
   const relLessons = lessonsByIds(domain.lessonIds, lessons);
+  const { renderings, drawings: drawingSets } = splitByKind(media);
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-16">
@@ -85,6 +102,8 @@ export function V2DomainDetail({ slug, seed }: { slug: string; seed: SeedData })
           )}
         </aside>
       </div>
+
+      <DomainMediaTabs renderingSets={renderings} drawingSets={drawingSets} />
     </main>
   );
 }

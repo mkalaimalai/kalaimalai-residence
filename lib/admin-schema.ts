@@ -25,7 +25,10 @@ export type RefKey =
   | "materials"
   | "drawings"
   | "decisions"
-  | "lessons";
+  | "lessons"
+  // Not referenced by any `FieldDef` — loaded so the quotes screen can offer BOQ
+  // packages for a quote's `boqId`.
+  | "boq";
 
 export interface FieldDef {
   name: string;

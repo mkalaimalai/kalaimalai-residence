@@ -5,12 +5,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import type { Space, Domain, Drawing, Vendor, Decision, Lesson, Material, GalleryItem } from "@/types";
-import { api } from "@/lib/api-v2";
+import { api, type MediaSet } from "@/lib/api-v2";
 import { useProject } from "../../V2ProjectChrome";
 import { byIds, drawingsByIds, vendorsByIds, decisionsByIds, lessonsByIds, materialsByIds } from "@/lib/relations";
 import { SectionHeading } from "@/components/SectionHeading";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Chip, ChipGroup } from "@/components/Chip";
+import { SpaceMediaTabs } from "@/components/SpaceMediaTabs";
+import { splitByKind } from "@/lib/media";
 
 interface SeedData {
   spaces: Space[]; domains: Domain[]; drawings: Drawing[]; vendors: Vendor[];
@@ -20,11 +22,25 @@ interface SeedData {
 export function V2SpaceDetail({ slug, seed }: { slug: string; seed: SeedData }) {
   const { selectedId } = useProject();
   const [space, setSpace] = useState<Space | undefined>(seed.spaces.find(s => s.slug === slug));
+  const [media, setMedia] = useState<MediaSet[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     api.spaceBySlug(slug, selectedId).then(s => { if (s) setSpace(s); }).catch((e) => setError(e.message));
   }, [slug, selectedId]);
+
+  // By resolved space **id**, not slug — slugs are unique per project only. Kept in its
+  // own effect so a media failure (the endpoint is behind require_user) costs the tabs
+  // and nothing else.
+  useEffect(() => {
+    if (!space) return;
+    let live = true;
+    api
+      .mediaSets({ projectId: selectedId, spaceId: space.id })
+      .then((sets) => { if (live) setMedia(sets); })
+      .catch(() => { if (live) setMedia([]); });
+    return () => { live = false; };
+  }, [space, selectedId]);
 
   if (error) return <p className="p-6 text-destructive">{error}</p>;
   if (!space) return null;
@@ -41,6 +57,9 @@ export function V2SpaceDetail({ slug, seed }: { slug: string; seed: SeedData }) 
   const domainSet = new Set(space.domainIds);
   const relatedSpaces = spaces.filter((s) => s.id !== space.id && s.domainIds.some((d) => domainSet.has(d))).slice(0, 3);
   const spaceGallery = gallery.filter((g) => g.spaceId === space.id);
+  // Spaces own drawing sheets only; renderings are grouped by domain, and the
+  // "Renderings" tab here is the space's gallery items (same split as 1.0).
+  const { drawings: drawingSets } = splitByKind(media);
 
   return (
     <main className="flex flex-col">
@@ -121,21 +140,17 @@ export function V2SpaceDetail({ slug, seed }: { slug: string; seed: SeedData }) 
         </aside>
       </div>
 
-      {spaceGallery.length > 0 && (
-        <section className="mx-auto max-w-5xl px-6 pb-16">
-          <SectionHeading eyebrow="Gallery" title="Images" className="mb-6" />
-          <div className="grid gap-4 sm:grid-cols-2">
-            {spaceGallery.map((g) => (
-              <figure key={g.id} className="overflow-hidden rounded-xl border border-border bg-card">
-                <div className="relative aspect-[4/3] bg-muted">
-                  <Image src={g.image} alt={g.title} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
-                </div>
-                <figcaption className="p-3 text-sm text-muted-foreground">{g.title}</figcaption>
-              </figure>
-            ))}
-          </div>
-        </section>
-      )}
+      {/* Replaces the old standalone gallery grid: 1.0 folds the space's gallery items
+          into the "Renderings" tab and its drawing sheets into "Drawings", and both
+          trees should present the same thing the same way. */}
+      <SpaceMediaTabs
+        galleryItems={spaceGallery}
+        drawingSets={drawingSets}
+        drawingChips={relDrawings.map((d) => ({
+          id: d.id,
+          label: `${d.title} (${d.revision})`,
+        }))}
+      />
 
       {relatedSpaces.length > 0 && (
         <section className="mx-auto max-w-5xl px-6 pb-20">

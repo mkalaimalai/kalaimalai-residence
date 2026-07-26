@@ -26,6 +26,57 @@ Supabase Postgres (see `api/README.md` and `docs/migration-plan.md`). It is **op
   portal data is baked into the static bundle. Admins get CRUD at `/portal/admin`
   (`lib/admin-schema.ts` + `components/portal/EntityForm.tsx`), wired to the write API.
 
+### Admin screens
+
+`/portal/admin` is one tabbed page. Most tabs are **generated** from the field registry in
+`lib/admin-schema.ts` and rendered by the generic `EntityForm` — adding a field is a
+registry edit, not new form code. Two tabs are **purpose-built**, because the flat
+registry cannot express a nested aggregate:
+
+- **Quotes** (`components/portal/admin/QuotesAdmin.tsx`) — a quote header plus its line
+  items, plus the approve / negotiate / reject workflow actions.
+- **Renderings & Sheets** (`components/portal/admin/MediaAdmin.tsx`) — `media_sets` rows
+  attached to the project, a domain, or a space.
+
+The admin's role comes from **`app_metadata.role == "admin"`** (`api/app/shared/auth.py`).
+It is deliberately *not* `user_metadata`, which the user can write themselves with only
+the public anon key — trusting that would let any account self-promote.
+
+Which project the portal administers is **selectable**:
+`components/portal/PortalProjectProvider.tsx` owns the choice (persisted under
+`portal_selected_project`), and `lib/api-client.ts` reads it in `scopedPath()` /
+`withProject()`. `Project` is the tenant root, so creates against `/projects` must opt out
+of the stamp: `withProject(payload, { scoped: false })`.
+
+**File uploads** go to Google Drive, not the repo: `POST /uploads` (returns URLs) and
+`POST /media-sets/{id}/files` (appends them to that set's `images`), both admin-only,
+multipart, several files per request, images/PDFs only, 25 MB each. `app/shared/drive.py`
+holds the client. A service account has **no Drive storage of its own**, so
+`GOOGLE_DRIVE_FOLDER_ID` must name a folder owned by a real account and shared with the
+service account as Editor — without it the endpoints return `501`. `GOOGLE_DRIVE_PUBLIC`
+grants `anyone: reader` so the site can render the file; it is off by default because
+turning it on publishes every upload to anyone with the link.
+
+`media_sets` (`api/app/contexts/media`, `api/migrations/003_media_sets.sql`) mirrors the
+`RenderingSet` shape in `data/renderings.ts` — title/width/height/images/subsections — so
+the same `RenderingGallery` can render DB rows.
+
+**Both trees now show the same media, by different routes.** 1.0 pages import
+`renderingsByDomain` / `drawingSheetsByDomain` / `drawingSheetsBySpace` at build time;
+2.0 pages fetch `GET /media-sets?projectId=&domainId=` (or `&spaceId=`) at runtime and
+narrow the rows through `lib/media.ts` (`splitByKind`) into the same `DomainMediaTabs` /
+`SpaceMediaTabs`. Domains own renderings *and* drawing sheets; spaces own drawing sheets
+only, and their "Renderings" tab is the space's gallery items — the same split as 1.0.
+`data/renderings.ts` and
+`data/drawingSheets.ts` stay the **source of record** — `npm run export:seed` flattens
+their slug-keyed maps into `mediaSets` rows (ids derived from kind + owner slug + index,
+so re-seeding upserts rather than duplicates) and `api/scripts/seed.py` loads them.
+
+One consequence worth knowing: `GET /media-sets` is behind `require_user`, so the tabs
+only populate for a signed-in visitor. That is consistent — the whole 2.0 tree is gated —
+but an anonymous fetch returns 401, and both detail components deliberately swallow that
+into "no tabs" rather than blanking the page.
+
 ## Commands
 
 ```bash
@@ -101,18 +152,63 @@ Entities (`types/index.ts`): `Project`, `Space`, `Domain`, `Drawing`, `Vendor`,
 `npm run verify`. Reference real images under `public/images/` (exterior in `elevation/`,
 interior in `spaces/`).
 
-## Two frontends: `/` (1.0) and `/2.0`
+## Two frontends: `/` (2.0) and `/1.0`
 
-`app/2.0/**` is a parallel, **API-first** rendering of the same public site. Differences
-that matter before editing either:
+The **2.0 tree is the site root**: `/` is the multi-project portfolio index and
+`/[projectId]/**` is one project's public site. The original single-project site was moved
+wholesale under **`app/1.0/**`** (`/1.0`, `/1.0/vision`, `/1.0/spaces/[slug]`, …); nothing
+public lives at the bare `/vision`, `/spaces`, … paths any more. `/portal/**` is unchanged.
+
+Differences that matter before editing either:
 
 - 1.0 pages are Server Components reading `lib/repository.ts` (seed by default). 2.0 pages
   are `"use client"` and fetch at runtime from `lib/api-v2.ts` (`NEXT_PUBLIC_API_URL`,
   default `http://localhost:8099`) — so 2.0 shows nothing without a running API.
-- 2.0 is **multi-project**: `app/2.0/layout.tsx` owns a project-picker context
-  (`useProject()`, persisted under `v2_selected_project`). 1.0 is single-project.
+- 2.0 is **multi-project**, and the project comes from the **URL**, not from storage:
+  `app/[projectId]/layout.tsx` prerenders one path per seed project and
+  `V2ProjectChrome` exposes it as `useProject().selectedId`. 1.0 is single-project.
 - Both share `types/index.ts` and the presentational components in `components/`. Keep
-  those components project-agnostic and prop-driven so both trees can use them.
+  those components project-agnostic and prop-driven so both trees can use them — cards
+  that link take a `basePath` prop (`"/1.0"` vs. `` `/${selectedId}` ``) rather than
+  hardcoding a route.
+- `SiteHeader` / `SiteFooter` are 1.0-and-portal chrome only; they return `null` elsewhere.
+  `PUBLIC_NAV` in `lib/nav.ts` therefore points at `/1.0/*`.
+
+### 2.0 is signed-in; 1.0 is public
+
+The 2.0 tree lives in the **`app/(v2)/` route group** — a grouping only, so `/` and
+`/[projectId]/**` keep their URLs while sharing `app/(v2)/layout.tsx`, which wraps them in
+`components/v2/V2AuthGate.tsx`. `/1.0/**` stays public. `/portal/**` sits outside the group
+and keeps its own `SupabaseAuthGate`. `/login` and `/signup` are top-level so they are not
+gated by the thing they unlock.
+
+**Identity is Supabase Auth. There is no second user store and no password in our API.**
+`lib/auth-v2.ts` wraps `supabase.auth.signUp` / `signInWithPassword`; the browser talks to
+Supabase directly, and this API only ever *verifies* the resulting JWT. The `identity`
+context (`api/app/contexts/identity`, `api/migrations/004_user_profiles.sql`) adds a
+`user_profiles` row keyed by the token's `sub` — display name, email, role mirror, signup
+date. `POST /me` is idempotent and is called after every sign-in, which is what backfills
+accounts that predate the table.
+
+Three things about it that are load-bearing:
+
+- **`user_profiles.role` is a mirror, never the authorization source.** `require_admin`
+  reads `app_metadata.role` off the verified token, which only the service_role key can
+  write. `PATCH /me` accepts `displayName` and nothing else — if it took `role`, editing
+  your profile would be self-promotion. Promoting someone is a Supabase-dashboard /
+  service-key act; `GET /users` is deliberately read-only.
+- **`user_profiles` has RLS enabled with no policies.** Supabase publishes every `public`
+  table through PostgREST, reachable with the anon key that ships in the browser bundle —
+  without this, the user list is world-readable and world-insertable straight past this
+  API. The API connects as `postgres`, which bypasses RLS, so `/me` and `/users` are
+  unaffected. **The other tables do not have this yet** and remain exposed the same way.
+- **`V2AuthGate` is UX, not the boundary.** The site is a static export with no server, so
+  there is no middleware and the page markup is a public file on a CDN. The gate decides
+  what a browser renders; the API's `require_user` decides what anyone can reach. Anything
+  sensitive must come from a gated endpoint at runtime, never be baked into the bundle.
+
+New signups get `viewer`: read access to every project, no writes. There is no per-user
+project membership yet — see the tenancy note in `docs/technical-review.md`.
 
 The seed is likewise now multi-project: `data/project.ts` exports `projects: Project[]`.
 `getProject()` returns `projects[0]` (the 1.0 singleton); `getProjects()` returns all.

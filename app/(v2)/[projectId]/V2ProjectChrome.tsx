@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { ArrowLeft, Menu, X } from "lucide-react";
 import { api, type PublicProject } from "@/lib/api-v2";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { SignOutButton } from "@/components/v2/SignOutButton";
 import { cn } from "@/lib/utils";
 
 const NAV = [
@@ -94,6 +95,7 @@ export function V2ProjectChrome({
                   </Link>
                 ))}
               </nav>
+              <SignOutButton />
               <ThemeToggle />
               <button
                 type="button"

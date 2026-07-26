@@ -12,15 +12,16 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
-  if (pathname.startsWith("/2.0")) return null;
+  // Chrome for the 1.0 site and the portal only. The portfolio index (`/`) and the
+  // per-project tree (`/[projectId]/**`) carry their own header.
+  if (!pathname.startsWith("/1.0") && !pathname.startsWith("/portal")) return null;
 
-  const isActive = (href: string) =>
-    href === "/" ? pathname === "/" : pathname.startsWith(href);
+  const isActive = (href: string) => pathname.startsWith(href);
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-        <Link href="/" className="font-serif text-lg tracking-tight text-foreground">
+        <Link href="/1.0" className="font-serif text-lg tracking-tight text-foreground">
           Zen Residence
         </Link>
 

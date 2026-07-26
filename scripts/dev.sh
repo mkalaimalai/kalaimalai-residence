@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 # Local dev launcher. Modes differ by which backing services a surface needs:
 #
-#   ./scripts/dev.sh web    Next only. `/` renders from the seed; `/2.0` will NOT work.
+#   ./scripts/dev.sh web    Next only. `/1.0` renders from the seed; `/` (2.0) will NOT work.
 #   ./scripts/dev.sh api    Postgres + pgweb + FastAPI. No frontend.
-#   ./scripts/dev.sh all    Everything — the mode to use for `/2.0` and the portal.
+#   ./scripts/dev.sh all    Everything — the mode to use for `/` (2.0) and the portal.
 #
 # Database target:
 #   DB_TARGET=docker    (default) local container, seeded automatically
 #   DB_TARGET=supabase  cloud Supabase via api/.env.supabase — no container, NO auto-seed
 #
-# Note: `/` and `/2.0` are routes on the SAME Next server. There is no second frontend.
+# Note: `/` and `/1.0` are routes on the SAME Next server. There is no second frontend.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -104,8 +104,8 @@ esac
 cat <<EOF
 
 ────────────────────────────────────────────────────────────
-  Frontend 1.0 (seed)   http://localhost:3000
-  Frontend 2.0 (API)    http://localhost:3000/2.0
+  Frontend 1.0 (seed)   http://localhost:3000/1.0
+  Frontend 2.0 (API)    http://localhost:3000
   Portal                http://localhost:3000/portal
   API docs (Swagger)    http://localhost:8099/docs
   API health            http://localhost:8099/healthz

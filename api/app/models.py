@@ -21,6 +21,8 @@ from app.contexts.document.infrastructure.orm import (  # noqa: F401
     LessonModel,
 )
 from app.contexts.handover.infrastructure.orm import WarrantyModel  # noqa: F401
+from app.contexts.identity.infrastructure.orm import UserProfileModel  # noqa: F401
+from app.contexts.media.infrastructure.orm import MediaSetModel  # noqa: F401
 from app.contexts.notification.infrastructure.orm import (  # noqa: F401
     NotificationModel,
 )

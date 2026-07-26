@@ -91,24 +91,108 @@ export const apiPost = <T>(path: string, body: unknown) =>
   request<T>("POST", path, body);
 export const apiPatch = <T>(path: string, body: unknown) =>
   request<T>("PATCH", path, body);
+export const apiDelete = <T>(path: string) => request<T>("DELETE", path);
 
 /**
- * The project this portal administers. The portal is the control centre for one
- * project (unlike `/2.0`, which has a picker), so every read is scoped to it and every
- * create is stamped with it — entities are `NOT NULL` on `project_id` since
- * api/migrations/002_project_scope.sql.
+ * Multipart upload — several files in one request, matching the API's
+ * `files: list[UploadFile]` parameter.
+ *
+ * Deliberately does NOT go through `request()`: that sets `Content-Type: application/
+ * json`, and a multipart body must let the browser set the header so it can include the
+ * boundary. Setting it by hand produces a body the server cannot parse.
+ */
+export async function apiUpload<T>(path: string, files: File[]): Promise<T> {
+  const form = new FormData();
+  for (const f of files) form.append("files", f, f.name);
+
+  const res = await fetch(`${BASE}${path}`, {
+    method: "POST",
+    headers: await authHeader(),
+    body: form,
+  });
+
+  if (!res.ok) {
+    let detail = `POST ${path} → ${res.status}`;
+    try {
+      const data = await res.json();
+      if (data?.detail) {
+        detail =
+          typeof data.detail === "string"
+            ? data.detail
+            : JSON.stringify(data.detail);
+      }
+    } catch {
+      /* no JSON body */
+    }
+    throw new ApiError(res.status, detail);
+  }
+  return (await res.json()) as T;
+}
+
+/**
+ * Default project scope — used until the portal knows better. Every read is scoped to
+ * the active project and every create stamped with it, since entities are `NOT NULL` on
+ * `project_id` (api/migrations/002_project_scope.sql).
  */
 export const PORTAL_PROJECT_ID =
   process.env.NEXT_PUBLIC_PROJECT_ID ?? "proj-kr";
 
-export const scopedPath = (path: string) =>
-  `${path}?projectId=${encodeURIComponent(PORTAL_PROJECT_ID)}`;
+/** localStorage key holding the admin's last chosen project. */
+export const PROJECT_STORAGE_KEY = "portal_selected_project";
 
-/** Stamp the owning project on a create payload. */
-export const withProject = <T extends object>(payload: T) => ({
-  projectId: PORTAL_PROJECT_ID,
-  ...payload,
-});
+/**
+ * The active project id, as a module-level value so the non-React call sites
+ * (`scopedPath`, `withProject`) keep working unchanged.
+ *
+ * It is seeded **synchronously at module load** from localStorage rather than being left
+ * at the default until PortalProjectProvider's effect restores it. That closes the
+ * stale-scope window: a component that calls `scopedPath` in its very first render would
+ * otherwise silently fetch `proj-kr` and show the wrong project's rows for one pass. The
+ * `typeof window` guard keeps this safe under the static export's prerender, where the
+ * value stays at the default (nothing is fetched during prerender anyway — the portal is
+ * client-fetched).
+ */
+let activeProjectId: string = (() => {
+  if (typeof window === "undefined") return PORTAL_PROJECT_ID;
+  try {
+    return window.localStorage.getItem(PROJECT_STORAGE_KEY) ?? PORTAL_PROJECT_ID;
+  } catch {
+    return PORTAL_PROJECT_ID;
+  }
+})();
+
+/** Read the active project id. */
+export const getActiveProjectId = () => activeProjectId;
+
+/**
+ * Point the client at a project. Called by `PortalProjectProvider` — once when it
+ * validates the restored/default id against `GET /projects`, and again on every pick.
+ * Persistence lives here too so the module value and localStorage never diverge.
+ */
+export function setActiveProjectId(id: string): void {
+  activeProjectId = id;
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(PROJECT_STORAGE_KEY, id);
+  } catch {
+    /* private mode / storage disabled — in-memory scope still works */
+  }
+}
+
+export const scopedPath = (path: string) =>
+  `${path}?projectId=${encodeURIComponent(activeProjectId)}`;
+
+/**
+ * Stamp the owning project on a create payload.
+ *
+ * `Project` is the tenant root and `ProjectCreate` has no `projectId` field, so creates
+ * against `/projects` must opt out with `{ scoped: false }` — otherwise the API rejects
+ * the extra field.
+ */
+export const withProject = <T extends object>(
+  payload: T,
+  opts?: { scoped?: boolean },
+) => (opts?.scoped === false ? { ...payload } : { projectId: activeProjectId, ...payload });
 
 // --- typed collection reads (mirror the repository getters used by the portal) ----
 export const api = {
@@ -123,5 +207,13 @@ export const api = {
   snags: () => apiGet<Snag[]>(scopedPath("/snags")),
   progress: () => apiGet<ProgressEntry[]>(scopedPath("/progress")),
   warranties: () => apiGet<Warranty[]>(scopedPath("/warranties")),
-  projectFull: () => apiGet<Project>("/project/full"),
+  /** Every project the signed-in user can see (`require_user`) — feeds the picker. */
+  projects: () => apiGet<Project[]>("/projects"),
+  /**
+   * The active project's full (portal-only) record. Uses `/projects/{id}` rather than
+   * `/project/full`, which is a hard singleton server-side (`GetSingletonProject` returns
+   * the first row and ignores any scope) and so would always return proj-kr.
+   */
+  projectFull: () =>
+    apiGet<Project>(`/projects/${encodeURIComponent(activeProjectId)}`),
 };
