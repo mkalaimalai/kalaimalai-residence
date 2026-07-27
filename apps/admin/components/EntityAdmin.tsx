@@ -20,7 +20,7 @@ import {
 import { ENTITY_BY_KEY, type EntityDef, type RefKey } from "@/lib/admin-schema";
 import { EntityForm } from "@/components/portal/EntityForm";
 import { SpaceFilesPanel } from "@/components/portal/admin/SpaceFilesPanel";
-import { useAuth } from "@/components/portal/SupabaseAuthGate";
+import { useAuth } from "@/components/v2/V2AuthGate";
 import { usePortalProject } from "@/components/portal/PortalProjectProvider";
 import { cn } from "@/lib/utils";
 

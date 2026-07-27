@@ -22,7 +22,7 @@ services:
     volumes:
       - kr-pgdata:/var/lib/postgresql/data
       # Applied only on first init of an empty volume.
-      - ./api/migrations/001_init.sql:/docker-entrypoint-initdb.d/001_init.sql:ro
+      - ./apps/api/migrations/001_init.sql:/docker-entrypoint-initdb.d/001_init.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s

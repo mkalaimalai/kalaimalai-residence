@@ -1,6 +1,6 @@
 # Technical Review — Kalaimalai Residence → Product
 
-Date: 2026-07-26 · Reviewer: Claude Code · Scope: full repo (frontend 1.0 + 2.0, `api/`, seed data, docs)
+Date: 2026-07-26 · Reviewer: Claude Code · Scope: full repo (frontend 1.0 + 2.0, `apps/api/`, seed data, docs)
 
 ---
 
@@ -12,7 +12,7 @@ Three things live in this repo, and they are at very different maturity levels.
 |---|---|---|
 | **Public site (`app/`, 1.0)** | Complete, shipping to GitHub Pages | Production-quality. Server Components → `lib/repository.ts` → typed seed. |
 | **Private portal (`app/portal/**`)** | Complete | Real Supabase Auth, client-side fetch via `lib/api-client.ts`, admin CRUD. |
-| **Backend (`api/`)** | Complete for one project, **not multi-tenant** | DDD/hexagonal FastAPI over Postgres, 7 bounded contexts, 26 controllers. |
+| **Backend (`apps/api/`)** | Complete for one project, **not multi-tenant** | DDD/hexagonal FastAPI over Postgres, 7 bounded contexts, 26 controllers. |
 | **Frontend 2.0 (`app/2.0/`)** | Uncommitted, 13 files | API-first, multi-project picker. This is the real product prototype. |
 
 Verified during review: `npm run typecheck` passes clean, `npm run verify` passes (all relation chains resolve, all image paths exist).
@@ -29,7 +29,7 @@ This is the head start. Most people building in this space start with a CRUD app
 
 ### The backend has already outgrown the seed
 
-Worth stating explicitly, because it's not in `CLAUDE.md`: `api/` models entities that **do not exist in `data/*.ts`**:
+Worth stating explicitly, because it's not in `CLAUDE.md`: `apps/api/` models entities that **do not exist in `data/*.ts`**:
 
 - `Quote`, `QuoteLineItem` — vendor quoting workflow
 - `PurchaseOrder`, `Delivery` — procurement execution
@@ -67,7 +67,7 @@ These are ranked by what actually stops this becoming an app. Everything else is
 Verified by inspection:
 
 - `project_id` exists on **only 4 ORM models** (`orm.py:75,116,132,147` — the new commercial ones). `Space`, `Domain`, `Drawing`, `Snag`, `Vendor`, `Warranty`, `Decision`, `ProgressEntry` have **no `project_id` at all**.
-- `api/app/shared/auth.py` resolves a **global** role: `admin` or `viewer`, read from `user_metadata.role`. There is no organisation, no membership table, no per-project authorization.
+- `apps/api/app/shared/auth.py` resolves a **global** role: `admin` or `viewer`, read from `user_metadata.role`. There is no organisation, no membership table, no per-project authorization.
 - No row-level security anywhere in the codebase.
 
 Consequence: **any authenticated admin can read and write every project's data.** Today that is fine — there is one project and one family. The moment there is a second customer it is a data breach. `app/2.0`'s project picker is currently a client-side filter over a shared pool, not an isolation boundary.
@@ -180,7 +180,7 @@ Independent of strategy, worth doing this week:
 
 - [ ] Commit or delete `app/2.0/` — 13 untracked files including the multi-project prototype is a real risk of loss
 - [ ] Commit or revert the 8 modified files (`data/project.ts` is +202 lines of uncommitted work)
-- [ ] Add `pytest` to `api/` with tenancy tests as the first suite
+- [ ] Add `pytest` to `apps/api/` with tenancy tests as the first suite
 - [ ] `docs/research.md` is 1 line, `docs/sources.md` is empty — fill or remove
 - [ ] Decide the 1.0/2.0 endgame and write it into `CLAUDE.md`, so feature work stops being a per-task judgment call
 

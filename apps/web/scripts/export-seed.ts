@@ -101,7 +101,9 @@ const payload = {
   mediaSets,
 };
 
-const out = join(process.cwd(), "api", "scripts", "seed.json");
+// cwd is apps/web (npm runs workspace scripts from the workspace dir); the API is a
+// sibling app, so go up one level rather than assuming the repo root.
+const out = join(process.cwd(), "..", "api", "scripts", "seed.json");
 mkdirSync(dirname(out), { recursive: true });
 writeFileSync(out, JSON.stringify(payload, null, 2));
 

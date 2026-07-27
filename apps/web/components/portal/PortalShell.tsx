@@ -3,7 +3,7 @@
 import { PortalDataProvider } from "./PortalDataProvider";
 import { PortalProjectProvider, PortalProjectPicker } from "./PortalProjectProvider";
 import { PortalSidebar } from "./PortalSidebar";
-import { SupabaseAuthGate } from "./SupabaseAuthGate";
+import { V2AuthGate } from "@/components/v2/V2AuthGate";
 
 /**
  * Portal chrome: a real Supabase auth gate wrapping a sidebar + content layout. The gate
@@ -16,7 +16,7 @@ import { SupabaseAuthGate } from "./SupabaseAuthGate";
  */
 export function PortalShell({ children }: { children: React.ReactNode }) {
   return (
-    <SupabaseAuthGate>
+    <V2AuthGate>
       <PortalProjectProvider>
         <PortalDataProvider>
           <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col md:flex-row">
@@ -30,6 +30,6 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
           </div>
         </PortalDataProvider>
       </PortalProjectProvider>
-    </SupabaseAuthGate>
+    </V2AuthGate>
   );
 }

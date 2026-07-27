@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { PORTAL_NAV } from "@/lib/nav";
 import { cn } from "@/lib/utils";
-import { useAuth } from "./SupabaseAuthGate";
+import { useAuth } from "@/components/v2/V2AuthGate";
 
 /** Left nav for the portal. Active link derived from the current path. */
 export function PortalSidebar() {

@@ -20,6 +20,9 @@ apps/*/expo-env.d.ts
 # next.js
 /.next/
 /out/
+apps/web/.next/
+apps/web/out/
+apps/*/tsconfig.tsbuildinfo
 
 # production
 /build
@@ -40,11 +43,11 @@ yarn-error.log*
 !api/.env.example
 
 # python backend (api/)
-api/.venv/
+**/.venv/
 **/__pycache__/
 *.pyc
 # generated seed bridge — regenerate with `npm run export:seed`
-api/scripts/seed.json
+apps/api/scripts/seed.json
 
 # vercel
 .vercel

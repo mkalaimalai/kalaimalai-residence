@@ -7,7 +7,7 @@ A web application documenting the design and construction of a family home in Be
 - **A private portal** (`/portal/**`) — a control center for the room matrix plus nine data
   tables (drawings, vendors, procurement, BOQ, decisions, progress, snags, warranties),
   gated by real Supabase Auth, with admin CRUD at `/portal/admin`.
-- **An optional FastAPI backend** (`api/`) — a DDD/hexagonal modular monolith over Supabase
+- **An optional FastAPI backend** (`apps/api/`) — a DDD/hexagonal modular monolith over Supabase
   Postgres that can serve the same data instead of the local seed.
 - **A second, API-first frontend** (`/2.0`) — the same public content rendered client-side
   from the API, with a multi-project picker.
@@ -37,7 +37,7 @@ A web application documenting the design and construction of a family home in Be
 | Build output | Static export (`output: "export"`, `trailingSlash: true`) → `out/` |
 | Tooling | ESLint 9 (`eslint-config-next`), `tsx` for data scripts — no test runner |
 
-### Backend (`api/`, optional)
+### Backend (`apps/api/`, optional)
 
 | Concern | Choice |
 |---|---|
@@ -46,7 +46,7 @@ A web application documenting the design and construction of a family home in Be
 | Persistence | SQLAlchemy 2 (async, `asyncpg`) over Supabase Postgres |
 | Validation | Pydantic v2 (`CamelModel` → camelCase responses), `pydantic-settings` for config |
 | Auth | Supabase Auth JWTs (HS256), verified in `app/shared/auth.py` |
-| Schema | Hand-checked SQL in `api/migrations/*.sql`; `create_all()` for dev convenience |
+| Schema | Hand-checked SQL in `apps/api/migrations/*.sql`; `create_all()` for dev convenience |
 | Local infra | Docker Compose — Postgres 15 + pgweb |
 
 ### Hosting
@@ -54,19 +54,24 @@ A web application documenting the design and construction of a family home in Be
 | Concern | Choice |
 |---|---|
 | Frontend | GitHub Pages (static, no Node runtime) via `.github/workflows/deploy.yml` |
-| Backend | Render free tier (`api/render.yaml`) |
+| Backend | Render free tier (`apps/api/render.yaml`) |
 | Database | Supabase Postgres (pooled connection, port 6543) |
 
 ---
 
 ## Getting started (frontend only — no database required)
 
-This is the default path. Everything on the public site builds from the seed in `data/`.
+This is the default path. Everything on the public site builds from the seed in
+`apps/web/data/`. All commands below run from the **repo root** — they delegate to the
+`@kr/web` workspace.
 
 ```bash
 npm install
 npm run dev        # → http://localhost:3000
 ```
+
+For the iOS/Android app, see [`apps/mobile/README.md`](apps/mobile/README.md); it installs
+separately (`npm run mobile:install`, then `npm run mobile`).
 
 Other scripts:
 
@@ -119,7 +124,7 @@ Run with `AUTH_DISABLED=true` locally and no Supabase services are required at a
 ### 2. API
 
 ```bash
-cd api
+cd apps/api
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 
@@ -138,7 +143,7 @@ python scripts/verify.py                      # server-side integrity check
 uvicorn app.main:app --reload --port 8099     # OpenAPI docs at /docs
 ```
 
-API settings (`api/app/config.py`, 12-factor via env): `DATABASE_URL`,
+API settings (`apps/api/app/config.py`, 12-factor via env): `DATABASE_URL`,
 `SUPABASE_JWT_SECRET`, `SUPABASE_JWT_AUDIENCE`, `CORS_ORIGINS`, `AUTH_DISABLED`.
 
 ### 3. Frontend against the API
@@ -151,7 +156,7 @@ DATA_SOURCE=api            # optional: also build the 1.0 public pages from the 
 
 Then `npm run dev`, and visit `/2.0` for the API-first frontend.
 
-See `api/README.md` for the bounded-context map, the ports/adapters rules and the auth
+See `apps/api/README.md` for the bounded-context map, the ports/adapters rules and the auth
 matrix; `docs/migration-plan.md` covers the seed → database transition.
 
 ---
@@ -183,7 +188,7 @@ over any plan):
 4. **`types/index.ts` is the contract.** Schema changes are their own reviewed feature.
 5. **Every entity belongs to exactly one project.** All 13 entity types carry a required
    `projectId` (FK to `projects`, `ON DELETE CASCADE`; see
-   `api/migrations/002_project_scope.sql`). Collection GETs accept `?projectId=` — omitting
+   `apps/api/migrations/002_project_scope.sql`). Collection GETs accept `?projectId=` — omitting
    it returns every project's rows, so a caller that renders one project must always pass
    it. 1.0 pins `projects[0]`, the portal pins `PORTAL_PROJECT_ID`, and 2.0 passes
    `useProject().selectedId`. Slugs are unique **per project**, not globally.
@@ -201,33 +206,59 @@ components in `components/` stay project-agnostic and prop-driven so both trees 
 
 ---
 
-## Project structure
+## Project structure — a monorepo
+
+Four deliverables and two shared packages in one repo:
+
+```
+apps/
+  web/         # Next.js: public site + portal/admin web interface (static export)
+  api/         # FastAPI backend
+  mobile/      # Expo: the iOS + Android content viewer
+packages/
+  contracts/   # entity interfaces — one copy compiled by every surface
+  api-client/  # transport + endpoint list, platform-agnostic
+```
+
+Inside `apps/web`:
 
 ```
 app/                     # routes (App Router)
-  page.tsx               #   /          home
-  vision/ spaces/ domains/ materials/ journey/ gallery/ lessons/
-  portal/                #   /portal    Supabase-gated control center + admin CRUD
-  2.0/                   #   /2.0       API-first, multi-project public site
+  page.tsx               #   /            portfolio index (project picker)
+  [projectId]/           #   /<project>   the API-first public site
+  1.0/                   #   /1.0         the original single-project site
+  portal/ admin/         #   Supabase-gated control center + admin CRUD
+  login/ signup/         #   auth pages, outside the gate they unlock
   layout.tsx             #   header + footer + fonts + no-flash theme script
   globals.css            #   theme tokens (light + dark palettes, fonts)
 
-components/              # shared presentational components + portal/ tables
-types/index.ts           # all entity interfaces — the data contract
+components/              # shared presentational components + portal/, admin/ tables
+types/index.ts           # the named data contract — re-exports @kr/contracts
 lib/
   repository.ts          # async getX() per entity (the 1.0 data entry point)
   relations.ts           # byIds / byId resolvers
   api-client.ts          # portal runtime client (authed)
-  api-v2.ts              # 2.0 runtime client
+  api-v2.ts              # web binding for @kr/api-client
   supabase-client.ts     # Supabase Auth session
   admin-schema.ts        # field schemas driving the admin EntityForm
   utils.ts               # cn, formatINR, landedFromEUR
 data/                    # typed seed modules (real project data)
-api/                     # FastAPI backend (see api/README.md)
 scripts/verify-data.ts   # data + relations integrity check
 public/images/           # elevation/ (exterior) + spaces/ (interior)
-docs/ specs/ .specify/   # design docs, Spec Kit specs, project constitution
 ```
+
+Root-level `docs/ specs/ .specify/` hold the design docs, Spec Kit specs and the
+constitution.
+
+### Workspaces
+
+`apps/web` and `packages/*` are npm workspaces, so root scripts delegate to them
+(`npm run dev` → `--workspace @kr/web`) and one `npm install` covers all three.
+
+**`apps/mobile` is deliberately not a workspace member.** React Native needs React 18 and
+Next needs React 19; as a member, npm split Expo across two `node_modules` trees and Metro
+could not bundle at all. It installs on its own (`npm run mobile:install`) and consumes
+the shared packages via `file:` deps. Details in `apps/mobile/README.md`.
 
 ---
 
@@ -245,8 +276,8 @@ returns `projects[0]` (the 1.0 singleton); `getProjects()` returns all.
 
 ### Database model
 
-The API's Postgres schema (SQLAlchemy models in `api/app/contexts/*/infrastructure/orm.py`,
-DDL in `api/migrations/`) is a superset of the frontend contract — it also carries the
+The API's Postgres schema (SQLAlchemy models in `apps/api/app/contexts/*/infrastructure/orm.py`,
+DDL in `apps/api/migrations/`) is a superset of the frontend contract — it also carries the
 commercial/quality workflow tables the public site never renders. Tables are owned by
 exactly one bounded context, and **no context reads another's tables**; cross-context
 access goes through service-client ports.
@@ -288,7 +319,7 @@ Two different mechanisms, deliberately:
   `drawing_ids`, `decision_ids`, `lesson_ids`, and so on, as Postgres `VARCHAR[]`. These are
   **not** FK-enforced at the database level; they mirror the seed's `*Ids` shape and are
   resolved at render time by `lib/relations.ts`. Referential integrity for them is checked
-  by `npm run verify` / `api/scripts/verify.py`, not by Postgres. Writes that cross a
+  by `npm run verify` / `apps/api/scripts/verify.py`, not by Postgres. Writes that cross a
   context boundary (e.g. a `vendorId` on a commercial row) are validated in the application
   layer through the service-client ports.
 
@@ -358,7 +389,7 @@ CRUD wired to the write API).
   images) to `out/`. Pushing to `main` triggers `.github/workflows/deploy.yml`, which runs
   `npm run build` and publishes `out/` to GitHub Pages. There is **no Node runtime in
   production**.
-- **API** — Render free tier via `api/render.yaml`: build `pip install -r requirements.txt`,
+- **API** — Render free tier via `apps/api/render.yaml`: build `pip install -r requirements.txt`,
   start `uvicorn app.main:app --host 0.0.0.0 --port $PORT`, health check `/healthz`. Set
   `DATABASE_URL` (Supabase **pooled**, port 6543), `SUPABASE_JWT_SECRET`, `CORS_ORIGINS`.
   Apply `migrations/*.sql` once, then run the seed loader.

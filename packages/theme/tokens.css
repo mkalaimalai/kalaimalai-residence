@@ -1,4 +1,8 @@
-@import "tailwindcss";
+/*
+ * Design tokens — the single source for both apps. Imported by
+ * apps/web/app/globals.css and apps/admin/app/globals.css after their own
+ * `@import "tailwindcss"`. Never hardcode hex in components; use these tokens.
+ */
 
 /*
   Theme tokens — defined once here (build doc §3 / §12).

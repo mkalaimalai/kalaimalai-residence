@@ -6,12 +6,12 @@ Read-only by design: it calls the API's public endpoints only.
 ## Run it
 
 ```bash
-npm install                 # from the repo root — workspaces install everything
-npm run mobile              # or: npm run start --workspace @kr/mobile
+npm run mobile:install      # from the repo root — this app installs separately, see below
+npm run mobile              # or: cd apps/mobile && npm start
 # then press `i` for the iOS simulator, `a` for Android
 ```
 
-The API must be running (`uvicorn app.main:app --port 8099` in `api/`), because unlike
+The API must be running (`uvicorn app.main:app --port 8099` in `apps/api/`), because unlike
 the 1.0 web site there is no seed fallback here.
 
 ### Pointing it at the API

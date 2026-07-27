@@ -46,7 +46,7 @@ Portal access tokens are Supabase JWTs, verified in `app/shared/auth.py`:
 ## Local development
 
 ```bash
-cd api
+cd apps/api
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 

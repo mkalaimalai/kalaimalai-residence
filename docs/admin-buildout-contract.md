@@ -18,7 +18,7 @@ contract: implement to it exactly, do not renegotiate it unilaterally.**
 
 | Stream | Owns |
 |---|---|
-| A — backend media | `api/app/contexts/media/**`, `api/migrations/003_media_sets.sql`, `api/app/main.py` (router registration line only) |
+| A — backend media | `apps/api/app/contexts/media/**`, `apps/api/migrations/003_media_sets.sql`, `apps/api/app/main.py` (router registration line only) |
 | B — quotes admin | `components/portal/admin/QuotesAdmin.tsx` (new) |
 | C — media admin | `components/portal/admin/MediaAdmin.tsx` (new) |
 | D — project scope | `components/portal/PortalProjectProvider.tsx` (new), `lib/api-client.ts` |
@@ -30,7 +30,7 @@ integrator applies it.
 ## A. Media API contract (`/media-sets`)
 
 New bounded context `media`, mirroring the layout of an existing simple context
-(`api/app/contexts/quality/**` is the reference: domain/entities.py,
+(`apps/api/app/contexts/quality/**` is the reference: domain/entities.py,
 infrastructure/orm.py + mappers, application/use_cases.py, interfaces/{schemas,rest_controller}.py).
 
 Table `media_sets` (migration `003_media_sets.sql`, idempotent, `BEGIN`/`COMMIT`):
@@ -89,7 +89,7 @@ export interface MediaSet {
 
 ## B. Quotes admin
 
-Backend is already complete — do not touch `api/`. Use:
+Backend is already complete — do not touch `apps/api/`. Use:
 
 - `GET /quotes?projectId=`, `POST /quotes` (`QuoteCreate`: `projectId`+`vendorId`
   required), `GET /quotes/{id}`, `GET /quotes/{id}/line-items`

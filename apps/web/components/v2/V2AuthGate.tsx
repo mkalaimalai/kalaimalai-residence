@@ -14,13 +14,39 @@
  * Anything genuinely sensitive must come from a `require_user` endpoint at runtime,
  * never be baked into the bundle — the same rule the portal already follows.
  */
-import { useCallback, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import type { Session } from "@supabase/supabase-js";
 import { Lock } from "lucide-react";
 import Link from "next/link";
 import { getSupabase, isSupabaseConfigured } from "@/lib/supabase-client";
 import { api } from "@/lib/api-v2";
+
+interface AuthCtx {
+  /** Supabase user id — the token's `sub`, and the key of `user_profiles`. */
+  userId: string | null;
+  email: string | null;
+  isAdmin: boolean;
+  signOut: () => Promise<void>;
+}
+
+const AuthContext = createContext<AuthCtx>({
+  userId: null,
+  email: null,
+  isAdmin: false,
+  signOut: async () => {},
+});
+
+/**
+ * The signed-in user, for UI that varies by identity or role.
+ *
+ * `isAdmin` here hides controls; it does not protect anything. Every write is checked
+ * server-side by `require_admin` against the token, so a user who flips this in devtools
+ * gains buttons that 403.
+ */
+export function useAuth(): AuthCtx {
+  return useContext(AuthContext);
+}
 
 export function V2AuthGate({ children }: { children: React.ReactNode }) {
   const supabase = getSupabase();
@@ -86,7 +112,23 @@ export function V2AuthGate({ children }: { children: React.ReactNode }) {
     );
   }
 
-  return <ProfileSync>{children}</ProfileSync>;
+  // app_metadata mirrors what the API trusts (`app/shared/auth.py`) — it is
+  // service_role-only, unlike user_metadata which the user can write themselves.
+  const role = (session.user.app_metadata?.role as string | undefined) ?? "viewer";
+  const value: AuthCtx = {
+    userId: session.user.id,
+    email: session.user.email ?? null,
+    isAdmin: role === "admin",
+    signOut: async () => {
+      await supabase?.auth.signOut();
+    },
+  };
+
+  return (
+    <AuthContext.Provider value={value}>
+      <ProfileSync>{children}</ProfileSync>
+    </AuthContext.Provider>
+  );
 }
 
 /**

@@ -1,0 +1,4 @@
+@import "tailwindcss";
+
+/* Same palette as the web app — one source, in packages/theme. */
+@import "@kr/theme/tokens.css";

@@ -6,7 +6,7 @@ sources of truth:
 - **`types/index.ts`** — the locked TypeScript contract (constitution §4). The seed
   modules in `data/*.ts`, the repository layer, and the API's read responses all
   conform to these shapes.
-- **`api/migrations/001_init.sql`** — the Supabase Postgres schema. It mirrors the
+- **`apps/api/migrations/001_init.sql`** — the Supabase Postgres schema. It mirrors the
   contract (snake_case columns) and adds backend-only tables for the procurement
   pipeline and quality tracking.
 

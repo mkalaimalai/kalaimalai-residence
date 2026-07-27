@@ -2,6 +2,29 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Repo layout — this is a monorepo
+
+```
+apps/web/      # Next.js 16: public site + portal/admin. Was the repo root until the split.
+apps/api/      # FastAPI backend (was ./api)
+apps/mobile/   # Expo: the iOS + Android content viewer
+packages/contracts/    # entity interfaces — the contract, compiled by every surface
+packages/api-client/   # transport + endpoint list, platform-agnostic
+```
+
+`apps/web` + `packages/*` are npm workspaces; **root scripts delegate to `@kr/web`**, so
+`npm run dev|build|verify|typecheck` still work unchanged from the repo root. Paths in
+the rest of this file are relative to `apps/web` unless stated otherwise.
+
+**`apps/mobile` is NOT a workspace member** — React Native needs React 18, Next needs
+React 19, and as a member npm split Expo across two `node_modules` trees so Metro could
+not bundle. It installs on its own (`npm run mobile:install`) and depends on the shared
+packages via `file:`. Do not "fix" this by adding it to `workspaces`.
+
+`packages/contracts` holds the entity definitions; `apps/web/types/index.ts` is now a
+re-export shim over it, so it remains the named contract and every `@/types` import is
+unchanged.
+
 ## What this is
 
 A two-part Next.js 16 (App Router) site documenting a family home in Bengaluru:
@@ -14,8 +37,8 @@ A two-part Next.js 16 (App Router) site documenting a family home in Bengaluru:
 By default there is **no database**: all content is typed seed data in `data/*.ts`, read
 through an async repository layer (`lib/repository.ts`).
 
-An **optional backend** now exists in `api/` — a DDD/hexagonal FastAPI modular monolith over
-Supabase Postgres (see `api/README.md` and `docs/migration-plan.md`). It is **opt-in**:
+An **optional backend** now exists in `apps/api/` — a DDD/hexagonal FastAPI modular monolith over
+Supabase Postgres (see `apps/api/README.md` and `docs/migration-plan.md`). It is **opt-in**:
 
 - Public pages still build from the seed unless `DATA_SOURCE=api` is set, in which case
   `lib/repository.ts` fetches from the API at build time (with seed fallback when
@@ -49,7 +72,7 @@ nested aggregate:
 - **Renderings & Sheets** (`components/portal/admin/MediaAdmin.tsx`) — `media_sets` rows
   attached to the project, a domain, or a space.
 
-The admin's role comes from **`app_metadata.role == "admin"`** (`api/app/shared/auth.py`).
+The admin's role comes from **`app_metadata.role == "admin"`** (`apps/api/app/shared/auth.py`).
 It is deliberately *not* `user_metadata`, which the user can write themselves with only
 the public anon key — trusting that would let any account self-promote.
 
@@ -68,7 +91,7 @@ service account as Editor — without it the endpoints return `501`. `GOOGLE_DRI
 grants `anyone: reader` so the site can render the file; it is off by default because
 turning it on publishes every upload to anyone with the link.
 
-`media_sets` (`api/app/contexts/media`, `api/migrations/003_media_sets.sql`) mirrors the
+`media_sets` (`apps/api/app/contexts/media`, `apps/api/migrations/003_media_sets.sql`) mirrors the
 `RenderingSet` shape in `data/renderings.ts` — title/width/height/images/subsections — so
 the same `RenderingGallery` can render DB rows.
 
@@ -81,7 +104,7 @@ only, and their "Renderings" tab is the space's gallery items — the same split
 `data/renderings.ts` and
 `data/drawingSheets.ts` stay the **source of record** — `npm run export:seed` flattens
 their slug-keyed maps into `mediaSets` rows (ids derived from kind + owner slug + index,
-so re-seeding upserts rather than duplicates) and `api/scripts/seed.py` loads them.
+so re-seeding upserts rather than duplicates) and `apps/api/scripts/seed.py` loads them.
 
 One consequence worth knowing: `GET /media-sets` is behind `require_user`, so the tabs
 only populate for a signed-in visitor. That is consistent — the whole 2.0 tree is gated —
@@ -100,10 +123,10 @@ npm run verify:api # same check against a live API (DATA_SOURCE=api, no seed fal
 npm run export:seed # dump the TS seed to JSON for the Python seed loader
 ```
 
-Backend (optional, `api/` — see `api/README.md` for the full flow):
+Backend (optional, `apps/api/` — see `apps/api/README.md` for the full flow):
 
 ```bash
-cd api && source .venv/bin/activate
+cd apps/api && source .venv/bin/activate
 export DATABASE_URL=... AUTH_DISABLED=true PYTHONPATH="$(pwd)"
 python scripts/seed.py      # load the JSON exported by `npm run export:seed`
 python scripts/verify.py    # backend equivalent of npm run verify
@@ -132,7 +155,7 @@ These come from `.specify/memory/constitution.md` — the constitution wins over
    their own reviewed feature, not a drive-by edit.
 5. **Every entity belongs to exactly one project.** All 13 entity types carry a required
    `projectId` (`project_id`, FK to `projects` with `ON DELETE CASCADE` — see
-   `api/migrations/002_project_scope.sql`); `Project` itself is the tenant root and has
+   `apps/api/migrations/002_project_scope.sql`); `Project` itself is the tenant root and has
    none. Collection GETs accept `?projectId=`; omitting it returns every project's rows,
    so **a caller that renders one project must always pass it**. The three surfaces
    differ: 1.0 pins `projects[0]` in `lib/repository.ts`, the portal pins
@@ -196,7 +219,7 @@ gated by the thing they unlock.
 **Identity is Supabase Auth. There is no second user store and no password in our API.**
 `lib/auth-v2.ts` wraps `supabase.auth.signUp` / `signInWithPassword`; the browser talks to
 Supabase directly, and this API only ever *verifies* the resulting JWT. The `identity`
-context (`api/app/contexts/identity`, `api/migrations/004_user_profiles.sql`) adds a
+context (`apps/api/app/contexts/identity`, `apps/api/migrations/004_user_profiles.sql`) adds a
 `user_profiles` row keyed by the token's `sub` — display name, email, role mirror, signup
 date. `POST /me` is idempotent and is called after every sign-in, which is what backfills
 accounts that predate the table.

@@ -3,7 +3,7 @@
 /**
  * Admin app chrome: auth gate → project scope → two-level nav + top bar.
  *
- * Deliberately reuses `SupabaseAuthGate` and `PortalProjectProvider` rather than
+ * Deliberately reuses `V2AuthGate` and `PortalProjectProvider` rather than
  * forking them — the admin app administers the same projects as the portal, and a
  * second source of truth for "which project am I in" is exactly the bug that made the
  * old pinned `PORTAL_PROJECT_ID` painful.
@@ -14,7 +14,7 @@ import {
   PortalProjectProvider,
   PortalProjectPicker,
 } from "@/components/portal/PortalProjectProvider";
-import { SupabaseAuthGate, useAuth } from "@/components/portal/SupabaseAuthGate";
+import { V2AuthGate, useAuth } from "@/components/v2/V2AuthGate";
 import { SECTION_BY_KEY, findItem } from "@/lib/admin-nav";
 import { AdminSidebar } from "./AdminSidebar";
 
@@ -90,10 +90,10 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   return (
-    <SupabaseAuthGate>
+    <V2AuthGate>
       <PortalProjectProvider>
         <AdminChrome>{children}</AdminChrome>
       </PortalProjectProvider>
-    </SupabaseAuthGate>
+    </V2AuthGate>
   );
 }
