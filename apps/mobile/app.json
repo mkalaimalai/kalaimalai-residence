@@ -17,7 +17,7 @@
         "backgroundColor": "#F6F3EE"
       }
     },
-    "plugins": ["expo-router"],
+    "plugins": [["expo-router", { "root": "./app" }]],
     "experiments": {
       "typedRoutes": true
     },

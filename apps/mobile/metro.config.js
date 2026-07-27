@@ -20,7 +20,8 @@ config.resolver.nodeModulesPaths = [
   path.resolve(workspaceRoot, "node_modules"),
 ];
 
-// One copy of React — two would break hooks.
-config.resolver.disableHierarchicalLookup = true;
+// NOTE: hierarchical lookup is left ON. Disabling it (the usual monorepo advice) breaks
+// resolution here because npm hoists most of Expo to the root while leaving expo-router
+// and react-native in the app's own node_modules.
 
 module.exports = config;

@@ -14,6 +14,7 @@
     "@kr/api-client": "*",
     "@kr/contracts": "*",
     "expo": "~52.0.0",
+    "expo-asset": "~11.0.0",
     "expo-constants": "~17.0.0",
     "expo-image": "~2.0.0",
     "expo-router": "~4.0.0",
