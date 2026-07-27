@@ -2,9 +2,47 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Repo layout — this is a monorepo
+
+```
+apps/web/      # Next.js 16: public site (1.0 + 2.0) + portal. Was the repo root until the split.
+apps/admin/    # Next.js 16: the admin app — its own origin, its own build, its own deploy
+apps/api/      # FastAPI backend (was ./api)
+apps/mobile/   # Expo: the iOS + Android content viewer
+apps/ios/      # native SwiftUI client (Xcode project, no npm involvement)
+apps/android/  # native Kotlin/Compose client (Gradle, no npm involvement)
+packages/contracts/    # entity interfaces — the contract, compiled by every surface
+packages/api-client/   # transport + endpoint list, platform-agnostic
+packages/theme/        # tokens.css — palette/radius/fonts shared by web + admin
+```
+
+`apps/web`, `apps/admin` + `packages/*` are npm workspaces; **root scripts delegate to
+`@kr/web`**, so `npm run dev|build|verify|typecheck` still work unchanged from the repo
+root. Paths in the rest of this file are relative to `apps/web` unless stated otherwise.
+
+Both Next apps set `turbopack.root` to the **monorepo root**, because `next` is hoisted
+there by workspaces and a per-app root cannot resolve it. `@kr/*` imports need explicit
+`paths` in each `tsconfig.json` pointing at `../../packages/*/src/index.ts` — the
+node_modules symlinks alone do not give `tsc` the TypeScript sources.
+
+**`apps/mobile` is NOT a workspace member** — React Native needs React 18, Next needs
+React 19, and as a member npm split Expo across two `node_modules` trees so Metro could
+not bundle. It installs on its own (`npm run mobile:install`) and depends on the shared
+packages via `file:`. Do not "fix" this by adding it to `workspaces`.
+
+`apps/ios` (SwiftUI/Xcode) and `apps/android` (Kotlin/Compose/Gradle) are **native clients
+outside the npm world entirely** — they re-declare the entity shapes in `Models.swift` /
+`Models.kt` and talk to the API directly. `packages/contracts` cannot reach them, so a
+contract change has to be mirrored there by hand.
+
+`packages/contracts` holds the entity definitions; `apps/web/types/index.ts` is now a
+re-export shim over it, so it remains the named contract and every `@/types` import is
+unchanged.
+
 ## What this is
 
-A two-part Next.js 16 (App Router) site documenting a family home in Bengaluru:
+A Next.js 16 (App Router) site documenting a family home in Bengaluru. `apps/web` is two
+parts; record management is the third surface, `apps/admin` (see below):
 
 - **Public editorial site** (`/`, `/vision`, `/spaces`, `/domains`, `/materials`,
   `/journey`, `/gallery`, `/lessons`) — anonymized case study.
@@ -14,39 +52,59 @@ A two-part Next.js 16 (App Router) site documenting a family home in Bengaluru:
 By default there is **no database**: all content is typed seed data in `data/*.ts`, read
 through an async repository layer (`lib/repository.ts`).
 
-An **optional backend** now exists in `api/` — a DDD/hexagonal FastAPI modular monolith over
-Supabase Postgres (see `api/README.md` and `docs/migration-plan.md`). It is **opt-in**:
+An **optional backend** now exists in `apps/api/` — a DDD/hexagonal FastAPI modular monolith over
+Supabase Postgres (see `apps/api/README.md` and `docs/migration-plan.md`). It is **opt-in**:
 
 - Public pages still build from the seed unless `DATA_SOURCE=api` is set, in which case
   `lib/repository.ts` fetches from the API at build time (with seed fallback when
   `ALLOW_SEED_FALLBACK=1`). The repository remains the only data door; `types/index.ts` is
   unchanged (the API returns the same camelCase shapes).
-- The portal uses **real Supabase Auth** (`components/portal/SupabaseAuthGate.tsx`, replacing
-  the old PasswordGate) and fetches live data client-side via `lib/api-client.ts`, so no
-  portal data is baked into the static bundle. Admins get CRUD at `/portal/admin`
-  (`lib/admin-schema.ts` + `components/portal/EntityForm.tsx`), wired to the write API.
+- The portal uses **real Supabase Auth** (`PortalShell` wraps everything in
+  `components/v2/V2AuthGate.tsx`) and fetches live data client-side via
+  `lib/api-client.ts`, so no portal data is baked into the static bundle. The portal is
+  read-oriented — writes live in the admin app.
 
-### Admin screens
+## The admin app (`apps/admin`) — a separate deployable
 
-`/portal/admin` is one tabbed page. Most tabs are **generated** from the field registry in
-`lib/admin-schema.ts` and rendered by the generic `EntityForm` — adding a field is a
-registry edit, not new form code. Two tabs are **purpose-built**, because the flat
-registry cannot express a nested aggregate:
+Record management is **not a route in the web app**. It is `@kr/admin`: its own Next
+build, its own origin, its own deploy, dev on **port 3001**. `apps/web/app/portal/admin`
+is only a client-side redirect to `ADMIN_URL` (`apps/web/lib/admin-url.ts`,
+`NEXT_PUBLIC_ADMIN_URL`, default `http://localhost:3001`) — a **cross-origin link, not an
+app route**. The point of the split is that admin code stops shipping inside the public
+static bundle. The two apps share only `packages/*`; anything else they both need is
+duplicated on purpose (each has its own `lib/api-client.ts`, `lib/supabase-client.ts`,
+`lib/utils.ts`).
 
-- **Quotes** (`components/portal/admin/QuotesAdmin.tsx`) — a quote header plus its line
-  items, plus the approve / negotiate / reject workflow actions.
-- **Renderings & Sheets** (`components/portal/admin/MediaAdmin.tsx`) — `media_sets` rows
-  attached to the project, a domain, or a space.
+Routes are bare (`/`, `/<section>/<item>`) since the app is its own origin. It is also
+`output: "export"`, entirely client-fetched against the FastAPI backend.
 
-The admin's role comes from **`app_metadata.role == "admin"`** (`api/app/shared/auth.py`).
-It is deliberately *not* `user_metadata`, which the user can write themselves with only
-the public anon key — trusting that would let any account self-promote.
+**Two-level navigation**: `lib/admin-nav.ts` declares sections (the icon rail — Catalog,
+Delivery, Commercial, Media, Settings) and the items inside each (the second panel,
+grouped by heading). Every item is a real route, so the URL is the state and each page is
+prerendered — `ADMIN_ROUTES` feeds `generateStaticParams`, which `output: "export"`
+requires. Adding an entity to the nav is an edit to `admin-nav.ts`; adding a *field* is
+just `lib/admin-schema.ts`.
 
-Which project the portal administers is **selectable**:
-`components/portal/PortalProjectProvider.tsx` owns the choice (persisted under
-`portal_selected_project`), and `lib/api-client.ts` reads it in `scopedPath()` /
-`withProject()`. `Project` is the tenant root, so creates against `/projects` must opt out
-of the stamp: `withProject(payload, { scoped: false })`.
+`AdminItemView` dispatches each item: registry-driven entities render through
+`EntityAdmin` (keyed by entity so switching remounts and no open form leaks across
+pages), while the keys in `CUSTOM_ITEMS` are **purpose-built**, because the flat registry
+cannot express a nested aggregate or a non-entity view:
+
+- **Quotes** (`components/QuotesAdmin.tsx`) — a quote header plus its line items, plus
+  the approve / negotiate / reject workflow actions.
+- **Renderings & Sheets** (`components/MediaAdmin.tsx`) — `media_sets` rows attached to
+  the project, a domain, or a space.
+- **Users** (`components/UsersAdmin.tsx`) — read-only; see the role note below.
+
+Auth is `components/AuthGate.tsx` — self-contained, because this app cannot reach the web
+app's `/login`. The admin's role comes from **`app_metadata.role == "admin"`**
+(`apps/api/app/shared/auth.py`), deliberately *not* `user_metadata`, which the user can
+write themselves with only the public anon key.
+
+Which project is administered is **selectable**: `components/ProjectProvider.tsx` owns the
+choice (persisted under `portal_selected_project`), and `lib/api-client.ts` reads it in
+`scopedPath()` / `withProject()`. `Project` is the tenant root, so creates against
+`/projects` must opt out of the stamp: `withProject(payload, { scoped: false })`.
 
 **File uploads** go to Google Drive, not the repo: `POST /uploads` (returns URLs) and
 `POST /media-sets/{id}/files` (appends them to that set's `images`), both admin-only,
@@ -57,7 +115,7 @@ service account as Editor — without it the endpoints return `501`. `GOOGLE_DRI
 grants `anyone: reader` so the site can render the file; it is off by default because
 turning it on publishes every upload to anyone with the link.
 
-`media_sets` (`api/app/contexts/media`, `api/migrations/003_media_sets.sql`) mirrors the
+`media_sets` (`apps/api/app/contexts/media`, `apps/api/migrations/003_media_sets.sql`) mirrors the
 `RenderingSet` shape in `data/renderings.ts` — title/width/height/images/subsections — so
 the same `RenderingGallery` can render DB rows.
 
@@ -70,12 +128,41 @@ only, and their "Renderings" tab is the space's gallery items — the same split
 `data/renderings.ts` and
 `data/drawingSheets.ts` stay the **source of record** — `npm run export:seed` flattens
 their slug-keyed maps into `mediaSets` rows (ids derived from kind + owner slug + index,
-so re-seeding upserts rather than duplicates) and `api/scripts/seed.py` loads them.
+so re-seeding upserts rather than duplicates) and `apps/api/scripts/seed.py` loads them.
 
 One consequence worth knowing: `GET /media-sets` is behind `require_user`, so the tabs
 only populate for a signed-in visitor. That is consistent — the whole 2.0 tree is gated —
 but an anonymous fetch returns 401, and both detail components deliberately swallow that
 into "no tabs" rather than blanking the page.
+
+## Running everything
+
+`./scripts/dev.sh` (root) is the launcher for the whole monorepo:
+
+```bash
+./scripts/dev.sh                 # api(:8099) + web(:3000) + admin(:3001)
+./scripts/dev.sh web admin       # just the two frontends
+./scripts/dev.sh api             # FastAPI only
+./scripts/dev.sh all mobile      # everything, plus Expo
+DB_TARGET=docker ./scripts/dev.sh     # local container instead (sandbox you can wipe)
+```
+
+`npm run dev:all` / `npm run dev:api` are aliases.
+
+**The API talks to Supabase by default** (`DB_TARGET=supabase`, exporting
+`apps/api/.env.supabase`, whose values outrank `apps/api/.env`). Two things follow:
+**every run reads and writes real cloud data**, and **auth is real** — `AUTH_DISABLED` is
+false, so requests need a genuine Supabase token and unauthenticated calls 401. Supabase
+is never auto-seeded; loading the seed there stays a manual act.
+
+`DB_TARGET=docker` is the escape hatch: local container from `docker-compose.yml`, seeded
+when empty, pgweb on :8081, and `AUTH_DISABLED=true` so every request counts as admin.
+
+The launcher refuses to start when a port is already taken and names the offending pid —
+a stale server answering on :3000 or :8099 otherwise looks exactly like code that will
+not reload. It starts uvicorn as `python -m uvicorn` rather than `.venv/bin/uvicorn`,
+because console scripts hardcode an interpreter path in their shebang and this venv
+predates the monorepo move.
 
 ## Commands
 
@@ -87,12 +174,23 @@ npm run lint       # eslint
 npm run build      # static export to out/ (statically generates every space/domain page)
 npm run verify:api # same check against a live API (DATA_SOURCE=api, no seed fallback)
 npm run export:seed # dump the TS seed to JSON for the Python seed loader
+
+npm run dev:admin       # the admin app → http://localhost:3001
+npm run build:admin
+npm run typecheck:admin
+npm run typecheck:all   # every workspace + the mobile app (which is outside them)
+
+npm run mobile:install  # apps/mobile installs on its own — see the workspaces note
+npm run mobile          # Expo dev server
 ```
 
-Backend (optional, `api/` — see `api/README.md` for the full flow):
+The unqualified `npm run dev|build|lint|typecheck|verify` are **`@kr/web` only** — they
+do not touch `apps/admin`. After a change that spans both, run `npm run typecheck:all`.
+
+Backend (optional, `apps/api/` — see `apps/api/README.md` for the full flow):
 
 ```bash
-cd api && source .venv/bin/activate
+cd apps/api && source .venv/bin/activate
 export DATABASE_URL=... AUTH_DISABLED=true PYTHONPATH="$(pwd)"
 python scripts/seed.py      # load the JSON exported by `npm run export:seed`
 python scripts/verify.py    # backend equivalent of npm run verify
@@ -121,7 +219,7 @@ These come from `.specify/memory/constitution.md` — the constitution wins over
    their own reviewed feature, not a drive-by edit.
 5. **Every entity belongs to exactly one project.** All 13 entity types carry a required
    `projectId` (`project_id`, FK to `projects` with `ON DELETE CASCADE` — see
-   `api/migrations/002_project_scope.sql`); `Project` itself is the tenant root and has
+   `apps/api/migrations/002_project_scope.sql`); `Project` itself is the tenant root and has
    none. Collection GETs accept `?projectId=`; omitting it returns every project's rows,
    so **a caller that renders one project must always pass it**. The three surfaces
    differ: 1.0 pins `projects[0]` in `lib/repository.ts`, the portal pins
@@ -185,7 +283,7 @@ gated by the thing they unlock.
 **Identity is Supabase Auth. There is no second user store and no password in our API.**
 `lib/auth-v2.ts` wraps `supabase.auth.signUp` / `signInWithPassword`; the browser talks to
 Supabase directly, and this API only ever *verifies* the resulting JWT. The `identity`
-context (`api/app/contexts/identity`, `api/migrations/004_user_profiles.sql`) adds a
+context (`apps/api/app/contexts/identity`, `apps/api/migrations/004_user_profiles.sql`) adds a
 `user_profiles` row keyed by the token's `sub` — display name, email, role mirror, signup
 date. `POST /me` is idempotent and is called after every sign-in, which is what backfills
 accounts that predate the table.
@@ -223,15 +321,16 @@ fetching stays in the server/repository layer. Examples: `MaterialsLibrary`,
 ## Styling
 
 Tailwind CSS v4, CSS-first. Theme tokens (palette + fonts, light + dark) live in
-`app/globals.css`. **Never hardcode hex in components** — use the tokens. Fonts: Fraunces
+`packages/theme/tokens.css`, imported by each app's `app/globals.css`, so web and admin
+stay one palette. **Never hardcode hex in components** — use the tokens. Fonts: Fraunces
 (serif headings) + Inter (sans body) via `next/font`. Class merge helper is `cn` from
 `lib/utils`; shadcn config is "new-york" / stone. `lib/utils` also has `formatINR` and
 `landedFromEUR` (EUR ex-works → estimated landed INR).
 
 ## Portal security model — important
 
-The portal now gates on **real Supabase Auth** (`components/portal/SupabaseAuthGate.tsx`;
-session in localStorage via `lib/supabase-client.ts`), and portal data is fetched
+The portal now gates on **real Supabase Auth** (`V2AuthGate` via `PortalShell`; session in
+localStorage through `lib/supabase-client.ts`), and portal data is fetched
 client-side through `lib/api-client.ts` rather than baked into the bundle. The old
 obscurity-only `PasswordGate` / `NEXT_PUBLIC_PORTAL_PASSCODE` are **gone** — ignore any
 lingering references in `docs/`.
@@ -243,15 +342,17 @@ prices, payment/contact details) belong in the database behind the API's `requir
 
 ## Deployment
 
-Static export (`output: "export"`, `trailingSlash: true`, unoptimized images) → `out/`.
-Pushing to `main` triggers `.github/workflows/deploy.yml`, which runs `npm run build` and
-publishes `out/` to GitHub Pages. There is no Node runtime in production.
+Both Next apps are static exports (`output: "export"`, `trailingSlash: true`, unoptimized
+images) → `apps/<app>/out/`. Pushing to `main` triggers `.github/workflows/deploy.yml`,
+which builds `apps/web` and publishes its `out/` to GitHub Pages. There is no Node runtime
+in production. The admin app deploys **separately, to its own origin** — it is not part of
+the Pages artifact, and the web app reaches it only via `NEXT_PUBLIC_ADMIN_URL`.
 
 ## Conventions
 
 - TypeScript strict, **no `any`**; `tsc --noEmit` must pass clean.
 - Conventional Commits. Always branch before starting work.
-- `@/*` path alias maps to the repo root.
+- `@/*` maps to the **app** root (`apps/web` or `apps/admin`), not the repo root.
 - `artifacts/` holds original source design assets (PDFs/renders) — local only, gitignored,
   not web-served. Don't import from it at runtime.
 

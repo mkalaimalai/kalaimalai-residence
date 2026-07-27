@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "Residence Archive",
+    "slug": "kr-residence-archive",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "krresidence",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "bundleIdentifier": "dev.kalaimalairesidence.archive",
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "dev.kalaimalairesidence.archive",
+      "adaptiveIcon": {
+        "backgroundColor": "#F6F3EE"
+      }
+    },
+    "plugins": [["expo-router", { "root": "./app" }]],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "// apiUrl": "Overridden at build time by EXPO_PUBLIC_API_URL; this is the dev default.",
+      "apiUrl": "http://localhost:8099",
+      "siteOrigin": "https://mkalaimalai-residence.github.io"
+    }
+  }
+}

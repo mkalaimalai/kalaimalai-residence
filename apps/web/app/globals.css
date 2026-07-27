@@ -1,0 +1,8 @@
+@import "tailwindcss";
+
+/*
+  Theme tokens now live in `packages/theme/tokens.css` so the web app and the admin app
+  (apps/admin) render from one palette instead of two copies that drift. Tailwind itself
+  must still be imported per entry point, which is why only the tokens moved.
+*/
+@import "@kr/theme/tokens.css";

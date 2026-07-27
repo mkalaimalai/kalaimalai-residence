@@ -50,7 +50,9 @@ jobs:
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: ./out
+          # The web app moved to apps/web in the monorepo split; the root `build` script
+          # delegates to that workspace, so only the artifact path changes here.
+          path: ./apps/web/out
 
   deploy:
     needs: build

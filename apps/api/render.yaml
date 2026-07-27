@@ -1,0 +1,29 @@
+# Render blueprint for the Kalaimalai Residence API.
+# Create a Web Service from this repo with root directory `api/`.
+services:
+  - type: web
+    name: kalaimalai-residence-api
+    runtime: python
+    rootDir: apps/api
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /healthz
+    envVars:
+      - key: DATABASE_URL
+        sync: false # set to the Supabase POOLED connection string (port 6543)
+      - key: SUPABASE_JWT_SECRET
+        sync: false # only verifies LEGACY HS256 tokens
+      # Required whenever the project signs sessions with JWT signing keys (ES256),
+      # which is the default for projects created from mid-2025 on: the public keys are
+      # fetched from <SUPABASE_URL>/auth/v1/.well-known/jwks.json. Without it every real
+      # portal login 401s, because the shared secret cannot verify an ES256 signature.
+      - key: SUPABASE_URL
+        sync: false # https://<project-ref>.supabase.co
+      # Every browser origin that calls this API. The admin app (apps/admin) is a
+      # separate deployable on its own origin — add its production URL here too, or its
+      # requests fail as opaque "Failed to fetch" errors.
+      - key: CORS_ORIGINS
+        value: https://mkalaimalai-residence.github.io,http://localhost:3000,http://localhost:3001
+      - key: AUTH_DISABLED
+        value: "false"

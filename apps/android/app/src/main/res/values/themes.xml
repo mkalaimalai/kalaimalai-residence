@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Compose paints the whole UI; this only needs to hand off without a flash. -->
+    <style name="Theme.KalaimalaiResidence" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>

@@ -1,0 +1,10 @@
+{
+  "name": "@kr/theme",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Design tokens (palette, radius, fonts) shared by the web app and the admin app.",
+  "exports": {
+    "./tokens.css": "./tokens.css"
+  },
+  "files": ["tokens.css"]
+}

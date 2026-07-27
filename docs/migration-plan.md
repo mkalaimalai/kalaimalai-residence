@@ -33,9 +33,9 @@ return the locked `types/index.ts` shapes — call sites and `lib/relations.ts` 
 
 ---
 
-## Backend: FastAPI as a DDD / hexagonal modular monolith (`api/`)
+## Backend: FastAPI as a DDD / hexagonal modular monolith (`apps/api/`)
 
-One deployable FastAPI app (Render deploys from the `api/` subdir), internally split into
+One deployable FastAPI app (Render deploys from the `apps/api/` subdir), internally split into
 **bounded contexts**, each with the four hexagonal layers from `architecture.md §7`. The
 domain layer is pure (no SQLAlchemy/Supabase imports); persistence sits behind a repository
 **port** implemented by an **adapter** in `infrastructure/`. Cross-domain access is
@@ -251,11 +251,11 @@ New **`/portal/admin`** area (auth-gated, same Supabase session) for CRUD:
 ## Seeding & verification
 
 - **New `scripts/export-seed.ts`** (run via existing `tsx`; add `"export:seed"` script) —
-  imports every `data/*` module and writes `api/scripts/seed.json` (camelCase, the TS shape).
+  imports every `data/*` module and writes `apps/api/scripts/seed.json` (camelCase, the TS shape).
   This is the only new place besides the repository fallback allowed to touch `data/*`.
-- **`api/scripts/seed.py`** — idempotent upsert of `seed.json` into Postgres (camelCase →
+- **`apps/api/scripts/seed.py`** — idempotent upsert of `seed.json` into Postgres (camelCase →
   snake_case via mappers). Run once against Supabase.
-- **`api/scripts/verify.py`** — server-side mirror of `scripts/verify-data.ts`: non-zero
+- **`apps/api/scripts/verify.py`** — server-side mirror of `scripts/verify-data.ts`: non-zero
   per-entity counts against known seed totals (spaces 16, domains 14, vendors 8, procurement
   6, drawings 6, gallery 8, materials 5, project 1, 3 each for the rest), every `*_id(s)`
   resolves, one relation chain walked. Gate before wiring the frontend.
@@ -269,7 +269,7 @@ New **`/portal/admin`** area (auth-gated, same Supabase session) for CRUD:
 
 ## Deployment & secrets
 
-- **Render Web Service**, root dir `api/`: build `pip install -r requirements.txt`, start
+- **Render Web Service**, root dir `apps/api/`: build `pip install -r requirements.txt`, start
   `uvicorn app.main:app --host 0.0.0.0 --port $PORT`, health check `/healthz`. Free tier
   sleeps when idle.
 - **Supabase**: one project; tables via `migrations/001_init.sql`; Auth enabled; portal
@@ -289,18 +289,18 @@ New **`/portal/admin`** area (auth-gated, same Supabase session) for CRUD:
 
 ## Phased implementation order
 
-- **Phase 0 — Backend skeleton + schema:** `api/` app, `shared/` (camel/db/auth), the six
+- **Phase 0 — Backend skeleton + schema:** `apps/api/` app, `shared/` (camel/db/auth), the six
   contexts scaffolded with all four hexagonal layers, SQLAlchemy ORM + `migrations/001_init.sql`
   for ~17 tables, `CamelModel` schemas mirroring `types/index.ts`. Create tables in Supabase.
-- **Phase 1 — Seed + server verify:** `scripts/export-seed.ts` → `seed.json`; `api/scripts/
-  seed.py`; `api/scripts/verify.py` passes. **Gate.**
+- **Phase 1 — Seed + server verify:** `scripts/export-seed.ts` → `seed.json`; `apps/api/scripts/
+  seed.py`; `apps/api/scripts/verify.py` passes. **Gate.**
 - **Phase 2 — Read API:** GET controllers + in-process service clients wired in
   `bootstrap.py`; CORS; deploy to Render; smoke-test each endpoint returns camelCase.
 - **Phase 3 — Public site → API:** modify `lib/repository.ts` (`DATA_SOURCE` switch + memo +
   fallback); `npm run verify:api` green; `DATA_SOURCE=api npm run build` enumerates all 16
   space slugs + 14 domain slugs.
 - **Phase 4 — Auth + portal live data:** `lib/supabase-client.ts`, `SupabaseAuthGate`,
-  `lib/api-client.ts`; `api/app/shared/auth.py` + `require_user` on portal endpoints; convert
+  `lib/api-client.ts`; `apps/api/app/shared/auth.py` + `require_user` on portal endpoints; convert
   the 10 portal pages to thin shell + client wrapper preserving `*Table` props.
 - **Phase 5 — Write API + admin CRUD:** add `Create…/Update…` use cases + commands +
   `POST/PATCH` controllers per context, with synchronous service-client referential
@@ -353,9 +353,9 @@ New **`/portal/admin`** area (auth-gated, same Supabase session) for CRUD:
 
 ## Critical files
 
-**New backend:** `api/app/main.py`, `api/app/bootstrap.py`, `api/app/shared/{camel,db,auth}.py`,
-`api/app/contexts/<ctx>/{domain,application,infrastructure,interfaces}/*` (six contexts),
-`api/migrations/001_init.sql`, `api/scripts/{seed,verify}.py`.
+**New backend:** `apps/api/app/main.py`, `apps/api/app/bootstrap.py`, `apps/api/app/shared/{camel,db,auth}.py`,
+`apps/api/app/contexts/<ctx>/{domain,application,infrastructure,interfaces}/*` (six contexts),
+`apps/api/migrations/001_init.sql`, `apps/api/scripts/{seed,verify}.py`.
 
 **New frontend:** `lib/supabase-client.ts`, `lib/api-client.ts` (get/post/patch),
 `lib/admin-schema.ts`, `components/portal/SupabaseAuthGate.tsx`,

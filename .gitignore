@@ -2,6 +2,10 @@
 
 # dependencies
 /node_modules
+# Workspaces keep their own node_modules for anything npm can't hoist.
+node_modules/
+apps/*/.expo/
+apps/*/expo-env.d.ts
 /.pnp
 .pnp.*
 .yarn/*
@@ -16,6 +20,9 @@
 # next.js
 /.next/
 /out/
+apps/*/.next/
+apps/*/out/
+apps/*/tsconfig.tsbuildinfo
 
 # production
 /build
@@ -36,11 +43,11 @@ yarn-error.log*
 !api/.env.example
 
 # python backend (api/)
-api/.venv/
+**/.venv/
 **/__pycache__/
 *.pyc
 # generated seed bridge — regenerate with `npm run export:seed`
-api/scripts/seed.json
+apps/api/scripts/seed.json
 
 # vercel
 .vercel
@@ -70,3 +77,12 @@ credentials.json
 .google-oauth-token.json
 api/.google-oauth-client.json
 api/.google-oauth-token.json
+
+# Xcode (apps/ios). The .xcodeproj itself IS tracked — it is the build definition — but
+# per-user state inside it is not: xcuserdata holds window layout, breakpoints and the
+# personal scheme list, and would conflict on every pull. The shared scheme lives in
+# xcshareddata and is tracked.
+xcuserdata/
+*.xcuserstate
+DerivedData/
+*.xcworkspace/xcuserdata/

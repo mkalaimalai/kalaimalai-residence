@@ -2,35 +2,28 @@
   "name": "kalaimalai-residence",
   "version": "0.1.0",
   "private": true,
+  "//workspaces": "apps/mobile is deliberately NOT a member: React Native needs React 18 and Next needs React 19, so npm splits Expo across two node_modules and Metro breaks. It installs on its own and consumes the packages via file: deps.",
+  "workspaces": [
+    "packages/*",
+    "apps/web",
+    "apps/admin"
+  ],
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint",
-    "typecheck": "tsc --noEmit",
-    "verify": "tsx scripts/verify-data.ts",
-    "verify:api": "DATA_SOURCE=api ALLOW_SEED_FALLBACK=0 tsx scripts/verify-data.ts",
-    "export:seed": "tsx scripts/export-seed.ts"
-  },
-  "dependencies": {
-    "@supabase/supabase-js": "^2.108.0",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "lucide-react": "^1.17.0",
-    "next": "16.2.7",
-    "react": "19.2.4",
-    "react-dom": "19.2.4",
-    "tailwind-merge": "^3.6.0"
-  },
-  "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.2.7",
-    "tailwindcss": "^4",
-    "tsx": "^4.22.4",
-    "typescript": "^5"
+    "dev:all": "./scripts/dev.sh all",
+    "dev:api": "./scripts/dev.sh api",
+    "dev": "npm run dev --workspace @kr/web",
+    "build": "npm run build --workspace @kr/web",
+    "start": "npm run start --workspace @kr/web",
+    "lint": "npm run lint --workspace @kr/web",
+    "typecheck": "npm run typecheck --workspace @kr/web",
+    "verify": "npm run verify --workspace @kr/web",
+    "verify:api": "npm run verify:api --workspace @kr/web",
+    "export:seed": "npm run export:seed --workspace @kr/web",
+    "typecheck:all": "npm run typecheck --workspaces --if-present && npm --prefix apps/mobile run typecheck",
+    "mobile": "npm --prefix apps/mobile run start",
+    "mobile:install": "npm --prefix apps/mobile install",
+    "dev:admin": "npm run dev --workspace @kr/admin",
+    "build:admin": "npm run build --workspace @kr/admin",
+    "typecheck:admin": "npm run typecheck --workspace @kr/admin"
   }
 }
