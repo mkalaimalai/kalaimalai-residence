@@ -52,34 +52,35 @@ What it does **not** share: components (React Native has no DOM) and the theme, 
 re-declared natively in `lib/theme.ts` because RN has no CSS variables. Keep that file in
 sync with `app/globals.css` by hand.
 
-## Known issue — bundling is not working yet
+## Why this app is not an npm workspace member
 
-`npx expo export --platform ios` currently fails:
+**It installs on its own** — that is deliberate, and the one thing to preserve when
+changing dependencies here.
+
+React Native 0.76 requires React **18.3.1**; Next.js 16 requires React **19**. With the
+app inside the workspace, npm hoisted part of Expo to the repo root and left
+`expo-router`, `react-native` and `react` nested in `apps/mobile/node_modules`. Metro then
+loaded `babel-preset-expo` from one tree and `expo-router` from the other, the preset
+never inlined `EXPO_ROUTER_APP_ROOT`, and every bundle died on:
 
 ```
-node_modules/expo-router/_ctx.ios.js: Invalid call at line 2: process.env.EXPO_ROUTER_APP_ROOT
-First argument of `require.context` should be a string denoting the directory to require.
+expo-router/_ctx.ios.js: Invalid call: process.env.EXPO_ROUTER_APP_ROOT
 ```
 
-`babel-preset-expo` is what inlines that env var, and in this workspace it is not being
-applied to `expo-router`'s own files. The app's TypeScript is fine — `npm run typecheck
---workspace @kr/mobile` is clean — this is purely Metro/Babel wiring.
+Adding a `babel.config.js`, exporting the env var by hand, and
+`resolver.disableHierarchicalLookup` all failed to fix it, because none of them address
+the split install. Taking the app out of the workspace and depending on the shared
+packages via `file:` puts one consistent Expo tree in `apps/mobile/node_modules`, and both
+platforms bundle.
 
-Ruled out so far:
+Consequences to keep in mind:
 
-- Missing Babel config — added `babel.config.js`; verified Metro reads it.
-- Version skew — expo 52.0.49, expo-router 4.0.22, react-native 0.76.5,
-  babel-preset-expo 12.0.12, @expo/metro-config 0.19.12 are all consistent for SDK 52.
-- Setting `EXPO_ROUTER_APP_ROOT` in the shell, and in `babel.config.js` before the preset
-  loads — neither reaches the transform.
-- `resolver.disableHierarchicalLookup = true` (the usual monorepo advice) made it worse:
-  npm hoists most of Expo to the root but leaves `expo-router` and `react-native` in
-  `apps/mobile/node_modules`, so both lookup paths are needed. It is now left on.
-
-Next things to try: pinning the install layout so Expo is not split across two
-`node_modules` (an `.npmrc` with a nested install strategy, or moving the app out of the
-workspace and depending on the packages by `file:`), or running Metro with the repo root
-as the project root.
+- `npm install` at the repo root does **not** install this app. Run `npm install` in
+  `apps/mobile` too (the root `mobile` script uses `npm --prefix`).
+- `file:` deps are copied, not symlinked, on install — after changing
+  `packages/contracts` or `packages/api-client`, re-run `npm install` here to pick it up.
+  Metro still watches the real sources during `expo start`, so this only bites on a cold
+  install.
 
 ## Not built yet
 

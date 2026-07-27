@@ -87,3 +87,11 @@ it is the lowest-value/highest-blast-radius step. Do it last, on its own commit.
   optional argument, so a dropped scope fails silently by returning every project's rows.
 - **No portal-only field reaches a public surface.** The mobile app uses
   `/projects/public` for exactly this reason.
+
+## Note on `apps/mobile` and workspaces
+
+The mobile app is intentionally **not** an npm workspace member. React Native needs React
+18 and Next needs React 19, so npm splits Expo across two `node_modules` trees and Metro
+cannot bundle. It installs separately and consumes `@kr/contracts` / `@kr/api-client` via
+`file:` deps — see `apps/mobile/README.md`. Stage 2 does not change this: moving the web
+app to `apps/web` leaves the mobile app exactly where it is.
