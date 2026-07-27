@@ -9,6 +9,8 @@
     "apps/admin"
   ],
   "scripts": {
+    "dev:all": "./scripts/dev.sh all",
+    "dev:api": "./scripts/dev.sh api",
     "dev": "npm run dev --workspace @kr/web",
     "build": "npm run build --workspace @kr/web",
     "start": "npm run start --workspace @kr/web",

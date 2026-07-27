@@ -2,7 +2,7 @@
  * Two-level navigation for the admin app.
  *
  * Level 1 is the icon rail (sections); level 2 is the panel listing that section's
- * items, optionally grouped. Every item maps to `/admin/<section>/<item>`, so the URL
+ * items, optionally grouped. Every item maps to `/<section>/<item>`, so the URL
  * is shareable and the static export can prerender each one.
  *
  * Item keys are either a key from `ENTITIES` in `lib/admin-schema.ts` (rendered by the
@@ -90,7 +90,7 @@ export const SECTION_BY_KEY: Record<string, NavSection> = Object.fromEntries(
   ADMIN_NAV.map((s) => [s.key, s]),
 );
 
-/** Every `/admin/<section>/<item>` pair — the static export needs them all up front. */
+/** Every `/<section>/<item>` pair — the static export needs them all up front. */
 export const ADMIN_ROUTES = ADMIN_NAV.flatMap((s) =>
   s.items.map((i) => ({ section: s.key, item: i.key })),
 );

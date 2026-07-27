@@ -1,37 +1,34 @@
 "use client";
 
 /**
- * Record management moved to the standalone admin app at `/admin`, which has the
- * two-level navigation and one route per entity.
+ * Record management moved to the **admin app**, which is now a separate endpoint
+ * (`apps/admin`, its own origin and its own deploy) rather than a route in this app.
  *
- * This route stays as a redirect rather than being deleted: it is the URL that was
- * linked from the portal sidebar and is likely bookmarked. There is no server in the
- * static export, so the redirect happens client-side, with a real link behind it for
- * anyone who lands here with JS disabled or before hydration.
+ * This route stays as a redirect because it is the URL the portal sidebar used to link
+ * to and is likely bookmarked. The target is a different origin, so this is a
+ * `window.location` assignment rather than a router navigation, and a plain `<a>` sits
+ * behind it for anyone who lands here before hydration.
  */
 import { useEffect } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { ADMIN_URL } from "@/lib/admin-url";
 
 export default function PortalAdminMoved() {
-  const router = useRouter();
-
   useEffect(() => {
-    router.replace("/admin");
-  }, [router]);
+    window.location.replace(ADMIN_URL);
+  }, []);
 
   return (
     <div className="space-y-3">
       <h1 className="font-serif text-2xl text-foreground">Admin has moved</h1>
       <p className="text-sm text-muted-foreground">
-        Record management now lives in its own app.
+        Record management now runs as its own app.
       </p>
-      <Link
-        href="/admin"
+      <a
+        href={ADMIN_URL}
         className="inline-block rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background transition-opacity hover:opacity-90"
       >
         Go to Admin
-      </Link>
+      </a>
     </div>
   );
 }

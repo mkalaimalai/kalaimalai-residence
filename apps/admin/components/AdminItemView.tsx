@@ -11,10 +11,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { apiGet, scopedPath } from "@/lib/api-client";
 import { ENTITY_BY_KEY } from "@/lib/admin-schema";
-import { usePortalProject } from "@/components/portal/PortalProjectProvider";
-import { MediaAdmin } from "@/components/portal/admin/MediaAdmin";
-import { QuotesAdmin } from "@/components/portal/admin/QuotesAdmin";
-import { UsersAdmin } from "@/components/portal/admin/UsersAdmin";
+import { useProject } from "@/components/ProjectProvider";
+import { MediaAdmin } from "@/components/MediaAdmin";
+import { QuotesAdmin } from "@/components/QuotesAdmin";
+import { UsersAdmin } from "@/components/UsersAdmin";
 import { EntityAdmin } from "./EntityAdmin";
 
 type NamedRow = { id: string; name: string };
@@ -59,7 +59,7 @@ export function AdminItemView({
   section: string;
   item: string;
 }) {
-  const { selectedId: projectId } = usePortalProject();
+  const { selectedId: projectId } = useProject();
   const vendors = useRefList("vendors", projectId);
   const boqs = useRefList("boq", projectId);
   const domains = useRefList("domains", projectId);

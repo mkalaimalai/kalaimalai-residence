@@ -16,7 +16,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { Loader2, ShieldCheck, User } from "lucide-react";
 import { api, ApiError } from "@/lib/api-client";
-import type { UserProfile, UserRole } from "@/types/api";
+import type { UserProfile, UserRole } from "@/lib/api-types";
+import { useAuth } from "@/components/AuthGate";
 import { cn } from "@/lib/utils";
 
 const ROLES: { value: UserRole; label: string; hint: string }[] = [
@@ -26,9 +27,8 @@ const ROLES: { value: UserRole; label: string; hint: string }[] = [
 
 export function UsersAdmin() {
   const [users, setUsers] = useState<UserProfile[] | null>(null);
-  // Own id, to mark "you" and to disable the self-demotion control. Fetched here rather
-  // than threaded through props: `useAuth` exposes email and isAdmin but not the id.
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  // Own id, to mark "you" and to disable the self-demotion control.
+  const { userId: currentUserId } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [note, setNote] = useState<string | null>(null);
   // Which row is mid-write, so only that row's control disables.
@@ -53,9 +53,6 @@ export function UsersAdmin() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     void load();
-    // Failure is tolerable — worst case the "you" marker is missing and the server
-    // still refuses a self-demotion.
-    api.me().then((p) => setCurrentUserId(p.id)).catch(() => undefined);
   }, [load]);
 
   const changeRole = async (user: UserProfile, role: UserRole) => {

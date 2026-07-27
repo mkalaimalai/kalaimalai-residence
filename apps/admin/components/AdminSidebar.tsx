@@ -57,11 +57,11 @@ export function AdminSidebar({
         className="flex w-16 flex-col items-center gap-1 border-r border-border py-3"
       >
         <Link
-          href="/admin"
+          href="/"
           aria-label="Admin home"
           className={cn(
             "mb-2 flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-background font-serif text-sm text-foreground",
-            pathname === "/admin/" || pathname === "/admin"
+            pathname === "/"
               ? "border-foreground"
               : "hover:border-foreground",
           )}
@@ -75,7 +75,7 @@ export function AdminSidebar({
           return (
             <Link
               key={s.key}
-              href={`/admin/${s.key}/${s.items[0].key}`}
+              href={`/${s.key}/${s.items[0].key}`}
               title={s.label}
               aria-label={s.label}
               aria-current={active ? "true" : undefined}
@@ -130,7 +130,7 @@ export function AdminSidebar({
                 return (
                   <li key={item.key}>
                     <Link
-                      href={`/admin/${section.key}/${item.key}`}
+                      href={`/${section.key}/${item.key}`}
                       aria-current={active ? "page" : undefined}
                       className={cn(
                         "flex items-center gap-2 border-l-2 px-4 py-1.5 text-sm transition-colors",

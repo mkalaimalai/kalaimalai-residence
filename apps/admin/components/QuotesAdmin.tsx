@@ -15,7 +15,7 @@ import { Plus } from "lucide-react";
 import { ApiError, apiGet, apiPatch, apiPost } from "@/lib/api-client";
 import { StatusBadge } from "@/components/StatusBadge";
 import { cn, formatINR } from "@/lib/utils";
-import type { Quote, QuoteApproval, QuoteLineItem } from "@/types/api";
+import type { Quote, QuoteApproval, QuoteLineItem } from "@/lib/api-types";
 
 export interface RefRow {
   id: string;

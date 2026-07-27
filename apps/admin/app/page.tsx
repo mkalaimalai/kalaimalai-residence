@@ -35,7 +35,7 @@ export default function AdminHome() {
               {section.items.map((item) => (
                 <li key={item.key}>
                   <Link
-                    href={`/admin/${section.key}/${item.key}`}
+                    href={`/${section.key}/${item.key}`}
                     className="inline-block rounded-md border border-border px-2.5 py-1 text-xs text-foreground transition-colors hover:bg-muted"
                   >
                     {item.label}

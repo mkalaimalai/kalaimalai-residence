@@ -1,30 +1,34 @@
 "use client";
 
 /**
- * Real auth gate for the portal — replaces the obscurity-only PasswordGate.
+ * Auth for the admin app — self-contained, because this app is its own endpoint and
+ * cannot lean on the web app's `/login` route.
  *
- * Shows a Supabase email/password sign-in form until there's a session, then renders the
- * portal. Exposes the signed-in user + admin role via `useAuth()` so admin-only UI (the
- * write screens) can be hidden from non-admins. The server still enforces the admin role
- * on every write — this is UX, not the security boundary.
+ * Shows an email/password form until there is a Supabase session, then renders the app
+ * and exposes the signed-in identity via `useAuth()`.
+ *
+ * The role comes from **`app_metadata.role`**, never `user_metadata`: the latter is
+ * writable by the user themselves with only the public anon key
+ * (`updateUser({ data: { role: "admin" } })`), so trusting it would let any account
+ * self-promote. The API enforces the same claim on every write — this is UX, not the
+ * security boundary.
  */
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { Lock } from "lucide-react";
 import { getSupabase, isSupabaseConfigured } from "@/lib/supabase-client";
 
 interface AuthCtx {
+  /** Supabase user id — the token's `sub`, and the key of `user_profiles`. Needed by
+   *  the Users screen to mark "you" and to disable the self-demotion control. */
+  userId: string | null;
   email: string | null;
   isAdmin: boolean;
   signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthCtx>({
+  userId: null,
   email: null,
   isAdmin: false,
   signOut: async () => {},
@@ -34,11 +38,20 @@ export function useAuth(): AuthCtx {
   return useContext(AuthContext);
 }
 
-export function SupabaseAuthGate({ children }: { children: React.ReactNode }) {
+function Centered({ children }: { children: React.ReactNode }) {
+  return (
+    <main className="mx-auto flex min-h-screen max-w-sm flex-col items-center justify-center gap-6 px-6 text-center">
+      <span className="flex h-12 w-12 items-center justify-center rounded-full border border-border bg-card text-muted-foreground">
+        <Lock size={20} />
+      </span>
+      {children}
+    </main>
+  );
+}
+
+export function AuthGate({ children }: { children: React.ReactNode }) {
   const supabase = getSupabase();
   const [session, setSession] = useState<Session | null>(null);
-  // When Supabase isn't configured we're immediately "ready" (the not-configured view
-  // renders below) — so the effect never needs a synchronous setState.
   const [ready, setReady] = useState(() => !isSupabaseConfigured);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -51,33 +64,28 @@ export function SupabaseAuthGate({ children }: { children: React.ReactNode }) {
       setSession(data.session);
       setReady(true);
     });
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
-      setSession(s);
-    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
     return () => sub.subscription.unsubscribe();
   }, [supabase]);
 
   if (!isSupabaseConfigured) {
     return (
-      <main className="mx-auto flex max-w-md flex-1 flex-col items-center justify-center gap-4 px-6 py-32 text-center">
-        <span className="flex h-12 w-12 items-center justify-center rounded-full border border-border bg-card text-muted-foreground">
-          <Lock size={20} />
-        </span>
-        <h1 className="font-serif text-2xl text-foreground">Portal not configured</h1>
+      <Centered>
+        <h1 className="font-serif text-2xl text-foreground">Admin not configured</h1>
         <p className="text-sm text-muted-foreground">
           Set <code>NEXT_PUBLIC_SUPABASE_URL</code>,{" "}
           <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code> and{" "}
-          <code>NEXT_PUBLIC_API_BASE_URL</code> to enable the control center.
+          <code>NEXT_PUBLIC_API_BASE_URL</code>.
         </p>
-      </main>
+      </Centered>
     );
   }
 
   if (!ready) {
     return (
-      <main className="flex flex-1 items-center justify-center py-32 text-sm text-muted-foreground">
+      <div className="flex min-h-screen items-center justify-center text-sm text-muted-foreground">
         Loading…
-      </main>
+      </div>
     );
   }
 
@@ -96,14 +104,11 @@ export function SupabaseAuthGate({ children }: { children: React.ReactNode }) {
 
   if (!session) {
     return (
-      <main className="mx-auto flex max-w-sm flex-1 flex-col items-center justify-center gap-6 px-6 py-32 text-center">
-        <span className="flex h-12 w-12 items-center justify-center rounded-full border border-border bg-card text-muted-foreground">
-          <Lock size={20} />
-        </span>
-        <div className="space-y-2">
-          <h1 className="font-serif text-3xl text-foreground">Private Portal</h1>
+      <Centered>
+        <div className="space-y-1">
+          <h1 className="font-serif text-3xl text-foreground">Admin</h1>
           <p className="text-sm text-muted-foreground">
-            Sign in to open the project control center.
+            Sign in to manage projects and records.
           </p>
         </div>
         <form onSubmit={submit} className="w-full space-y-3">
@@ -133,21 +138,24 @@ export function SupabaseAuthGate({ children }: { children: React.ReactNode }) {
             {busy ? "Signing in…" : "Sign in"}
           </button>
         </form>
-      </main>
+      </Centered>
     );
   }
 
-  // app_metadata mirrors what the API trusts (see api/app/shared/auth.py) — it is
-  // service_role-only, unlike user_metadata which the user can write themselves.
-  const role =
-    (session.user.app_metadata?.role as string | undefined) ?? "viewer";
-  const value: AuthCtx = {
-    email: session.user.email ?? null,
-    isAdmin: role === "admin",
-    signOut: async () => {
-      await supabase?.auth.signOut();
-    },
-  };
+  const role = (session.user.app_metadata?.role as string | undefined) ?? "viewer";
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider
+      value={{
+        userId: session.user.id,
+        email: session.user.email ?? null,
+        isAdmin: role === "admin",
+        signOut: async () => {
+          await supabase?.auth.signOut();
+        },
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 }

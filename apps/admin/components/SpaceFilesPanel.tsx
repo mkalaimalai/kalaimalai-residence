@@ -24,7 +24,7 @@ import {
   apiUpload,
   ApiError,
 } from "@/lib/api-client";
-import type { MediaKind, MediaSet } from "@/types/api";
+import type { MediaKind, MediaSet } from "@/lib/api-types";
 import { cn } from "@/lib/utils";
 
 const KINDS: { value: MediaKind; label: string }[] = [

@@ -18,10 +18,10 @@ import {
   withProject,
 } from "@/lib/api-client";
 import { ENTITY_BY_KEY, type EntityDef, type RefKey } from "@/lib/admin-schema";
-import { EntityForm } from "@/components/portal/EntityForm";
-import { SpaceFilesPanel } from "@/components/portal/admin/SpaceFilesPanel";
-import { useAuth } from "@/components/v2/V2AuthGate";
-import { usePortalProject } from "@/components/portal/PortalProjectProvider";
+import { EntityForm } from "@/components/EntityForm";
+import { SpaceFilesPanel } from "@/components/SpaceFilesPanel";
+import { useAuth } from "@/components/AuthGate";
+import { useProject } from "@/components/ProjectProvider";
 import { cn } from "@/lib/utils";
 
 type Row = Record<string, unknown>;
@@ -36,7 +36,7 @@ const REF_KEYS: RefKey[] = [
 export function EntityAdmin({ entityKey }: { entityKey: string }) {
   const entity: EntityDef | undefined = ENTITY_BY_KEY[entityKey];
   const { isAdmin } = useAuth();
-  const { selectedId: projectId } = usePortalProject();
+  const { selectedId: projectId } = useProject();
 
   const [refs, setRefs] = useState<RefRows>({});
   const [rows, setRows] = useState<Row[]>([]);

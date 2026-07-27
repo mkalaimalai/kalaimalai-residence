@@ -3,7 +3,7 @@
 /**
  * Admin app chrome: auth gate → project scope → two-level nav + top bar.
  *
- * Deliberately reuses `V2AuthGate` and `PortalProjectProvider` rather than
+ * Deliberately reuses `AuthGate` and `ProjectProvider` rather than
  * forking them — the admin app administers the same projects as the portal, and a
  * second source of truth for "which project am I in" is exactly the bug that made the
  * old pinned `PORTAL_PROJECT_ID` painful.
@@ -11,17 +11,17 @@
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import {
-  PortalProjectProvider,
-  PortalProjectPicker,
-} from "@/components/portal/PortalProjectProvider";
-import { V2AuthGate, useAuth } from "@/components/v2/V2AuthGate";
+  ProjectProvider,
+  ProjectPicker,
+} from "@/components/ProjectProvider";
+import { AuthGate, useAuth } from "@/components/AuthGate";
 import { SECTION_BY_KEY, findItem } from "@/lib/admin-nav";
 import { AdminSidebar } from "./AdminSidebar";
 
 /** `/admin/catalog/spaces/` → `["catalog", "spaces"]`; tolerates the trailing slash. */
 function parsePath(pathname: string): [string | null, string | null] {
-  const parts = pathname.split("/").filter(Boolean); // ["admin", section?, item?]
-  return [parts[1] ?? null, parts[2] ?? null];
+  const parts = pathname.split("/").filter(Boolean); // ["catalog"?, "spaces"?]
+  return [parts[0] ?? null, parts[1] ?? null];
 }
 
 function AdminChrome({ children }: { children: React.ReactNode }) {
@@ -65,7 +65,7 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
           </nav>
 
           <div className="flex items-center gap-3">
-            <PortalProjectPicker />
+            <ProjectPicker />
             {email && (
               <span className="hidden text-xs text-muted-foreground sm:inline">
                 {email}
@@ -90,10 +90,10 @@ function AdminChrome({ children }: { children: React.ReactNode }) {
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   return (
-    <V2AuthGate>
-      <PortalProjectProvider>
+    <AuthGate>
+      <ProjectProvider>
         <AdminChrome>{children}</AdminChrome>
-      </PortalProjectProvider>
-    </V2AuthGate>
+      </ProjectProvider>
+    </AuthGate>
   );
 }

@@ -1,3 +1,4 @@
+import path from "path";
 import type { NextConfig } from "next";
 
 /**
@@ -12,7 +13,9 @@ const nextConfig: NextConfig = {
   output: "export",
   images: { unoptimized: true },
   trailingSlash: true,
-  turbopack: { root: __dirname },
+  // Root is the monorepo, not this app: `next` is hoisted to the root
+  // node_modules by npm workspaces, so a per-app root cannot resolve it.
+  turbopack: { root: path.join(__dirname, "..", "..") },
 };
 
 export default nextConfig;

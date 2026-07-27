@@ -14,7 +14,7 @@ import { Plus, Trash2, X } from "lucide-react";
 import { apiGet, apiPatch, apiPost, ApiError } from "@/lib/api-client";
 import { getSupabase } from "@/lib/supabase-client";
 import { cn } from "@/lib/utils";
-import type { MediaKind, MediaSet, MediaSubsection } from "@/types/api";
+import type { MediaKind, MediaSet, MediaSubsection } from "@/lib/api-types";
 
 type NamedRow = { id: string; name: string };
 

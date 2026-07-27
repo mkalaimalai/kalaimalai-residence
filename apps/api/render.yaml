@@ -20,7 +20,10 @@ services:
       # portal login 401s, because the shared secret cannot verify an ES256 signature.
       - key: SUPABASE_URL
         sync: false # https://<project-ref>.supabase.co
+      # Every browser origin that calls this API. The admin app (apps/admin) is a
+      # separate deployable on its own origin — add its production URL here too, or its
+      # requests fail as opaque "Failed to fetch" errors.
       - key: CORS_ORIGINS
-        value: https://mkalaimalai-residence.github.io,http://localhost:3000
+        value: https://mkalaimalai-residence.github.io,http://localhost:3000,http://localhost:3001
       - key: AUTH_DISABLED
         value: "false"
