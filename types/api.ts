@@ -126,3 +126,18 @@ export interface UploadedFile {
   mimeType: string;
   size: number;
 }
+
+/** App role. Authorization reads `app_metadata.role` on the token; the profile row
+ * below only mirrors it for display. */
+export type UserRole = "viewer" | "admin";
+
+/** A `user_profiles` row — the app's record of a signed-up person. Credentials,
+ * email verification and sessions all stay in Supabase Auth. */
+export interface UserProfile {
+  id: string;
+  email: string | null;
+  displayName: string | null;
+  role: UserRole;
+  createdAt: string;
+  updatedAt: string;
+}

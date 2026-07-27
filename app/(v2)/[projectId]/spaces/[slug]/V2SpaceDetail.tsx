@@ -57,9 +57,10 @@ export function V2SpaceDetail({ slug, seed }: { slug: string; seed: SeedData }) 
   const domainSet = new Set(space.domainIds);
   const relatedSpaces = spaces.filter((s) => s.id !== space.id && s.domainIds.some((d) => domainSet.has(d))).slice(0, 3);
   const spaceGallery = gallery.filter((g) => g.spaceId === space.id);
-  // Spaces own drawing sheets only; renderings are grouped by domain, and the
-  // "Renderings" tab here is the space's gallery items (same split as 1.0).
-  const { drawings: drawingSets } = splitByKind(media);
+  // Both kinds, same as a domain page: the admin panel uploads renderings *and* drawing
+  // sheets per space, so both have to reach the tabs. The renderings tab additionally
+  // shows the space's seed gallery items, which 1.0 has and the DB does not.
+  const { renderings: renderingSets, drawings: drawingSets } = splitByKind(media);
 
   return (
     <main className="flex flex-col">
@@ -145,6 +146,7 @@ export function V2SpaceDetail({ slug, seed }: { slug: string; seed: SeedData }) 
           trees should present the same thing the same way. */}
       <SpaceMediaTabs
         galleryItems={spaceGallery}
+        renderingSets={renderingSets}
         drawingSets={drawingSets}
         drawingChips={relDrawings.map((d) => ({
           id: d.id,

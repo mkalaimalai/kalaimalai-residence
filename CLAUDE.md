@@ -28,10 +28,21 @@ Supabase Postgres (see `api/README.md` and `docs/migration-plan.md`). It is **op
 
 ### Admin screens
 
-`/portal/admin` is one tabbed page. Most tabs are **generated** from the field registry in
-`lib/admin-schema.ts` and rendered by the generic `EntityForm` — adding a field is a
-registry edit, not new form code. Two tabs are **purpose-built**, because the flat
-registry cannot express a nested aggregate:
+Record management lives in a **standalone admin app at `/admin`** (`app/admin/**` +
+`components/admin/**`). `/portal/admin` is now only a client-side redirect to it — the
+portal keeps its read-oriented dashboards.
+
+The admin app has **two-level navigation**: `lib/admin-nav.ts` declares sections (the
+icon rail — Catalog, Delivery, Commercial, Media) and the items inside each (the second
+panel, grouped by heading). Every item is a real route, `/admin/<section>/<item>`, so the
+URL is the state and each page is prerendered — `ADMIN_ROUTES` feeds
+`generateStaticParams`, which `output: "export"` requires. Adding an entity to the nav is
+an edit to `admin-nav.ts`; adding a *field* is still just `lib/admin-schema.ts`.
+
+`AdminItemView` dispatches each item: registry-driven entities render through
+`EntityAdmin` (keyed by entity so switching remounts and no open form leaks across
+pages), while two items are **purpose-built**, because the flat registry cannot express a
+nested aggregate:
 
 - **Quotes** (`components/portal/admin/QuotesAdmin.tsx`) — a quote header plus its line
   items, plus the approve / negotiate / reject workflow actions.

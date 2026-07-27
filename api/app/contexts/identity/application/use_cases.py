@@ -7,10 +7,17 @@ reading or writing another person's profile.
 """
 from __future__ import annotations
 
+from collections.abc import Callable
+
 from app.contexts.identity.domain import entities as e
 from app.contexts.identity.domain.repository import UserProfileRepository
 from app.shared.auth import AuthUser
 from app.shared.errors import ValidationError
+
+# PORT for "make this role real in the identity provider". Injected rather than imported
+# so the guard logic in `set_role` is testable without a network call, and so the
+# Supabase dependency stays in the infrastructure layer where it belongs.
+RoleWriter = Callable[[str, str], None]
 
 # A display name is a label, not prose. Long enough for a real name, short enough that
 # it cannot be used to smuggle a wall of text into an admin listing.
@@ -69,6 +76,39 @@ class UserProfileService:
     async def list_all(self) -> list[e.UserProfile]:
         """Admin-only listing — guarded at the route, not here."""
         return await self._repo.list_all()
+
+    async def set_role(
+        self, actor: AuthUser, user_id: str, role: str, writer: RoleWriter
+    ) -> e.UserProfile:
+        """Change another user's role. Admin-only, guarded at the route.
+
+        Order matters: `app_metadata` is written first, and the mirror row only after it
+        succeeds. Doing it the other way round would leave the profile claiming a role
+        the token will never carry — a listing that lies about who can do what.
+        """
+        if role not in e.ROLES:
+            raise ValidationError(f"role must be one of {', '.join(e.ROLES)}")
+
+        # Self-demotion is how an admin locks themselves out: the only way back is the
+        # Supabase dashboard, and if they were the last admin, nobody can undo it from
+        # the app at all. Changing *someone else's* role is unrestricted.
+        if user_id == actor.id and role != e.ADMIN:
+            raise ValidationError(
+                "You cannot remove your own admin role — ask another admin to do it."
+            )
+
+        writer(user_id, role)
+
+        existing = await self._repo.get(user_id)
+        profile = e.UserProfile(
+            id=user_id,
+            email=existing.email if existing else None,
+            display_name=existing.display_name if existing else None,
+            role=role,
+        )
+        if existing:
+            profile.created_at = existing.created_at
+        return await self._repo.upsert(profile)
 
 
 def _default_name(email: str | None) -> str | None:

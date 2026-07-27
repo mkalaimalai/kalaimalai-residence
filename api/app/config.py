@@ -22,6 +22,15 @@ class Settings(BaseSettings):
     # endpoint. Without it only legacy HS256 tokens can be verified.
     supabase_url: str = ""
 
+    # Supabase service_role key. Needed ONLY to write `app_metadata.role`, which is the
+    # authorization source of record (`app/shared/auth.py`) and is deliberately not
+    # writable with the anon key — otherwise any user could promote themselves.
+    #
+    # This key bypasses RLS and can do anything to the project, so: server-side only,
+    # never a NEXT_PUBLIC_ var, never logged. Left empty by default — the role endpoint
+    # reports 501 rather than the server pretending it can do something it cannot.
+    supabase_service_role_key: str = ""
+
     # Comma-separated list of allowed browser origins for CORS.
     cors_origins: str = "http://localhost:3000"
 

@@ -14,9 +14,15 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.config import Settings, get_settings
 from app.contexts.identity.application.use_cases import UserProfileService
 from app.contexts.identity.infrastructure.repository_impl import (
     SqlAlchemyUserProfileRepository,
+)
+from app.contexts.identity.infrastructure.supabase_admin import (
+    AdminApiError,
+    AdminApiNotConfigured,
+    set_app_role,
 )
 from app.contexts.identity.interfaces import schemas as s
 from app.shared.auth import AuthUser, require_admin, require_user
@@ -67,10 +73,38 @@ async def update_me(
     "", response_model=list[s.UserProfileResponse], dependencies=[Depends(require_admin)]
 )
 async def list_users(service: UserProfileService = Depends(_service)):
-    """Who has signed up. Read-only on purpose: promoting someone means writing
-    `app_metadata.role`, which requires the service_role key and is done from the
-    Supabase dashboard or an admin script — not from a request this API can serve."""
+    """Who has signed up."""
     return [s.UserProfileResponse.model_validate(p) for p in await service.list_all()]
+
+
+@users_router.patch("/{user_id}/role", response_model=s.UserProfileResponse)
+async def set_user_role(
+    user_id: str,
+    body: s.UserRoleUpdate,
+    actor: AuthUser = Depends(require_admin),
+    service: UserProfileService = Depends(_service),
+    settings: Settings = Depends(get_settings),
+):
+    """Promote or demote a user.
+
+    Writes `app_metadata.role` in Supabase — the authorization source — and mirrors it
+    onto the profile row. The target keeps their old permissions until their access
+    token refreshes (Supabase default: within the hour).
+    """
+
+    def writer(uid: str, role: str) -> None:
+        set_app_role(settings, uid, role)
+
+    try:
+        profile = await service.set_role(actor, user_id, body.role, writer)
+    except ValidationError as exc:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, str(exc)) from exc
+    except AdminApiNotConfigured as exc:
+        # 501: the server is missing configuration, not the caller.
+        raise HTTPException(status.HTTP_501_NOT_IMPLEMENTED, str(exc)) from exc
+    except AdminApiError as exc:
+        raise HTTPException(status.HTTP_502_BAD_GATEWAY, str(exc)) from exc
+    return s.UserProfileResponse.model_validate(profile)
 
 
 routers = [me_router, users_router]

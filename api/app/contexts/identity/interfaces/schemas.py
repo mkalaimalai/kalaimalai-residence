@@ -20,3 +20,10 @@ class UserProfileUpdate(CamelModel):
     `app_metadata.role`, and accepting it here would let a user promote themselves."""
 
     display_name: str
+
+
+class UserRoleUpdate(CamelModel):
+    """Admin-only role change. Separate from `UserProfileUpdate` on purpose: that one is
+    the self-service surface and must never carry a role."""
+
+    role: str

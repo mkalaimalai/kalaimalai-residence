@@ -15,12 +15,20 @@ export function SpaceMediaTabs({
   galleryItems,
   drawingSets,
   drawingChips,
+  renderingSets = [],
 }: {
   galleryItems: GalleryItem[];
   drawingSets: RenderingSet[];
   drawingChips: { id: string; label: string }[];
+  /**
+   * Rendering-kind `media_sets` owned by this space. Optional and empty by default
+   * because 1.0 has no such thing — its space renderings only ever exist as gallery
+   * items. 2.0 passes these because the admin panel can upload renderings per space,
+   * and without rendering them here those uploads would vanish from the site.
+   */
+  renderingSets?: RenderingSet[];
 }) {
-  const hasRenderings = galleryItems.length > 0;
+  const hasRenderings = galleryItems.length > 0 || renderingSets.length > 0;
   const hasDrawings = drawingSets.length > 0 || drawingChips.length > 0;
   const [active, setActive] = useState<Tab>(
     hasRenderings ? "renderings" : "drawings",
@@ -65,6 +73,13 @@ export function SpaceMediaTabs({
               title="Design renderings"
               description="Presentation renders for this space."
             />
+            {/* Uploaded rendering sets first, rendered exactly as a domain page does,
+                then any seed gallery items for this space. */}
+            {renderingSets.length > 0 && (
+              <div className="mt-8">
+                <RenderingGallery sets={renderingSets} />
+              </div>
+            )}
             <div className="mt-8 space-y-6">
               {galleryItems.map((item) => (
                 <figure

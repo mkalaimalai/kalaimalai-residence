@@ -14,8 +14,11 @@ export function PortalSidebar() {
   const isActive = (href: string) =>
     href === "/portal" ? pathname === "/portal" : pathname.startsWith(href);
 
+  // Record management moved out of the portal into the standalone admin app at
+  // `/admin`, which has its own two-level navigation. The portal keeps the read-oriented
+  // dashboards; this is the door through to editing.
   const items = isAdmin
-    ? [...PORTAL_NAV, { label: "Admin", href: "/portal/admin" }]
+    ? [...PORTAL_NAV, { label: "Admin →", href: "/admin" }]
     : PORTAL_NAV;
 
   return (

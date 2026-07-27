@@ -30,6 +30,8 @@ import type {
   Quote,
   QuoteApproval,
   QuoteLineItem,
+  UserProfile,
+  UserRole,
 } from "@/types/api";
 
 const BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
@@ -207,6 +209,21 @@ export const api = {
   snags: () => apiGet<Snag[]>(scopedPath("/snags")),
   progress: () => apiGet<ProgressEntry[]>(scopedPath("/progress")),
   warranties: () => apiGet<Warranty[]>(scopedPath("/warranties")),
+  /**
+   * Everyone who has signed up (`require_admin`). Not project-scoped — a person is not
+   * owned by a project, so `scopedPath` would be wrong here.
+   */
+  users: () => apiGet<UserProfile[]>("/users"),
+  /** The caller's own profile. Subject comes from the token, so it needs no id. */
+  me: () => apiGet<UserProfile>("/me"),
+  /**
+   * Promote or demote someone. Writes `app_metadata.role` in Supabase via the API's
+   * service_role key — 501 if the server has no such key configured. The change lands
+   * for the target on their next token refresh, not immediately.
+   */
+  setUserRole: (userId: string, role: UserRole) =>
+    apiPatch<UserProfile>(`/users/${encodeURIComponent(userId)}/role`, { role }),
+
   /** Every project the signed-in user can see (`require_user`) — feeds the picker. */
   projects: () => apiGet<Project[]>("/projects"),
   /**
