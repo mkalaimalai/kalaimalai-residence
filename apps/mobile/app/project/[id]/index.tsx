@@ -11,9 +11,9 @@ import { Image } from "expo-image";
 import { Link, Stack, useLocalSearchParams } from "expo-router";
 import type { PublicProject } from "@kr/api-client";
 import type { Space } from "@kr/contracts";
-import { api, imageUrl } from "../../lib/api";
-import { ErrorState, Loading, Screen, useColors } from "../../components/Screen";
-import { radius, spacing } from "../../lib/theme";
+import { api, imageUrl } from "../../../lib/api";
+import { ErrorState, Loading, Screen, useColors } from "../../../components/Screen";
+import { radius, spacing } from "../../../lib/theme";
 
 export default function ProjectScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -50,6 +50,10 @@ export default function ProjectScreen() {
             <Text style={[styles.concept, { color: colors.foreground }]}>
               {project.conceptStatement}
             </Text>
+            <View style={styles.links}>
+              <NavChip label="Gallery" href={`/project/${id}/gallery`} />
+              <NavChip label="Materials" href={`/project/${id}/materials`} />
+            </View>
             <Text style={[styles.sectionLabel, { color: colors.accent }]}>
               {spaces.length} SPACES
             </Text>
@@ -83,8 +87,33 @@ export default function ProjectScreen() {
   );
 }
 
+/** Link out to the project's other collections. */
+function NavChip({ label, href }: { label: string; href: string }) {
+  const colors = useColors();
+  return (
+    <Link href={href as never} asChild>
+      <Pressable
+        style={[
+          styles.chip,
+          { backgroundColor: colors.surface, borderColor: colors.border },
+        ]}
+      >
+        <Text style={[styles.chipText, { color: colors.foreground }]}>{label}</Text>
+      </Pressable>
+    </Link>
+  );
+}
+
 const styles = StyleSheet.create({
   subtitle: { fontSize: 15 },
+  links: { flexDirection: "row", gap: spacing.sm, marginTop: spacing.xs },
+  chip: {
+    borderWidth: 1,
+    borderRadius: radius.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+  },
+  chipText: { fontSize: 14, fontWeight: "500" },
   concept: { fontSize: 16, lineHeight: 24 },
   sectionLabel: { fontSize: 12, letterSpacing: 1, fontWeight: "600" },
   row: {

@@ -36,6 +36,8 @@ Two hosts are needed because the API returns **root-relative image paths**
 |---|---|---|
 | `/` | Portfolio index | `GET /projects/public` |
 | `/project/[id]` | Concept + room list | `GET /projects/public`, `GET /spaces?projectId=` |
+| `/project/[id]/gallery` | Image grid | `GET /gallery?projectId=` |
+| `/project/[id]/materials` | Material library by category | `GET /materials?projectId=` |
 | `/space/[id]` | Room detail + relations | `GET /spaces/{id}`, then domains/materials/vendors scoped to its project |
 
 Every collection call passes `projectId` — omitting it returns every project's rows
