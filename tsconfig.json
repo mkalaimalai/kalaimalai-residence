@@ -19,7 +19,11 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      // Workspace packages are symlinked into node_modules, but tsc will not pick up
+      // their TypeScript sources from there — map them to the real files.
+      "@kr/contracts": ["./packages/contracts/src/index.ts"],
+      "@kr/api-client": ["./packages/api-client/src/index.ts"]
     }
   },
   "include": [
@@ -30,5 +34,8 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules"]
+  // `apps/*` are separate workspaces with their own tsconfig and their own React types
+  // (the mobile app is on React 18 / react-native types). Compiling them under the web
+  // app's settings pulls in two copies of @types/react and fails on the mismatch.
+  "exclude": ["node_modules", "apps"]
 }
