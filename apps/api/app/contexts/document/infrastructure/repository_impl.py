@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.contexts.document.domain import entities as e
 from app.contexts.document.domain.repository import (
     DrawingRepository,
+    DrawingRevisionRepository,
     GalleryRepository,
     LessonRepository,
 )
@@ -18,6 +19,13 @@ class SqlAlchemyDrawingRepository(
 ):
     def __init__(self, session: AsyncSession) -> None:
         super().__init__(session, orm.DrawingModel, e.Drawing)
+
+
+class SqlAlchemyDrawingRevisionRepository(
+    SqlAlchemyCrudRepository[e.DrawingRevision], DrawingRevisionRepository
+):
+    def __init__(self, session: AsyncSession) -> None:
+        super().__init__(session, orm.DrawingRevisionModel, e.DrawingRevision)
 
 
 class SqlAlchemyGalleryRepository(

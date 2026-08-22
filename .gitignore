@@ -86,3 +86,6 @@ xcuserdata/
 *.xcuserstate
 DerivedData/
 *.xcworkspace/xcuserdata/
+
+# Speckle spike scratch (docs/speckle-spike.md) — delete when the spike concludes
+apps/api/scripts/spike_speckle.py
