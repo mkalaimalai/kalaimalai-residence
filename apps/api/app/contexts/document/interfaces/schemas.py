@@ -17,6 +17,7 @@ class DrawingResponse(CamelModel):
     consultant: str
     file_url: str
     notes: str
+    suitability: str
 
 
 class DrawingCreate(CamelModel):
@@ -30,6 +31,7 @@ class DrawingCreate(CamelModel):
     consultant: str = ""
     file_url: str = ""
     notes: str = ""
+    suitability: str = "S0"
 
 
 class DrawingUpdate(CamelModel):
@@ -42,6 +44,43 @@ class DrawingUpdate(CamelModel):
     consultant: str | None = None
     file_url: str | None = None
     notes: str | None = None
+    suitability: str | None = None
+
+
+# --- DrawingRevision ---------------------------------------------------------------
+class DrawingRevisionResponse(CamelModel):
+    project_id: str
+    id: str
+    drawing_id: str
+    code: str
+    issued_on: str
+    suitability: str
+    file_url: str
+    supersedes_id: str
+    issued_by: str
+    change_note: str
+
+
+class DrawingRevisionCreate(CamelModel):
+    project_id: str
+    drawing_id: str
+    code: str
+    issued_on: str = ""
+    suitability: str = "S0"
+    file_url: str = ""
+    supersedes_id: str = ""
+    issued_by: str = ""
+    change_note: str = ""
+
+
+class DrawingRevisionUpdate(CamelModel):
+    code: str | None = None
+    issued_on: str | None = None
+    suitability: str | None = None
+    file_url: str | None = None
+    supersedes_id: str | None = None
+    issued_by: str | None = None
+    change_note: str | None = None
 
 
 # --- GalleryItem -------------------------------------------------------------------

@@ -21,6 +21,25 @@ class DrawingModel(ProjectScoped, Base):
     consultant: Mapped[str] = mapped_column(String, default="")
     file_url: Mapped[str] = mapped_column(String, default="")
     notes: Mapped[str] = mapped_column(Text, default="")
+    suitability: Mapped[str] = mapped_column(String, default="S0")
+
+
+class DrawingRevisionModel(ProjectScoped, Base):
+    """One row per issue of a drawing — see entities.DrawingRevision."""
+
+    __tablename__ = "drawing_revisions"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    drawing_id: Mapped[str | None] = mapped_column(String, nullable=True, default=None)
+    code: Mapped[str] = mapped_column(String, nullable=False)
+    issued_on: Mapped[str] = mapped_column(String, default="")
+    suitability: Mapped[str] = mapped_column(String, default="S0")
+    file_url: Mapped[str] = mapped_column(String, default="")
+    supersedes_id: Mapped[str | None] = mapped_column(
+        String, nullable=True, default=None
+    )
+    issued_by: Mapped[str] = mapped_column(String, default="")
+    change_note: Mapped[str] = mapped_column(Text, default="")
 
 
 class GalleryModel(ProjectScoped, Base):
