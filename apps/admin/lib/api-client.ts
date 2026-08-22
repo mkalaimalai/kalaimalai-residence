@@ -22,17 +22,7 @@ import type {
   Vendor,
   Warranty,
 } from "@kr/contracts";
-import type {
-  Delivery,
-  Inspection,
-  NotificationRecord,
-  PurchaseOrder,
-  Quote,
-  QuoteApproval,
-  QuoteLineItem,
-  UserProfile,
-  UserRole,
-} from "@/lib/api-types";
+import type { UserProfile, UserRole } from "@/lib/api-types";
 
 const BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 

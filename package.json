@@ -25,7 +25,9 @@
     "typecheck:api": "cd apps/api && PYTHONPATH=\"$PWD\" .venv/bin/python -m mypy app/",
     "dev:admin": "npm run dev --workspace @kr/admin",
     "build:admin": "npm run build --workspace @kr/admin",
-    "typecheck:admin": "npm run typecheck --workspace @kr/admin"
+    "typecheck:admin": "npm run typecheck --workspace @kr/admin",
+    "lint:admin": "npm run lint --workspace @kr/admin",
+    "lint:all": "npm run lint --workspaces --if-present"
   },
   "devDependencies": {
     "vitest": "^3.2.7"
