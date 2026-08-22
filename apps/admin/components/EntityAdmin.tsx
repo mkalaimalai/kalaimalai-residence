@@ -34,6 +34,21 @@ const REF_KEYS: RefKey[] = [
   "boq",
 ];
 
+/**
+ * Reference lists, kept per project for the life of the page.
+ *
+ * These eight lists exist only to fill the id-selects *inside the form*, but they were
+ * being refetched on every mount — so opening any entity page cost nine round trips
+ * before the table appeared, and switching entities paid for all eight again. Against
+ * an API a region away that is most of a second of staring at a spinner.
+ *
+ * Module scope rather than component state, because the point is to survive the
+ * remount: AdminItemView keys EntityAdmin by entity, so navigation always remounts it.
+ * Writes invalidate the entry, since a row someone just created has to appear in the
+ * selects.
+ */
+const REF_CACHE = new Map<string, RefRows>();
+
 export function EntityAdmin({ entityKey }: { entityKey: string }) {
   const entity: EntityDef | undefined = ENTITY_BY_KEY[entityKey];
   const { isAdmin } = useAuth();
@@ -50,7 +65,11 @@ export function EntityAdmin({ entityKey }: { entityKey: string }) {
   const [formError, setFormError] = useState<string | null>(null);
 
   const loadRefs = useCallback(async () => {
-    void projectId; // refetch trigger; scopedPath() resolves the project internally
+    const cached = REF_CACHE.get(projectId);
+    if (cached) {
+      setRefs(cached);
+      return;
+    }
     const entries = await Promise.all(
       REF_KEYS.map(async (key) => {
         const def = ENTITY_BY_KEY[key];
@@ -64,7 +83,9 @@ export function EntityAdmin({ entityKey }: { entityKey: string }) {
         ] as const;
       }),
     );
-    setRefs(Object.fromEntries(entries));
+    const next: RefRows = Object.fromEntries(entries);
+    REF_CACHE.set(projectId, next);
+    setRefs(next);
   }, [projectId]);
 
   const loadRows = useCallback(async () => {
@@ -82,14 +103,21 @@ export function EntityAdmin({ entityKey }: { entityKey: string }) {
   }, [entity, projectId]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    void loadRefs();
-  }, [loadRefs]);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    void loadRows();
-  }, [loadRows]);
+    let cancelled = false;
+    void (async () => {
+      // Rows first, references after. Both used to be in flight together, which meant
+      // the table — the only thing on screen — waited behind eight lists it does not
+      // use. Sequencing them costs the form nothing: refs land while the user is still
+      // reading the table, long before they click Edit.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      await loadRows();
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      if (!cancelled) await loadRefs();
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [loadRows, loadRefs]);
   // Note: switching entity does NOT need a state reset here — AdminItemView keys this
   // component by entity, so React remounts it and the open form/search go with it.
 
@@ -127,6 +155,9 @@ export function EntityAdmin({ entityKey }: { entityKey: string }) {
       }
       setEditing(null);
       setHeroImageUrl("");
+      // A created or renamed row has to show up in the selects, so the cached lists
+      // for this project are no longer true.
+      REF_CACHE.delete(projectId);
       await Promise.all([loadRows(), loadRefs()]);
     } catch (err) {
       setFormError(
