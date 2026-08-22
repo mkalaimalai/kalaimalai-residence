@@ -55,7 +55,36 @@ jobs:
           # The admin app deploys separately (Cloudflare Pages, see deploy-admin.yml);
           # this is the only thing tying the two origins together. Unset means the
           # localhost dev fallback ships to production, so set the ADMIN_URL repo variable.
-          NEXT_PUBLIC_ADMIN_URL: ${{ vars.ADMIN_URL }}
+          # The admin app is now mounted under this same origin at /admin (built and
+          # copied in the step below), so this is a path, not a cross-origin URL.
+          NEXT_PUBLIC_ADMIN_URL: /admin
+
+      # The admin app keeps its own Next build — separate deps, separate config — but its
+      # export is nested into the web export so both ship in one Pages artifact and the
+      # admin UI stays on this origin instead of redirecting to another host.
+      #
+      # ADMIN_BASE_PATH is what makes the nesting work: it prefixes every route and asset
+      # URL with /admin. Without it the copied app would request /_next/... and be served
+      # the web app's chunks.
+      - name: Build admin (mounted at /admin)
+        run: npm run build:admin
+        env:
+          ADMIN_BASE_PATH: /admin
+          NEXT_PUBLIC_API_BASE_URL: ${{ vars.API_BASE_URL }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_WEB_URL: ${{ vars.WEB_URL }}
+
+      - name: Nest the admin export into the web export
+        run: |
+          set -euo pipefail
+          # Fail loudly rather than publishing a half-built site.
+          test -d apps/admin/out || { echo "admin export missing"; exit 1; }
+          # apps/web no longer has an /admin route, so this must not be overwriting
+          # anything — if it exists, the two builds are fighting over the path.
+          test ! -e apps/web/out/admin || { echo "apps/web/out/admin already exists"; exit 1; }
+          cp -R apps/admin/out apps/web/out/admin
+          test -f apps/web/out/admin/index.html
 
       - uses: actions/upload-pages-artifact@v3
         with:
