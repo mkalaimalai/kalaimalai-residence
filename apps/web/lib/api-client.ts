@@ -137,7 +137,7 @@ export async function apiUpload<T>(path: string, files: File[]): Promise<T> {
  * `project_id` (api/migrations/002_project_scope.sql).
  */
 export const PORTAL_PROJECT_ID =
-  process.env.NEXT_PUBLIC_PROJECT_ID ?? "proj-kr";
+  process.env.NEXT_PUBLIC_PROJECT_ID || "proj-kr";
 
 /** localStorage key holding the admin's last chosen project. */
 export const PROJECT_STORAGE_KEY = "portal_selected_project";
