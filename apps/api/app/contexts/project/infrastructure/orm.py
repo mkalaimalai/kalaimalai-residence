@@ -50,7 +50,7 @@ class ProgressModel(ProjectScoped, Base):
     id: Mapped[str] = mapped_column(String, primary_key=True)
     date: Mapped[str] = mapped_column(String, default="")
     phase: Mapped[str] = mapped_column(String, default="")
-    space_id: Mapped[str] = mapped_column(String, default="")
+    space_id: Mapped[str | None] = mapped_column(String, nullable=True, default=None)
     work_completed: Mapped[str] = mapped_column(Text, default="")
     photos: Mapped[list[str]] = mapped_column(_STR_ARRAY, default=list)
     issues: Mapped[str] = mapped_column(Text, default="")

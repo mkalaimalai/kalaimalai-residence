@@ -19,7 +19,7 @@ class BOQModel(ProjectScoped, Base):
     __tablename__ = "boqs"
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
-    vendor_id: Mapped[str] = mapped_column(String, default="")
+    vendor_id: Mapped[str | None] = mapped_column(String, nullable=True, default=None)
     category: Mapped[str] = mapped_column(String, default="")
     quote_date: Mapped[str] = mapped_column(String, default="")
     original_amount: Mapped[float] = mapped_column(Numeric, default=0)
@@ -37,9 +37,9 @@ class ProcurementModel(ProjectScoped, Base):
     id: Mapped[str] = mapped_column(String, primary_key=True)
     item: Mapped[str] = mapped_column(String, nullable=False)
     category: Mapped[str] = mapped_column(String, default="")
-    space_id: Mapped[str] = mapped_column(String, default="")
+    space_id: Mapped[str | None] = mapped_column(String, nullable=True, default=None)
     brand: Mapped[str] = mapped_column(String, default="")
-    vendor_id: Mapped[str] = mapped_column(String, default="")
+    vendor_id: Mapped[str | None] = mapped_column(String, nullable=True, default=None)
     country: Mapped[str] = mapped_column(String, default="")
     quantity: Mapped[int] = mapped_column(Integer, default=1)
     estimated_price: Mapped[float] = mapped_column(Numeric, default=0)
@@ -61,7 +61,7 @@ class MaterialModel(ProjectScoped, Base):
     name: Mapped[str] = mapped_column(String, nullable=False)
     category: Mapped[str] = mapped_column(String, default="")
     space_ids: Mapped[list[str]] = mapped_column(_STR_ARRAY, default=list)
-    vendor_id: Mapped[str] = mapped_column(String, default="")
+    vendor_id: Mapped[str | None] = mapped_column(String, nullable=True, default=None)
     status: Mapped[str] = mapped_column(String, default="")
     image: Mapped[str] = mapped_column(String, default="")
     notes: Mapped[str] = mapped_column(Text, default="")
@@ -72,8 +72,8 @@ class QuoteModel(ProjectScoped, Base):
     __tablename__ = "quotes"
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
-    vendor_id: Mapped[str] = mapped_column(String, default="")
-    boq_id: Mapped[str] = mapped_column(String, default="")
+    vendor_id: Mapped[str | None] = mapped_column(String, nullable=True, default=None)
+    boq_id: Mapped[str | None] = mapped_column(String, nullable=True, default=None)
     quote_number: Mapped[str] = mapped_column(String, default="")
     quote_date: Mapped[str] = mapped_column(String, default="")
     valid_until: Mapped[str] = mapped_column(String, default="")
@@ -93,8 +93,8 @@ class QuoteLineItemModel(ProjectScoped, Base):
     __tablename__ = "quote_line_items"
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
-    quote_id: Mapped[str] = mapped_column(String, default="")
-    boq_line_id: Mapped[str] = mapped_column(String, default="")
+    quote_id: Mapped[str | None] = mapped_column(String, nullable=True, default=None)
+    boq_line_id: Mapped[str | None] = mapped_column(String, nullable=True, default=None)
     description: Mapped[str] = mapped_column(Text, default="")
     quantity: Mapped[float] = mapped_column(Numeric, default=0)
     unit: Mapped[str] = mapped_column(String, default="")
@@ -111,15 +111,17 @@ class BOQLineItemModel(ProjectScoped, Base):
     __tablename__ = "boq_line_items"
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
-    boq_id: Mapped[str] = mapped_column(String, default="")  # parent BOQ package
-    space_id: Mapped[str] = mapped_column(String, default="")
+    boq_id: Mapped[str | None] = mapped_column(
+        String, nullable=True, default=None
+    )  # parent BOQ package
+    space_id: Mapped[str | None] = mapped_column(String, nullable=True, default=None)
     work_package_id: Mapped[str] = mapped_column(String, default="")
     description: Mapped[str] = mapped_column(Text, default="")
     quantity: Mapped[float] = mapped_column(Numeric, default=0)
     unit: Mapped[str] = mapped_column(String, default="")
     benchmark_rate: Mapped[float] = mapped_column(Numeric, default=0)
     approved_rate: Mapped[float] = mapped_column(Numeric, default=0)
-    approved_vendor_id: Mapped[str] = mapped_column(String, default="")
+    approved_vendor_id: Mapped[str | None] = mapped_column(String, nullable=True, default=None)
     status: Mapped[str] = mapped_column(String, default="Estimated")
 
 
@@ -127,8 +129,8 @@ class PurchaseOrderModel(ProjectScoped, Base):
     __tablename__ = "purchase_orders"
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
-    quote_id: Mapped[str] = mapped_column(String, default="")
-    vendor_id: Mapped[str] = mapped_column(String, default="")
+    quote_id: Mapped[str | None] = mapped_column(String, nullable=True, default=None)
+    vendor_id: Mapped[str | None] = mapped_column(String, nullable=True, default=None)
     amount: Mapped[float] = mapped_column(Numeric, default=0)
     currency: Mapped[str] = mapped_column(String, default="INR")
     status: Mapped[str] = mapped_column(String, default="Created")
@@ -140,7 +142,7 @@ class DeliveryModel(ProjectScoped, Base):
     __tablename__ = "deliveries"
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
-    purchase_order_id: Mapped[str] = mapped_column(String, default="")
+    purchase_order_id: Mapped[str | None] = mapped_column(String, nullable=True, default=None)
     expected_date: Mapped[str] = mapped_column(String, default="")
     actual_date: Mapped[str] = mapped_column(String, default="")
     status: Mapped[str] = mapped_column(String, default="Planned")

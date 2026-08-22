@@ -12,7 +12,7 @@ class SnagModel(ProjectScoped, Base):
     __tablename__ = "snags"
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
-    space_id: Mapped[str] = mapped_column(String, default="")
+    space_id: Mapped[str | None] = mapped_column(String, nullable=True, default=None)
     category: Mapped[str] = mapped_column(String, default="")
     description: Mapped[str] = mapped_column(Text, default="")
     photo_url: Mapped[str] = mapped_column(String, default="")
@@ -28,7 +28,7 @@ class InspectionModel(ProjectScoped, Base):
     __tablename__ = "inspections"
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
-    space_id: Mapped[str] = mapped_column(String, default="")
+    space_id: Mapped[str | None] = mapped_column(String, nullable=True, default=None)
     work_package_id: Mapped[str] = mapped_column(String, default="")
     inspector: Mapped[str] = mapped_column(String, default="")
     inspection_date: Mapped[str] = mapped_column(String, default="")
@@ -41,8 +41,8 @@ class DecisionModel(ProjectScoped, Base):
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
     title: Mapped[str] = mapped_column(String, nullable=False)
-    domain_id: Mapped[str] = mapped_column(String, default="")
-    space_id: Mapped[str] = mapped_column(String, default="")
+    domain_id: Mapped[str | None] = mapped_column(String, nullable=True, default=None)
+    space_id: Mapped[str | None] = mapped_column(String, nullable=True, default=None)
     type: Mapped[str] = mapped_column(String, default="Design")
     options_considered: Mapped[list[str]] = mapped_column(ARRAY(String), default=list)
     final_decision: Mapped[str] = mapped_column(Text, default="")
