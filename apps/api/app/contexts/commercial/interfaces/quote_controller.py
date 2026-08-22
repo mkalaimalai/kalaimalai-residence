@@ -5,13 +5,14 @@ the ApproveQuote use case depends on — the §5/§9 Quote-approval → Purchase
 """
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from datetime import UTC
+
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.contexts.commercial.application.quote_use_cases import (
     ApproveQuote,
     ApproveQuoteCommand,
-    CompareQuotes,
     NegotiateQuote,
     RejectQuote,
 )
@@ -19,7 +20,6 @@ from app.contexts.commercial.domain import entities as e
 from app.contexts.commercial.infrastructure import orm
 from app.contexts.commercial.infrastructure.repository_impl import (
     SqlAlchemyBOQRepository,
-    SqlAlchemyDeliveryRepository,
     SqlAlchemyPurchaseOrderRepository,
     SqlAlchemyQuoteLineItemRepository,
     SqlAlchemyQuoteRepository,
@@ -185,11 +185,11 @@ async def list_purchase_orders(repo=Depends(_pos), project_id: str | None = _PRO
     dependencies=[Depends(require_admin)],
 )
 async def create_purchase_order(body: s.PurchaseOrderCreate, repo=Depends(_pos)):
-    from datetime import date
+    from datetime import datetime
 
     service = CrudService(repo, e.PurchaseOrder, "po")
     fields = body.model_dump(by_alias=False)
-    fields["created_at"] = date.today().isoformat()
+    fields["created_at"] = datetime.now(UTC).date().isoformat()
     po = await service.create(fields)
     return s.PurchaseOrderResponse.model_validate(po)
 

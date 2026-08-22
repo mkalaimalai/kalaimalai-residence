@@ -1,13 +1,12 @@
-# Monorepo migration
+# Monorepo migration — historical record
 
-Target layout — one repo, five deliverables (web, api, admin, iOS, Android):
+Target layout — one repo, four deliverables (web, api, admin, iOS, Android):
 
 ```
 apps/
-  web/         # Next.js public site (1.0 + the project tree) — currently the repo root
-  admin/       # admin + portal web interface — currently /admin and /portal inside web
-  mobile/      # Expo: iOS + Android content viewer            ✅ done
-  api/         # FastAPI backend                                — currently ./api
+  web/         # Next.js public site (1.0 + the project tree)
+  admin/       # admin + portal web interface
+  api/         # FastAPI backend
 packages/
   contracts/   # entity interfaces, one copy for every surface  ✅ done
   api-client/  # transport + endpoint list, platform-agnostic   ✅ done
@@ -15,13 +14,12 @@ packages/
 
 ## Stage 1 — shareable core ✅
 
-Done in `adbdf4a`. npm workspaces, `@kr/contracts`, `@kr/api-client`, and the Expo app.
+Done in `adbdf4a`. npm workspaces, `@kr/contracts`, `@kr/api-client`.
 Nothing moved yet: the web app still lives at the repo root and still compiles against
 `@/types`, which is now a re-export shim over `@kr/contracts`.
 
 **Why this order.** Extracting the shared core first means the later moves are pure
-`git mv` with no logic changes — and the mobile app already proves the extraction works,
-because it consumes both packages and typechecks against them.
+`git mv` with no logic changes.
 
 ## Stage 2 — move the web app to `apps/web`
 
@@ -85,13 +83,4 @@ it is the lowest-value/highest-blast-radius step. Do it last, on its own commit.
 - **`types/index.ts` stays the named contract**; it just re-exports `@kr/contracts` now.
 - **Every collection fetch keeps its `projectId`.** The shared client makes it an
   optional argument, so a dropped scope fails silently by returning every project's rows.
-- **No portal-only field reaches a public surface.** The mobile app uses
-  `/projects/public` for exactly this reason.
-
-## Note on `apps/mobile` and workspaces
-
-The mobile app is intentionally **not** an npm workspace member. React Native needs React
-18 and Next needs React 19, so npm splits Expo across two `node_modules` trees and Metro
-cannot bundle. It installs separately and consumes `@kr/contracts` / `@kr/api-client` via
-`file:` deps — see `apps/mobile/README.md`. Stage 2 does not change this: moving the web
-app to `apps/web` leaves the mobile app exactly where it is.
+- **No portal-only field reaches a public surface.**

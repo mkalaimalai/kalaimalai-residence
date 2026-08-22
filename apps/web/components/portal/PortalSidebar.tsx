@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { PORTAL_NAV } from "@/lib/nav";
 import { ADMIN_URL } from "@/lib/admin-url";
-import { cn } from "@/lib/utils";
+import { cn } from "@kr/api-client";
 import { useAuth } from "@/components/v2/V2AuthGate";
 
 /** Left nav for the portal. Active link derived from the current path. */
@@ -22,9 +22,13 @@ export function PortalSidebar() {
   const items: NavItem[] = isAdmin
     ? [
         ...PORTAL_NAV.map((i) => ({ ...i, external: false })),
+        { label: "Profile", href: "/portal/profile", external: false },
         { label: "Admin ↗", href: ADMIN_URL, external: true },
       ]
-    : PORTAL_NAV.map((i) => ({ ...i, external: false }));
+    : [
+        ...PORTAL_NAV.map((i) => ({ ...i, external: false })),
+        { label: "Profile", href: "/portal/profile", external: false },
+      ];
 
   return (
     <nav className="flex gap-1 overflow-x-auto border-b border-border p-3 md:w-56 md:flex-col md:overflow-visible md:border-b-0 md:border-r md:p-4">

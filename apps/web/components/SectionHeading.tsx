@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@kr/api-client";
 
 interface SectionHeadingProps {
   eyebrow?: string;

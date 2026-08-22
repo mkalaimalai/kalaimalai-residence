@@ -9,7 +9,7 @@ filter by project_id, which they carry).
 """
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.contexts.commercial.application.quote_use_cases import CompareQuotes

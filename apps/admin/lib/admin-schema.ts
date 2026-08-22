@@ -84,7 +84,6 @@ export const ENTITIES: EntityDef[] = [
       { name: "city", label: "City", type: "text" },
       { name: "designer", label: "Designer", type: "text" },
       { name: "direction", label: "Direction", type: "textarea" },
-      { name: "heroImage", label: "Hero image", type: "text" },
       { name: "conceptStatement", label: "Concept statement", type: "textarea" },
       { name: "plotArea", label: "Plot area", type: "text" },
       { name: "builtUpArea", label: "Built-up area", type: "text" },

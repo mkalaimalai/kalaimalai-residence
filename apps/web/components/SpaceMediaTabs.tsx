@@ -7,7 +7,7 @@ import { RenderingGallery } from "@/components/RenderingGallery";
 import { Chip, ChipGroup } from "@/components/Chip";
 import type { GalleryItem } from "@/types";
 import type { RenderingSet } from "@/data/renderings";
-import { cn } from "@/lib/utils";
+import { cn } from "@kr/api-client";
 
 type Tab = "renderings" | "drawings";
 

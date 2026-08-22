@@ -76,11 +76,7 @@ export function PortalDataProvider({ children }: { children: React.ReactNode }) 
   const [error, setError] = useState<string | null>(null);
 
   const reload = useCallback(async () => {
-    // Read so the dependency is honest: the api-client resolves the active project
-    // internally, but this callback must be re-created when the selection changes.
     void selectedId;
-    // State updates happen only after the first await — never synchronously in the
-    // mount effect (avoids cascading-render lint warnings).
     try {
       const [
         spaces, domains, vendors, materials, drawings, decisions,

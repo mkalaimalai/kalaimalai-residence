@@ -18,7 +18,7 @@ import { Loader2, ShieldCheck, User } from "lucide-react";
 import { api, ApiError } from "@/lib/api-client";
 import type { UserProfile, UserRole } from "@/lib/api-types";
 import { useAuth } from "@/components/AuthGate";
-import { cn } from "@/lib/utils";
+import { cn } from "@kr/api-client";
 
 const ROLES: { value: UserRole; label: string; hint: string }[] = [
   { value: "viewer", label: "Viewer", hint: "Read-only access to every project." },

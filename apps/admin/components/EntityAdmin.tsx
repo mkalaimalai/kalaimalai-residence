@@ -20,9 +20,10 @@ import {
 import { ENTITY_BY_KEY, type EntityDef, type RefKey } from "@/lib/admin-schema";
 import { EntityForm } from "@/components/EntityForm";
 import { SpaceFilesPanel } from "@/components/SpaceFilesPanel";
+import { ProjectImageUpload } from "@/components/ProjectImageUpload";
 import { useAuth } from "@/components/AuthGate";
 import { useProject } from "@/components/ProjectProvider";
-import { cn } from "@/lib/utils";
+import { cn } from "@kr/api-client";
 
 type Row = Record<string, unknown>;
 type RefRows = Partial<Record<RefKey, { id: string; name: string }[]>>;
@@ -44,6 +45,7 @@ export function EntityAdmin({ entityKey }: { entityKey: string }) {
   const [listLoading, setListLoading] = useState(true);
   const [listError, setListError] = useState<string | null>(null);
   const [editing, setEditing] = useState<Row | "new" | null>(null);
+  const [heroImageUrl, setHeroImageUrl] = useState("");
   const [busy, setBusy] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -113,15 +115,18 @@ export function EntityAdmin({ entityKey }: { entityKey: string }) {
     setFormError(null);
     try {
       if (editing && editing !== "new") {
-        await apiPatch(`${entity.endpoint}/${editing.id}`, payload);
+        const body = entity.key === "projects" ? { ...payload, heroImage: heroImageUrl } : payload;
+        await apiPatch(`${entity.endpoint}/${editing.id}`, body);
       } else {
+        const body = entity.key === "projects" ? { ...payload, heroImage: heroImageUrl } : payload;
         // `Project` is the tenant root — it has no `projectId` of its own.
         await apiPost(
           entity.endpoint,
-          withProject(payload, { scoped: entity.key !== "projects" }),
+          withProject(body, { scoped: entity.key !== "projects" }),
         );
       }
       setEditing(null);
+      setHeroImageUrl("");
       await Promise.all([loadRows(), loadRefs()]);
     } catch (err) {
       setFormError(
@@ -166,6 +171,18 @@ export function EntityAdmin({ entityKey }: { entityKey: string }) {
                 spaceName={String(editing.name ?? "Space")}
               />
             )}
+            {entity.key === "projects" && (
+              <ProjectImageUpload
+                currentUrl={
+                  editing !== "new"
+                    ? String((editing as Row).heroImage ?? "")
+                    : heroImageUrl
+                }
+                onUpload={(url) => {
+                  setHeroImageUrl(url);
+                }}
+              />
+            )}
           </EntityForm>
         </div>
       </section>
@@ -203,6 +220,7 @@ export function EntityAdmin({ entityKey }: { entityKey: string }) {
               type="button"
               onClick={() => {
                 setFormError(null);
+                setHeroImageUrl("");
                 setEditing("new");
               }}
               className="flex items-center gap-1.5 rounded-lg bg-foreground px-3 py-1.5 text-sm font-medium text-background transition-opacity hover:opacity-90"
@@ -254,6 +272,7 @@ export function EntityAdmin({ entityKey }: { entityKey: string }) {
                       type="button"
                       onClick={() => {
                         setFormError(null);
+                        setHeroImageUrl(String(r.heroImage ?? ""));
                         setEditing(r);
                       }}
                       className={cn(

@@ -7,7 +7,7 @@
  *
  * Base URL: NEXT_PUBLIC_API_BASE_URL.
  */
-import { getSupabase } from "@/lib/supabase-client";
+import { getSupabase } from "@kr/api-client";
 import type {
   BOQ,
   Decision,
@@ -214,15 +214,22 @@ export const api = {
    * owned by a project, so `scopedPath` would be wrong here.
    */
   users: () => apiGet<UserProfile[]>("/users"),
-  /** The caller's own profile. Subject comes from the token, so it needs no id. */
+  /** The caller's own profile. Subject comes from the token. */
   me: () => apiGet<UserProfile>("/me"),
   /**
-   * Promote or demote someone. Writes `app_metadata.role` in Supabase via the API's
-   * service_role key — 501 if the server has no such key configured. The change lands
-   * for the target on their next token refresh, not immediately.
+   * Promote or demote someone. Writes `app_metadata.role` in Supabase via the
+   * API's service_role key — 501 if the server has no such key configured.
+   * The change lands for the target on their next token refresh, not
+   * immediately.
    */
   setUserRole: (userId: string, role: UserRole) =>
     apiPatch<UserProfile>(`/users/${encodeURIComponent(userId)}/role`, { role }),
+  /** Change the caller's own password. */
+  updatePassword: (newPassword: string) =>
+    apiPatch<{ ok: boolean }>("/me/password", { new_password: newPassword }),
+  /** Update the caller's display name. */
+  updateProfile: (displayName: string) =>
+    apiPatch<UserProfile>("/me", { displayName }),
 
   /** Every project the signed-in user can see (`require_user`) — feeds the picker. */
   projects: () => apiGet<Project[]>("/projects"),

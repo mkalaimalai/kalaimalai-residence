@@ -5,7 +5,7 @@ import Image from "next/image";
 import type { GalleryItem, GalleryCategory } from "@/types";
 import { api } from "@/lib/api-v2";
 import { useProject } from "../V2ProjectChrome";
-import { cn } from "@/lib/utils";
+import { cn } from "@kr/api-client";
 import { SectionHeading } from "@/components/SectionHeading";
 
 const LABELS: Record<GalleryCategory | "all", string> = {

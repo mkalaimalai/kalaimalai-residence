@@ -2,7 +2,7 @@
 
 import { useMemo, useState, type ReactNode } from "react";
 import { ChevronDown, ChevronUp, ChevronsUpDown, Search } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@kr/api-client";
 
 export interface Column<T> {
   id: string;

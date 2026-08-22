@@ -20,7 +20,6 @@ token exchange, which should not happen on import or per request.
 from __future__ import annotations
 
 import io
-import json
 import os
 from dataclasses import dataclass
 from functools import lru_cache

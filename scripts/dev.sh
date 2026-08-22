@@ -6,8 +6,6 @@
 #   ./scripts/dev.sh web          Next web app only (:3000)
 #   ./scripts/dev.sh admin        Next admin app only (:3001)
 #   ./scripts/dev.sh api          Postgres + pgweb + FastAPI (:8099), no frontend
-#   ./scripts/dev.sh mobile       Expo dev server only
-#   ./scripts/dev.sh all mobile   everything, plus Expo
 #
 # Database target:
 #   DB_TARGET=supabase  (default) cloud Postgres via apps/api/.env.supabase. No
@@ -90,6 +88,14 @@ start_api() {
   python3 -m venv apps/api/.venv && apps/api/.venv/bin/pip install -r apps/api/requirements.txt"
   require_free_port "$API_PORT" "api"
 
+  # Build the schema before anything queries it. The container starts as a bare Postgres
+  # (no initdb SQL), and neither migration era can build an empty DB alone — see
+  # scripts/init-local-db.sh for why. Idempotent: a no-op once already at head.
+  if [[ "$DB_TARGET" == "docker" ]]; then
+    log "Building schema (raw SQL + alembic)"
+    "$ROOT/scripts/init-local-db.sh" || fail "schema build failed"
+  fi
+
   # Seed only the local container, only when empty. Never auto-seed Supabase — that is a
   # write to shared cloud data and must stay an explicit, manual act.
   if [[ "$DB_TARGET" == "docker" ]]; then
@@ -135,30 +141,19 @@ start_admin() {
   PIDS+=($!)
 }
 
-start_mobile() {
-  [[ -d apps/mobile/node_modules ]] || fail \
-    "apps/mobile deps missing. Install them:  npm run mobile:install"
-  log "Starting Expo"
-  npm run mobile &
-  PIDS+=($!)
-}
-
 # --- dispatch -----------------------------------------------------------------------
 MODES=("${@:-all}")
 [[ "$DB_TARGET" == "supabase" ]] && load_supabase_env
 
-WANT_MOBILE=0
 for mode in "${MODES[@]}"; do
   case "$mode" in
     all)    start_db; start_api; start_web; start_admin ;;
     api)    start_db; start_api ;;
     web)    start_web ;;
     admin)  start_admin ;;
-    mobile) WANT_MOBILE=1 ;;
-    *)      fail "Unknown mode '$mode'. Use: all | web | admin | api | mobile" ;;
+    *)      fail "Unknown mode '$mode'. Use: all | web | admin | api" ;;
   esac
 done
-[[ "$WANT_MOBILE" == 1 ]] && start_mobile
 
 [[ ${#PIDS[@]} -eq 0 ]] && fail "Nothing to run."
 

@@ -7,7 +7,7 @@
  * var and the Supabase session held in localStorage.
  */
 import { createApiClient } from "@kr/api-client";
-import { getSupabase } from "@/lib/supabase-client";
+import { getSupabase } from "@kr/api-client";
 
 export type { PublicProject, UserProfile, MediaSet, ApiClient } from "@kr/api-client";
 export { ApiError, resolveImageUrl } from "@kr/api-client";

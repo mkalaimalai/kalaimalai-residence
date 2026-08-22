@@ -9,11 +9,9 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import Image from "next/image";
 import { Plus, Trash2, X } from "lucide-react";
 import { apiGet, apiPatch, apiPost, ApiError } from "@/lib/api-client";
-import { getSupabase } from "@/lib/supabase-client";
-import { cn } from "@/lib/utils";
+import { cn, getSupabase } from "@kr/api-client";
 import type { MediaKind, MediaSet, MediaSubsection } from "@/lib/api-types";
 
 type NamedRow = { id: string; name: string };
@@ -345,6 +343,27 @@ const allImages = (set: MediaSet): string[] => [
 
 const countImages = (set: MediaSet): number => allImages(set).length;
 
+const WEB_URL = process.env.NEXT_PUBLIC_WEB_URL ?? "http://localhost:3000";
+
+type Preview = "local" | "remote" | "link";
+
+const previewKind = (url: string): Preview => {
+  if (url.startsWith("/")) return "local";
+  if (url.includes("drive.google.com/file/")) return "link";
+  return "remote";
+};
+
+const driveFileId = (url: string): string | null => {
+  return (
+    url.match(/\/file\/d\/([^/]+)/)?.[1] ??
+    url.match(/[?&]id=([^&]+)/)?.[1] ??
+    null
+  );
+};
+
+const driveThumb = (id: string) =>
+  `https://drive.google.com/thumbnail?id=${id}&sz=w200`;
+
 function ThumbnailStrip({ images }: { images: string[] }) {
   if (images.length === 0) {
     return <p className="text-xs text-muted-foreground">No images.</p>;
@@ -353,13 +372,7 @@ function ThumbnailStrip({ images }: { images: string[] }) {
   return (
     <div className="flex items-center gap-2 overflow-x-auto">
       {shown.map((src) => (
-        <span
-          key={src}
-          title={src}
-          className="relative h-14 w-20 shrink-0 overflow-hidden rounded-md border border-border bg-muted"
-        >
-          <Image src={src} alt="" fill sizes="80px" className="object-cover" />
-        </span>
+        <Thumb key={src} src={src} />
       ))}
       {images.length > shown.length && (
         <span className="shrink-0 text-xs text-muted-foreground">
@@ -367,6 +380,52 @@ function ThumbnailStrip({ images }: { images: string[] }) {
         </span>
       )}
     </div>
+  );
+}
+
+function Thumb({ src }: { src: string }) {
+  const kindOf = previewKind(src);
+  const driveId = kindOf === "link" ? driveFileId(src) : null;
+  const [thumbFailed, setThumbFailed] = useState(false);
+
+  if (kindOf === "local") {
+    const resolved = `${WEB_URL}${src}`;
+    return (
+      <span
+        title={src}
+        className="relative h-14 w-20 shrink-0 overflow-hidden rounded-md border border-border bg-muted"
+      >
+        <img src={resolved} alt="" className="h-full w-full object-cover" />
+      </span>
+    );
+  }
+
+  if (kindOf === "link" && driveId && !thumbFailed) {
+    return (
+      <span
+        title={src}
+        className="relative h-14 w-20 shrink-0 overflow-hidden rounded-md border border-border bg-muted"
+      >
+        <img
+          src={driveThumb(driveId)}
+          alt=""
+          className="h-full w-full object-cover"
+          onError={() => setThumbFailed(true)}
+        />
+      </span>
+    );
+  }
+
+  return (
+    <a
+      href={src}
+      target="_blank"
+      rel="noreferrer"
+      title={src}
+      className="flex h-14 w-20 shrink-0 items-center justify-center rounded-md border border-border p-1 text-center text-[10px] leading-tight text-muted-foreground hover:bg-muted"
+    >
+      Open
+    </a>
   );
 }
 

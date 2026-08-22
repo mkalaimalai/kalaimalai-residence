@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { Material } from "@/types";
 import { api } from "@/lib/api-v2";
 import { useProject } from "../V2ProjectChrome";
-import { cn } from "@/lib/utils";
+import { cn } from "@kr/api-client";
 import { SectionHeading } from "@/components/SectionHeading";
 import { MaterialCard } from "@/components/MaterialCard";
 

@@ -7,7 +7,7 @@ and NotificationServiceClient (notify). BOQ confirmation and PO creation are in-
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import date
+from datetime import UTC, datetime
 
 from app.contexts.commercial.domain.entities import PurchaseOrder, Quote
 from app.contexts.commercial.domain.repository import (
@@ -60,7 +60,7 @@ class ApproveQuote:
             raise NotFoundError(f"quote {quote_id} not found")
 
         # 2. Validate not expired
-        if quote.is_expired(date.today().isoformat()):
+        if quote.is_expired(datetime.now(UTC).date().isoformat()):
             raise ValidationError(f"quote {quote_id} has expired")
 
         # 3. Confirm vendor (synchronous, via Vendor service-client port)
@@ -95,7 +95,7 @@ class ApproveQuote:
                 amount=amount,
                 currency=quote.currency,
                 status="Created",
-                created_at=date.today().isoformat(),
+                created_at=datetime.now(UTC).date().isoformat(),
                 notes=f"Auto-created on approval of quote {quote.id}",
             )
         )

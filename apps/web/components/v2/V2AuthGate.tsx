@@ -19,7 +19,7 @@ import { useRouter, usePathname } from "next/navigation";
 import type { Session } from "@supabase/supabase-js";
 import { Lock } from "lucide-react";
 import Link from "next/link";
-import { getSupabase, isSupabaseConfigured } from "@/lib/supabase-client";
+import { getSupabase, isSupabaseConfigured } from "@kr/api-client";
 import { api } from "@/lib/api-v2";
 
 interface AuthCtx {

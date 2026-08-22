@@ -2,7 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import { Moon, Sun } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@kr/api-client";
 
 // The `dark` class on <html> is the source of truth (set by the no-flash
 // script in layout.tsx and by toggle() below). We read it via

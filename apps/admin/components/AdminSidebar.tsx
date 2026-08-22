@@ -24,7 +24,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { ADMIN_NAV, groupItems, type NavSection } from "@/lib/admin-nav";
-import { cn } from "@/lib/utils";
+import { cn } from "@kr/api-client";
 
 const ICONS: Record<NavSection["icon"], LucideIcon> = {
   boxes: Boxes,

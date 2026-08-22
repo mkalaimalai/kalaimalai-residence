@@ -22,6 +22,9 @@ RoleWriter = Callable[[str, str], None]
 # A display name is a label, not prose. Long enough for a real name, short enough that
 # it cannot be used to smuggle a wall of text into an admin listing.
 MAX_DISPLAY_NAME = 80
+# Supabase's own floor is 6; asking for more here is cheap and the error
+# is clearer coming from us than bouncing off the API.
+MIN_PASSWORD = 8
 
 
 class UserProfileService:
@@ -72,6 +75,15 @@ class UserProfileService:
         profile = await self.ensure(user)
         profile.display_name = name
         return await self._repo.upsert(profile)
+
+    async def change_password(self, user: AuthUser, new_password: str) -> None:
+        """Validate the new password before the controller pushes it to
+        Supabase via the admin API."""
+        new_password = new_password.strip()
+        if len(new_password) < MIN_PASSWORD:
+            raise ValidationError(
+                f"Password must be at least {MIN_PASSWORD} characters"
+            )
 
     async def list_all(self) -> list[e.UserProfile]:
         """Admin-only listing — guarded at the route, not here."""

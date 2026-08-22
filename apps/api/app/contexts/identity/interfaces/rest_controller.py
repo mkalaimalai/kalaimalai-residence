@@ -23,6 +23,7 @@ from app.contexts.identity.infrastructure.supabase_admin import (
     AdminApiError,
     AdminApiNotConfigured,
     set_app_role,
+    set_user_password,
 )
 from app.contexts.identity.interfaces import schemas as s
 from app.shared.auth import AuthUser, require_admin, require_user
@@ -67,6 +68,28 @@ async def update_me(
     except ValidationError as exc:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, str(exc)) from exc
     return s.UserProfileResponse.model_validate(profile)
+
+
+@me_router.patch("/password")
+async def update_password(
+    body: s.UserPasswordUpdate,
+    user: AuthUser = Depends(require_user),
+    service: UserProfileService = Depends(_service),
+    settings: Settings = Depends(get_settings),
+):
+    try:
+        await service.change_password(user, body.new_password)
+    except ValidationError as exc:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, str(exc)) from exc
+    try:
+        set_user_password(settings, user.id, body.new_password)
+    except AdminApiNotConfigured as exc:
+        raise HTTPException(
+            status.HTTP_501_NOT_IMPLEMENTED, str(exc)
+        ) from exc
+    except AdminApiError as exc:
+        raise HTTPException(status.HTTP_502_BAD_GATEWAY, str(exc)) from exc
+    return {"ok": True}
 
 
 @users_router.get(
