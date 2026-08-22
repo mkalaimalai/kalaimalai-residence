@@ -47,6 +47,10 @@ jobs:
           NEXT_PUBLIC_API_BASE_URL: ${{ vars.API_BASE_URL }}
           NEXT_PUBLIC_SUPABASE_URL: ${{ vars.SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          # The admin app deploys separately (Cloudflare Pages, see deploy-admin.yml);
+          # this is the only thing tying the two origins together. Unset means the
+          # localhost dev fallback ships to production, so set the ADMIN_URL repo variable.
+          NEXT_PUBLIC_ADMIN_URL: ${{ vars.ADMIN_URL }}
 
       - uses: actions/upload-pages-artifact@v3
         with:
