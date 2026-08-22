@@ -343,7 +343,10 @@ const allImages = (set: MediaSet): string[] => [
 
 const countImages = (set: MediaSet): number => allImages(set).length;
 
-const WEB_URL = process.env.NEXT_PUBLIC_WEB_URL ?? "http://localhost:3000";
+// `||`, not `??`: an unset CI variable inlines as the empty string rather than
+// undefined, and "" + "/images/..." resolves against *this* origin, where the web
+// app's public files do not exist.
+const WEB_URL = process.env.NEXT_PUBLIC_WEB_URL || "http://localhost:3000";
 
 type Preview = "local" | "remote" | "link";
 

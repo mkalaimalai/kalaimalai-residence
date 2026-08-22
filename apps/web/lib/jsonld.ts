@@ -22,7 +22,7 @@ import type {
 export type SchemaObject = Record<string, unknown>;
 
 const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://mkalaimalai-residence.github.io"
+  process.env.NEXT_PUBLIC_SITE_URL || "https://mkalaimalai-residence.github.io"
 ).replace(/\/$/, "");
 
 export const abs = (path: string): string =>
