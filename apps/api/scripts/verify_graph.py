@@ -1,8 +1,8 @@
 """Check every entity reference in a live database.
 
-`npm run verify` checks the seed. Nothing checked production, which is where references
-actually rot: a vendor deleted through the admin app used to leave every quote, material
-and warranty that mentioned it pointing at an id that no longer resolves.
+`npm run verify` checks the seed. Nothing checked production, where a reference could
+point at an id that no longer resolves and the only symptom was a traversal quietly
+returning fewer rows than it should.
 
 Two kinds of edge, checked differently:
 
@@ -15,9 +15,18 @@ Two kinds of edge, checked differently:
 
 Usage (from apps/api, with the environment loaded):
 
-    ./.venv/bin/python -m scripts.verify_graph
+    ./.venv/bin/python -m scripts.verify_graph          # report
+    ./.venv/bin/python -m scripts.verify_graph --fix    # report, then repair arrays
 
-Exits non-zero on the first dangling reference, so it works as a CI gate.
+Exits non-zero when anything dangles, so it works as a gate.
+
+`--fix` removes dangling ids from array columns. It is deliberately the only repair
+offered: scalar columns are constrained now, so the database rejects a bad reference at
+write time and there is nothing to repair. Arrays have no such enforcement, and the only
+way to break one is direct database access — the API has a single DELETE route
+(`/media-sets/{id}`), and media_sets is referenced by no array column. So this is a
+maintenance tool for after someone edits data in the Supabase dashboard, not a guard
+against anything the application does.
 """
 
 from __future__ import annotations
@@ -48,7 +57,7 @@ async def _missing_tables(conn: asyncpg.Connection, names: set[str]) -> set[str]
     return names - {r["table_name"] for r in rows}
 
 
-async def main() -> int:
+async def main(fix: bool = False) -> int:
     conn = await asyncpg.connect(_dsn(), statement_cache_size=0)
     try:
         referenced = {t for t, _, _, _ in EDGES} | {t for _, _, t in ARRAY_EDGES}
@@ -86,6 +95,23 @@ async def main() -> int:
                 f") x WHERE x.ref IS NOT NULL AND x.ref <> '' "
                 f"AND NOT EXISTS (SELECT 1 FROM {target} t WHERE t.id = x.ref)"
             )
+            if dangling and fix:
+                # array_remove per bad id, so untouched elements keep their order.
+                bad = await conn.fetch(
+                    f"SELECT DISTINCT x.ref FROM ("
+                    f"  SELECT unnest({column}) AS ref FROM {table}"
+                    f") x WHERE x.ref IS NOT NULL AND x.ref <> '' "
+                    f"AND NOT EXISTS (SELECT 1 FROM {target} t WHERE t.id = x.ref)"
+                )
+                for row in bad:
+                    await conn.execute(
+                        f"UPDATE {table} SET {column} = array_remove({column}, $1) "
+                        f"WHERE $1 = ANY({column})",
+                        row["ref"],
+                    )
+                ids = ", ".join(r["ref"] for r in bad)
+                print(f"  fix {table}.{column} -> {target}: removed {ids}")
+                dangling = 0
             print(f"  {'ok ' if not dangling else 'FAIL'} {table}.{column} -> {target}")
             if dangling:
                 failures.append(f"{table}.{column}: {dangling} dangling")
@@ -106,4 +132,4 @@ async def main() -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(asyncio.run(main()))
+    raise SystemExit(asyncio.run(main(fix="--fix" in sys.argv)))
