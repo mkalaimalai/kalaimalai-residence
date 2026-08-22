@@ -31,9 +31,13 @@ piece than a rendering, and it embeds into a static export without a server.
 
 Recorded here so the decision is revisited on evidence rather than enthusiasm:
 
-- **It presumes a native model exists.** If the residence was drawn in 2D CAD only, there is nothing
-  to ingest and this feature delivers nothing. 2D DWG cannot be parsed into reliable semantics —
-  layer conventions differ per consultant, and "is this polyline a wall?" is a guess.
+- ~~**It presumes a native model exists.**~~ **Answered — both sources exist.** A SketchUp model
+  (`Kalaimalai_Residence_model 15 R3.skp`, 63 MB) and a set of DWG/DXF drawings from the consultants.
+  The general warning that 2D CAD cannot be parsed into reliable semantics **does not apply here**:
+  these drawings follow the **AIA CAD Layer Guidelines**, so the semantics are in the layer name.
+  Measured on `MADHU-FF-PLAN-mm.dxf` — 455 entities across 12 named layers: `A-WALL` 27,
+  `A-GLAZ` 21, `A-DOOR` 15, `A-FLOR-STRS` 27, `A-FLOR-FIXT` 11, plus 126 annotation entities
+  carrying room identifiers. `A-WALL` → `IfcWall` is a lookup, not a guess.
 - **It adds a second system** with its own auth and availability, against a stack that is currently
   one API and one database.
 - **It is not the differentiator.** The defensible part of this product is the decision and
@@ -141,8 +145,15 @@ Two constraints this must respect:
 
 ## Open questions
 
-1. **Does a native model exist for this residence?** Everything here is blocked on it. Answer this
-   before any other work.
+1. ~~**Does a native model exist?**~~ **Yes — and this changes the sequencing.** Two independent
+   routes now exist, and they deliver different things:
+   - **Viewer (fast):** publish the `.skp` through a provider's SketchUp connector, set
+     `project.modelRef`, embed. Delivers the portfolio piece without any extraction work.
+   - **Elements (deeper):** parse the DXFs by layer into `BuildingElement` rows. Viable because of
+     the AIA layer discipline; a Python job with `ezdxf` fits the existing FastAPI stack, and needs
+     no AI. Gives real geometry-to-record joins, but no 3D.
+
+   These are independent. Neither blocks the other.
 2. **Public or portal?** The viewer is a marketing asset on the public page and a working tool on
    the portal. The anonymisation rule may permit only the second.
 3. **Self-hosted or hosted provider?** Self-hosting removes the third-party dependency and adds an
