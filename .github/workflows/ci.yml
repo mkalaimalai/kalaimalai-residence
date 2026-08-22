@@ -32,7 +32,9 @@ jobs:
           cache-dependency-path: apps/api/requirements.txt
 
       - name: Install API deps
-        run: pip install -r apps/api/requirements.txt ruff mypy
+        # Path is relative to working-directory; the apps/api prefix resolved to
+        # apps/api/apps/api/requirements.txt and failed every run.
+        run: pip install -r requirements.txt ruff mypy
         working-directory: apps/api
 
       - name: Ruff lint
