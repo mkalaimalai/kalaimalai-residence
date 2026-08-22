@@ -1,0 +1,58 @@
+# Render blueprint for the FastAPI backend (`apps/api`).
+#
+# The two Next apps are static exports on GitHub Pages / Cloudflare Pages; this is the
+# only piece that needs a running process. Postgres stays in Supabase — this blueprint
+# deliberately declares no database, so Render hosts the app and nothing else.
+#
+# First deploy: Render dashboard → New → Blueprint → point at this repo. Everything
+# marked `sync: false` is left blank on purpose and must be pasted in the dashboard;
+# they are secrets and must never be committed.
+services:
+  - type: web
+    name: kr-api
+    runtime: python
+    plan: free
+    region: singapore # closest Render region to Bengaluru / the Supabase project
+    rootDir: apps/api
+    buildCommand: pip install -r requirements.txt
+    # Render injects $PORT; binding to it (and to 0.0.0.0) is what makes the service
+    # reachable. Migrations are NOT run here — see the note at the bottom of this file.
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    # The free plan sleeps after ~15 min idle. `deploy.yml` pre-warms this path before
+    # building the web app so build-time fetches hit a woken instance.
+    healthCheckPath: /healthz
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12"
+      # Supabase Postgres, POOLED connection string (port 6543) — the direct connection
+      # exhausts its slot limit quickly. Must use the `postgresql+asyncpg://` scheme:
+      # the app talks to it through SQLAlchemy's async engine.
+      - key: DATABASE_URL
+        sync: false
+      # Verifies incoming Supabase access tokens. HS256 secret for legacy tokens;
+      # SUPABASE_URL is what allows the default ES256/RS256 tokens to be verified via JWKS.
+      - key: SUPABASE_JWT_SECRET
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      # Only needed to write `app_metadata.role` (the authorization source of record).
+      # Bypasses RLS — server-side only, never a NEXT_PUBLIC_ var. Leave unset and the
+      # role endpoint reports 501 rather than pretending it can promote users.
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      # Every browser origin that may call this API. No wildcard is possible:
+      # `allow_credentials=True` in app/main.py requires each origin be named exactly.
+      - key: CORS_ORIGINS
+        value: https://mkalaimalai-residence.github.io,https://kr-admin.pages.dev,http://localhost:3000,http://localhost:3001
+      # Explicit, because the default-off case is the one that matters: this is a real
+      # deployment against real data, and every request must carry a genuine token.
+      - key: AUTH_DISABLED
+        value: "false"
+
+# Migrations are not part of the start command on purpose: every instance restart would
+# race the same `alembic upgrade head`, and a migration failure would turn into a boot
+# loop rather than a visible error. Run them deliberately from a machine with the same
+# DATABASE_URL:
+#
+#   cd apps/api && source .venv/bin/activate
+#   DATABASE_URL=<pooled supabase url> alembic upgrade head
