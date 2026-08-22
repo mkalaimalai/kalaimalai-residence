@@ -85,20 +85,28 @@ export function QuotesAdmin({ projectId, vendors, boqs = [] }: QuotesAdminProps)
   }, []);
 
   useEffect(() => {
-    setSelectedId(null);
-    void loadQuotes();
+    // Wrapped rather than called straight, so the loader's own `setLoading(true)` is
+    // not a synchronous setState in the effect body — the same shape EntityAdmin uses.
+    void (async () => {
+      await loadQuotes();
+    })();
   }, [loadQuotes]);
 
   useEffect(() => {
-    if (!selectedId) {
-      setLines([]);
-      return;
-    }
-    setEditingLine(null);
-    void loadLines(selectedId);
+    // Only fetching here. Clearing the previous quote's lines and any open line form
+    // used to happen in this effect too, which meant every selection change rendered
+    // once to apply those resets and again for the fetch. Both are now derived or
+    // handled where the selection actually changes.
+    if (!selectedId) return;
+    void (async () => {
+      await loadLines(selectedId);
+    })();
   }, [selectedId, loadLines]);
 
   const selected = quotes.find((q) => q.id === selectedId) ?? null;
+  // `lines` holds whatever was last fetched; with nothing selected there is nothing to
+  // show. Deriving beats clearing it in an effect, which cost a second render.
+  const visibleLines = selectedId ? lines : [];
 
   const createQuote = async (draft: HeaderDraft) => {
     setHeaderBusy(true);
@@ -175,7 +183,7 @@ export function QuotesAdmin({ projectId, vendors, boqs = [] }: QuotesAdminProps)
     });
   };
 
-  const linesTotal = lines.reduce((sum, li) => sum + li.totalPrice, 0);
+  const linesTotal = visibleLines.reduce((sum, li) => sum + li.totalPrice, 0);
 
   return (
     <div className="space-y-6">
@@ -274,6 +282,7 @@ export function QuotesAdmin({ projectId, vendors, boqs = [] }: QuotesAdminProps)
                         onClick={() => {
                           setActionError(null);
                           setActionResult(null);
+                          setEditingLine(null);
                           setSelectedId(q.id === selectedId ? null : q.id);
                         }}
                         className="rounded-md border border-border px-3 py-1.5 text-sm text-foreground hover:bg-muted"
@@ -336,9 +345,9 @@ export function QuotesAdmin({ projectId, vendors, boqs = [] }: QuotesAdminProps)
                 <div className="flex items-center justify-between">
                   <h4 className="text-sm font-medium text-foreground">
                     Line items
-                    {lines.length > 0 && (
+                    {visibleLines.length > 0 && (
                       <span className="ml-2 text-xs font-normal text-muted-foreground">
-                        {lines.length} \u00B7 {money(linesTotal, selected.currency)}
+                        {visibleLines.length} \u00B7 {money(linesTotal, selected.currency)}
                       </span>
                     )}
                   </h4>
@@ -363,12 +372,12 @@ export function QuotesAdmin({ projectId, vendors, boqs = [] }: QuotesAdminProps)
                   <p className="py-4 text-sm text-muted-foreground">Loading\u2026</p>
                 ) : (
                   <div className="divide-y divide-border rounded-lg border border-border">
-                    {lines.length === 0 && (
+                    {visibleLines.length === 0 && (
                       <p className="px-4 py-5 text-sm text-muted-foreground">
                         No line items yet.
                       </p>
                     )}
-                    {lines.map((li) => (
+                    {visibleLines.map((li) => (
                       <div
                         key={li.id}
                         className="flex items-start justify-between gap-3 px-4 py-3"

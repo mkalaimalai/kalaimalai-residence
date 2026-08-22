@@ -49,6 +49,24 @@ const REF_KEYS: RefKey[] = [
  */
 const REF_CACHE = new Map<string, RefRows>();
 
+/**
+ * The rows themselves, keyed by project and entity.
+ *
+ * Navigation always remounts this component, so returning to a list you were just
+ * looking at otherwise refetches it in full — a round trip to another region before
+ * anything appears, every time. Cached rows render immediately and are then revalidated
+ * in the background, so the table is instant and still converges on the truth within
+ * one request.
+ *
+ * The cache lives as long as the tab does. That is the right lifetime for an admin tool
+ * used by one person at a time; it is not right for concurrent editors, who would see
+ * each other's writes only after a revalidation lands.
+ */
+const ROW_CACHE = new Map<string, Row[]>();
+
+const rowCacheKey = (projectId: string, entityKey: string) =>
+  `${projectId}:${entityKey}`;
+
 export function EntityAdmin({ entityKey }: { entityKey: string }) {
   const entity: EntityDef | undefined = ENTITY_BY_KEY[entityKey];
   const { isAdmin } = useAuth();
@@ -90,13 +108,26 @@ export function EntityAdmin({ entityKey }: { entityKey: string }) {
 
   const loadRows = useCallback(async () => {
     if (!entity) return;
-    void projectId;
-    setListLoading(true);
+    const key = rowCacheKey(projectId, entity.key);
+    const cached = ROW_CACHE.get(key);
+    if (cached) {
+      // Paint what we have, then refresh underneath.
+      setRows(cached);
+      setListLoading(false);
+    } else {
+      setListLoading(true);
+    }
     setListError(null);
     try {
-      setRows(await apiGet<Row[]>(scopedPath(entity.endpoint)));
+      const data = await apiGet<Row[]>(scopedPath(entity.endpoint));
+      ROW_CACHE.set(key, data);
+      setRows(data);
     } catch (err) {
-      setListError(err instanceof Error ? err.message : "Failed to load");
+      // A failed revalidation must not blank a table the user is reading — surface the
+      // error only when there is nothing cached to fall back to.
+      if (!cached) {
+        setListError(err instanceof Error ? err.message : "Failed to load");
+      }
     } finally {
       setListLoading(false);
     }
@@ -109,9 +140,7 @@ export function EntityAdmin({ entityKey }: { entityKey: string }) {
       // the table — the only thing on screen — waited behind eight lists it does not
       // use. Sequencing them costs the form nothing: refs land while the user is still
       // reading the table, long before they click Edit.
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       await loadRows();
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       if (!cancelled) await loadRefs();
     })();
     return () => {
@@ -155,8 +184,9 @@ export function EntityAdmin({ entityKey }: { entityKey: string }) {
       }
       setEditing(null);
       setHeroImageUrl("");
-      // A created or renamed row has to show up in the selects, so the cached lists
-      // for this project are no longer true.
+      // A created or renamed row has to show up in both the table and the selects, so
+      // neither cached copy is true any more.
+      if (entity) ROW_CACHE.delete(rowCacheKey(projectId, entity.key));
       REF_CACHE.delete(projectId);
       await Promise.all([loadRows(), loadRefs()]);
     } catch (err) {
