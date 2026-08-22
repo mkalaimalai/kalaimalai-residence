@@ -4,7 +4,7 @@ import { useState } from "react";
 import { SectionHeading } from "@/components/SectionHeading";
 import { RenderingGallery } from "@/components/RenderingGallery";
 import type { RenderingSet } from "@/data/renderings";
-import { cn } from "@/lib/utils";
+import { cn } from "@kr/api-client";
 
 type Tab = "renderings" | "drawings";
 

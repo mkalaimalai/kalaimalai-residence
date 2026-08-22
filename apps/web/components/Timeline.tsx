@@ -1,5 +1,5 @@
 import { StatusBadge } from "@/components/StatusBadge";
-import { cn } from "@/lib/utils";
+import { cn } from "@kr/api-client";
 
 export interface TimelineStage {
   title: string;

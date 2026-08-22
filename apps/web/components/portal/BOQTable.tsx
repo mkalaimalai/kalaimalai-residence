@@ -3,7 +3,7 @@
 import type { BOQ } from "@/types";
 import { DataTable, type Column, type Filter } from "@/components/DataTable";
 import { StatusBadge } from "@/components/StatusBadge";
-import { formatINR } from "@/lib/utils";
+import { formatINR } from "@kr/api-client";
 
 export function BOQTable({
   rows,

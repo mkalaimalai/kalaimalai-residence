@@ -21,8 +21,10 @@ services:
       - "5432:5432"
     volumes:
       - kr-pgdata:/var/lib/postgresql/data
-      # Applied only on first init of an empty volume.
-      - ./apps/api/migrations/001_init.sql:/docker-entrypoint-initdb.d/001_init.sql:ro
+      # No initdb mount: the schema is Alembic-managed now. migrations/raw/*.sql is
+      # kept as history and cannot build an empty DB (002 backfills project_id and
+      # aborts unless projects is already seeded). scripts/dev.sh runs
+      # `alembic upgrade head` against the fresh container instead.
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s

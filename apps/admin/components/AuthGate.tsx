@@ -16,7 +16,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { Lock } from "lucide-react";
-import { getSupabase, isSupabaseConfigured } from "@/lib/supabase-client";
+import { getSupabase, isSupabaseConfigured } from "@kr/api-client";
 
 interface AuthCtx {
   /** Supabase user id — the token's `sub`, and the key of `user_profiles`. Needed by

@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { PUBLIC_NAV, PORTAL_LINK } from "@/lib/nav";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { cn } from "@/lib/utils";
+import { cn } from "@kr/api-client";
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);

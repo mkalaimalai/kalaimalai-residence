@@ -3,7 +3,7 @@
 import type { ProcurementItem } from "@/types";
 import { DataTable, type Column, type Filter } from "@/components/DataTable";
 import { StatusBadge } from "@/components/StatusBadge";
-import { formatINR, landedFromEUR } from "@/lib/utils";
+import { formatINR, landedFromEUR } from "@kr/api-client";
 
 // Build-time FX assumption for landed-cost estimates (EUR ex-works → INR).
 // Obscurity-only seed data; refine when real invoices land.

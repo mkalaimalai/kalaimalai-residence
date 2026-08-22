@@ -7,7 +7,7 @@
 import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { getSupabase, isSupabaseConfigured } from "@/lib/supabase-client";
+import { getSupabase, isSupabaseConfigured } from "@kr/api-client";
 import { signIn } from "@/lib/auth-v2";
 import { AuthShell, Field, FormError, SubmitButton } from "@/components/v2/AuthShell";
 

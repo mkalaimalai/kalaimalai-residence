@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@kr/api-client";
 
 /**
  * Status pill. Maps any status string to a tone by keyword so it works across

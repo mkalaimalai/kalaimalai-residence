@@ -6,6 +6,7 @@ pydantic==2.10.4
 pydantic-settings==2.7.1
 python-jose[cryptography]==3.3.0
 httpx==0.28.1
+alembic==1.18.5
 # Multipart form parsing — required by FastAPI's UploadFile (media upload endpoints).
 python-multipart==0.0.32
 # Google Drive upload for rendering / drawing-sheet files.

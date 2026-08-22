@@ -8,7 +8,7 @@
 import { useState } from "react";
 import { LogOut } from "lucide-react";
 import { signOut } from "@/lib/auth-v2";
-import { cn } from "@/lib/utils";
+import { cn } from "@kr/api-client";
 
 export function SignOutButton({ className }: { className?: string }) {
   const [busy, setBusy] = useState(false);

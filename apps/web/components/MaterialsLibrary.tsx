@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import type { Material } from "@/types";
 import { MaterialCard } from "@/components/MaterialCard";
-import { cn } from "@/lib/utils";
+import { cn } from "@kr/api-client";
 
 export function MaterialsLibrary({ materials }: { materials: Material[] }) {
   const [filter, setFilter] = useState<string>("all");

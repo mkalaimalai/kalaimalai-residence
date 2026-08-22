@@ -1,11 +1,11 @@
 /**
- * Platform-agnostic client for the FastAPI backend.
+ * Shared client for the FastAPI backend.
  *
  * Extracted from the web app's `lib/api-v2.ts` so the web app, the admin app and the
- * iOS/Android app all speak to the API through one implementation. Nothing in here may
- * import from `next`, touch `window`, or read `process.env` — the host supplies its own
- * base URL and token getter, because those differ per platform (Next.js inlines
- * `NEXT_PUBLIC_*`, Expo inlines `EXPO_PUBLIC_*`, and React Native has no `window`).
+ * iOS/Android app all speak to the API through one implementation.
+ *
+ * Also re-exports browser utilities (`cn`, `formatINR`, `getSupabase`) that used to be
+ * duplicated across every app — see `supabase.ts` and `utils.ts`.
  */
 import type {
   Space, Domain, Drawing, Vendor, ProcurementItem, Decision,
@@ -114,6 +114,8 @@ export function createApiClient({ baseUrl, getAccessToken }: ApiClientOptions) {
     me:            (): Promise<UserProfile> => request("/me"),
     updateMe:      (displayName: string): Promise<UserProfile> =>
       request("/me", { method: "PATCH", body: JSON.stringify({ displayName }) }),
+    updatePassword: (newPassword: string): Promise<{ ok: boolean }> =>
+      request("/me/password", { method: "PATCH", body: JSON.stringify({ new_password: newPassword }) }),
     users:         (): Promise<UserProfile[]> => request("/users"),
 
     /** Renderings / drawing sheets, filtered server-side. Behind `require_user`. */
@@ -167,3 +169,6 @@ export function resolveImageUrl(path: string, siteOrigin: string): string {
   if (/^https?:\/\//i.test(path)) return path;
   return `${siteOrigin.replace(/\/$/, "")}${path.startsWith("/") ? "" : "/"}${path}`;
 }
+
+export { cn, formatINR, landedFromEUR } from "./utils";
+export { getSupabase, isSupabaseConfigured } from "./supabase";

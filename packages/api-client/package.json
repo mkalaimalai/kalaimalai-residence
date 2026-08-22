@@ -2,7 +2,7 @@
   "name": "@kr/api-client",
   "version": "0.1.0",
   "private": true,
-  "description": "Platform-agnostic client for the FastAPI backend — shared by web, admin and mobile.",
+  "description": "Shared browser client for the FastAPI backend — shared by web, admin, and mobile.",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "exports": {
@@ -12,7 +12,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@kr/contracts": "*"
+    "@kr/contracts": "*",
+    "@supabase/supabase-js": "^2.108.0",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
     "typescript": "^5"

@@ -25,7 +25,7 @@ import {
   ApiError,
 } from "@/lib/api-client";
 import type { MediaKind, MediaSet } from "@/lib/api-types";
-import { cn } from "@/lib/utils";
+import { cn } from "@kr/api-client";
 
 const KINDS: { value: MediaKind; label: string }[] = [
   { value: "rendering", label: "Renderings" },

@@ -4,7 +4,7 @@ import { usePortalData } from "@/components/portal/PortalDataProvider";
 import { spaceById } from "@/lib/relations";
 import { DashboardMetricCard } from "@/components/portal/DashboardMetricCard";
 import { StatusBadge } from "@/components/StatusBadge";
-import { formatINR } from "@/lib/utils";
+import { formatINR } from "@kr/api-client";
 
 const OPEN_DECISIONS = new Set(["Open", "Revisit"]);
 const PENDING_PROCUREMENT = new Set([

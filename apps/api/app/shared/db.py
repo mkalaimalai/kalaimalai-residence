@@ -38,7 +38,7 @@ class ProjectScoped:
     # declared_attr, not a bare mapped_column: a ForeignKey object cannot be shared
     # across mappers, so each subclass needs its own instance.
     @declared_attr
-    def project_id(cls) -> Mapped[str]:  # noqa: N805
+    def project_id(cls) -> Mapped[str]:
         return mapped_column(
             String,
             ForeignKey("projects.id", ondelete="CASCADE"),

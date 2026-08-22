@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import type { GalleryItem, GalleryCategory } from "@/types";
-import { cn } from "@/lib/utils";
+import { cn } from "@kr/api-client";
 
 const LABELS: Record<GalleryCategory | "all", string> = {
   all: "All",

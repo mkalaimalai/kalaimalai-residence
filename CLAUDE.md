@@ -8,7 +8,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 apps/web/      # Next.js 16: public site (1.0 + 2.0) + portal. Was the repo root until the split.
 apps/admin/    # Next.js 16: the admin app — its own origin, its own build, its own deploy
 apps/api/      # FastAPI backend (was ./api)
-apps/mobile/   # Expo: the iOS + Android content viewer
 apps/ios/      # native SwiftUI client (Xcode project, no npm involvement)
 apps/android/  # native Kotlin/Compose client (Gradle, no npm involvement)
 packages/contracts/    # entity interfaces — the contract, compiled by every surface
@@ -24,11 +23,6 @@ Both Next apps set `turbopack.root` to the **monorepo root**, because `next` is 
 there by workspaces and a per-app root cannot resolve it. `@kr/*` imports need explicit
 `paths` in each `tsconfig.json` pointing at `../../packages/*/src/index.ts` — the
 node_modules symlinks alone do not give `tsc` the TypeScript sources.
-
-**`apps/mobile` is NOT a workspace member** — React Native needs React 18, Next needs
-React 19, and as a member npm split Expo across two `node_modules` trees so Metro could
-not bundle. It installs on its own (`npm run mobile:install`) and depends on the shared
-packages via `file:`. Do not "fix" this by adding it to `workspaces`.
 
 `apps/ios` (SwiftUI/Xcode) and `apps/android` (Kotlin/Compose/Gradle) are **native clients
 outside the npm world entirely** — they re-declare the entity shapes in `Models.swift` /
@@ -178,10 +172,7 @@ npm run export:seed # dump the TS seed to JSON for the Python seed loader
 npm run dev:admin       # the admin app → http://localhost:3001
 npm run build:admin
 npm run typecheck:admin
-npm run typecheck:all   # every workspace + the mobile app (which is outside them)
-
-npm run mobile:install  # apps/mobile installs on its own — see the workspaces note
-npm run mobile          # Expo dev server
+npm run typecheck:all   # every workspace
 ```
 
 The unqualified `npm run dev|build|lint|typecheck|verify` are **`@kr/web` only** — they
@@ -295,11 +286,13 @@ Three things about it that are load-bearing:
   write. `PATCH /me` accepts `displayName` and nothing else — if it took `role`, editing
   your profile would be self-promotion. Promoting someone is a Supabase-dashboard /
   service-key act; `GET /users` is deliberately read-only.
-- **`user_profiles` has RLS enabled with no policies.** Supabase publishes every `public`
-  table through PostgREST, reachable with the anon key that ships in the browser bundle —
-  without this, the user list is world-readable and world-insertable straight past this
-  API. The API connects as `postgres`, which bypasses RLS, so `/me` and `/users` are
-  unaffected. **The other tables do not have this yet** and remain exposed the same way.
+- **Every `public` table has RLS enabled with no policies.** Supabase publishes every
+  `public` table through PostgREST, reachable with the anon key that ships in the browser
+  bundle — without this, the data is world-readable and world-insertable straight past
+  this API. The API connects as `postgres`, which bypasses RLS, so the endpoints are
+  unaffected and remain the only door. `user_profiles` was locked down in
+  `migrations/raw/004`; the rest in the Alembic revision `a1c7e2b90d41`, which is what
+  clears Supabase's "RLS Disabled in Public" advisor.
 - **`V2AuthGate` is UX, not the boundary.** The site is a static export with no server, so
   there is no middleware and the page markup is a public file on a CDN. The gate decides
   what a browser renders; the API's `require_user` decides what anyone can reach. Anything

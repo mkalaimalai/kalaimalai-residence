@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches-ignore: [main]
+  pull_request:
+
+jobs:
+  lint-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # --- Node.js workspace ---
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      - name: TypeScript typecheck
+        run: npm run typecheck:all
+
+      - name: Unit tests
+        run: npm test
+
+      # --- Python API ---
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: apps/api/requirements.txt
+
+      - name: Install API deps
+        run: pip install -r apps/api/requirements.txt ruff mypy
+        working-directory: apps/api
+
+      - name: Ruff lint
+        run: python -m ruff check app/
+        working-directory: apps/api
+
+      - name: Mypy typecheck
+        run: python -m mypy app/
+        working-directory: apps/api
+        env:
+          PYTHONPATH: ${{ github.workspace }}/apps/api
+
+      - name: OpenAPI schema validation
+        run: python -m scripts.export-openapi
+        working-directory: apps/api
+        env:
+          PYTHONPATH: ${{ github.workspace }}/apps/api
+
+      - name: Data integrity check (seed)
+        run: npm run verify

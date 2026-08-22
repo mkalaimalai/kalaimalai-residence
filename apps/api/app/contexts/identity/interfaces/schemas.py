@@ -22,6 +22,13 @@ class UserProfileUpdate(CamelModel):
     display_name: str
 
 
+class UserPasswordUpdate(CamelModel):
+    """Self-service password change. The caller's identity comes from the
+    verified token, not from the body."""
+
+    new_password: str
+
+
 class UserRoleUpdate(CamelModel):
     """Admin-only role change. Separate from `UserProfileUpdate` on purpose: that one is
     the self-service surface and must never carry a role."""

@@ -11,7 +11,7 @@
  * sees a password — it verifies the resulting JWT (`api/app/shared/auth.py`) and keeps
  * its own `user_profiles` row keyed by the token's `sub`.
  */
-import { getSupabase } from "@/lib/supabase-client";
+import { getSupabase } from "@kr/api-client";
 import { api } from "@/lib/api-v2";
 
 export interface AuthResult {

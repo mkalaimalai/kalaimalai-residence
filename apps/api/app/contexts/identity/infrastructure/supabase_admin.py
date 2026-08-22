@@ -39,12 +39,7 @@ def _require_config(settings: Settings) -> tuple[str, str]:
 
 
 def set_app_role(settings: Settings, user_id: str, role: str) -> None:
-    """Set `app_metadata.role` for one Supabase auth user.
-
-    Supabase merges `app_metadata` rather than replacing it, so other keys survive.
-    The new role only reaches the client on their next token refresh — an already-issued
-    access token keeps the old claim until it expires (Supabase default: 1 hour).
-    """
+    """Set `app_metadata.role` for one Supabase auth user."""
     base, key = _require_config(settings)
     try:
         res = httpx.put(
@@ -63,9 +58,32 @@ def set_app_role(settings: Settings, user_id: str, role: str) -> None:
     if res.status_code == 404:
         raise AdminApiError(f"No Supabase auth user with id {user_id}.")
     if res.status_code >= 400:
-        # Deliberately not echoing the body verbatim — it can carry request context we
-        # would rather not surface, and the status plus our own framing is enough.
         raise AdminApiError(
             f"Supabase refused the role change ({res.status_code}). Check that "
             "SUPABASE_SERVICE_ROLE_KEY belongs to this project."
+        )
+
+
+def set_user_password(settings: Settings, user_id: str, new_password: str) -> None:
+    """Set the password for one Supabase auth user via the admin API."""
+    base, key = _require_config(settings)
+    try:
+        res = httpx.put(
+            f"{base}/auth/v1/admin/users/{user_id}",
+            headers={
+                "apikey": key,
+                "Authorization": f"Bearer {key}",
+                "Content-Type": "application/json",
+            },
+            json={"password": new_password},
+            timeout=10.0,
+        )
+    except httpx.HTTPError as exc:
+        raise AdminApiError(f"Could not reach the Supabase admin API: {exc}") from exc
+
+    if res.status_code == 404:
+        raise AdminApiError(f"No Supabase auth user with id {user_id}.")
+    if res.status_code >= 400:
+        raise AdminApiError(
+            f"Supabase refused the password change ({res.status_code})."
         )

@@ -1,0 +1,26 @@
+[project]
+name = "kalaimalai-residence-api"
+version = "0.1.0"
+description = "FastAPI backend for the Kalaimalai Residence."
+requires-python = ">=3.12"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "DTZ", "RUF100"]
+ignore = ["B008", "RUF012", "UP046", "UP047", "SIM102"]
+
+[tool.ruff.lint.per-file-ignores]
+"scripts/*" = ["ALL"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = false
+ignore_missing_imports = true
+warn_unused_ignores = false
+
+# Pydantic patterns: variables-as-types and dynamic model_validate/dump are
+# idiomatic and produce false positives.
+disable_error_code = ["valid-type", "attr-defined", "empty-body", "arg-type", "call-arg"]

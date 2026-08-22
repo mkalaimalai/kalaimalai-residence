@@ -18,14 +18,6 @@ from fastapi import (
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import Settings, get_settings
-from app.shared.drive import (
-    DriveNotConfigured,
-    DriveUploadError,
-    UploadedFile,
-    upload_bytes,
-)
-from app.shared.pdf import PdfRenderError, render_pdf_to_jpegs
-
 from app.contexts.media.application.use_cases import MediaSetService
 from app.contexts.media.infrastructure.project_refs_client import LocalProjectRefsClient
 from app.contexts.media.infrastructure.repository_impl import (
@@ -39,7 +31,14 @@ from app.contexts.project.infrastructure.repository_impl import (
 )
 from app.shared.auth import require_admin, require_user
 from app.shared.db import get_session
+from app.shared.drive import (
+    DriveNotConfigured,
+    DriveUploadError,
+    UploadedFile,
+    upload_bytes,
+)
 from app.shared.errors import NotFoundError, ValidationError
+from app.shared.pdf import PdfRenderError, render_pdf_to_jpegs
 
 media_sets_router = APIRouter(prefix="/media-sets", tags=["media"])
 

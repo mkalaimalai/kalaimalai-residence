@@ -2,7 +2,6 @@
   "name": "kalaimalai-residence",
   "version": "0.1.0",
   "private": true,
-  "//workspaces": "apps/mobile is deliberately NOT a member: React Native needs React 18 and Next needs React 19, so npm splits Expo across two node_modules and Metro breaks. It installs on its own and consumes the packages via file: deps.",
   "workspaces": [
     "packages/*",
     "apps/web",
@@ -19,11 +18,16 @@
     "verify": "npm run verify --workspace @kr/web",
     "verify:api": "npm run verify:api --workspace @kr/web",
     "export:seed": "npm run export:seed --workspace @kr/web",
-    "typecheck:all": "npm run typecheck --workspaces --if-present && npm --prefix apps/mobile run typecheck",
-    "mobile": "npm --prefix apps/mobile run start",
-    "mobile:install": "npm --prefix apps/mobile install",
+    "typecheck:all": "npm run typecheck --workspaces --if-present",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint:api": "cd apps/api && .venv/bin/python -m ruff check app/ && .venv/bin/python -m mypy app/",
+    "typecheck:api": "cd apps/api && PYTHONPATH=\"$PWD\" .venv/bin/python -m mypy app/",
     "dev:admin": "npm run dev --workspace @kr/admin",
     "build:admin": "npm run build --workspace @kr/admin",
     "typecheck:admin": "npm run typecheck --workspace @kr/admin"
+  },
+  "devDependencies": {
+    "vitest": "^3.2.7"
   }
 }

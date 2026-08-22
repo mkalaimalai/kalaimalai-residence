@@ -1,7 +1,7 @@
 """Notification use cases."""
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from app.contexts.notification.domain.entities import Notification
 from app.contexts.notification.domain.repository import (
@@ -45,7 +45,7 @@ class SendNotification:
             body=body,
             status="Queued",
             related_entity=related_entity,
-            created_at=datetime.now(timezone.utc).isoformat(),
+            created_at=datetime.now(UTC).isoformat(),
         )
         ok = await self._sender.send(notification)
         notification.status = "Sent" if ok else "Failed"

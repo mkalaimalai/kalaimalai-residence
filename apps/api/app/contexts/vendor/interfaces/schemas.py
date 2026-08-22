@@ -24,7 +24,7 @@ class VendorResponse(CamelModel):
     notes: str
 
     @classmethod
-    def from_entity(cls, vendor: Vendor) -> "VendorResponse":
+    def from_entity(cls, vendor: Vendor) -> VendorResponse:
         return cls.model_validate(vendor)
 
 
