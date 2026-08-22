@@ -336,10 +336,34 @@ prices, payment/contact details) belong in the database behind the API's `requir
 ## Deployment
 
 Both Next apps are static exports (`output: "export"`, `trailingSlash: true`, unoptimized
-images) → `apps/<app>/out/`. Pushing to `main` triggers `.github/workflows/deploy.yml`,
-which builds `apps/web` and publishes its `out/` to GitHub Pages. There is no Node runtime
-in production. The admin app deploys **separately, to its own origin** — it is not part of
-the Pages artifact, and the web app reaches it only via `NEXT_PUBLIC_ADMIN_URL`.
+images) → `apps/<app>/out/`. There is no Node runtime in production. Three surfaces, three
+targets, all triggered by a push to `main`:
+
+| Surface | Target | Workflow |
+|---|---|---|
+| `apps/web` | GitHub Pages at `mkalaimalai-residence.github.io` | `deploy.yml` |
+| `apps/admin` | Cloudflare Pages at `kr-admin.pages.dev` | `deploy-admin.yml` |
+| `apps/api` | Render (`kr-api`, Singapore) | `render.yaml`, auto-deploy on push |
+
+**The web app is served from a second repo**, `mkalaimalai-residence/mkalaimalai-residence.github.io`,
+which holds a copy of this source and runs its own `deploy.yml`. That is not redundancy for
+its own sake: only a user/org Pages site gets the bare root domain, and this repo's Pages URL
+is a subpath (`/kalaimalai-residence/`) that a Next export without `basePath` cannot boot
+from — the HTML asks for `/_next/...` at the domain root and 404s.
+
+Two mechanisms keep that from rotting, both of which must stay:
+
+- `sync-pages-repo.yml` pushes `main` to the org repo on every commit here (using
+  `PAGES_REPO_TOKEN`, a PAT — the default `GITHUB_TOKEN` cannot push across repos). Keeping
+  the copy in step by hand is what let it fall 12 commits behind and serve a stale build.
+- `deploy.yml` is **guarded on `github.repository`** so it only publishes from the org repo.
+  The file has to live in this tree to be synced there, and without the guard this repo
+  would also publish the unbootable subpath copy.
+
+Anything build-time and public is a repo **variable** (`API_BASE_URL`, `SUPABASE_URL`,
+`ADMIN_URL`) or **secret** (`SUPABASE_ANON_KEY`); `NEXT_PUBLIC_*` values are inlined at build
+time, so **changing a variable does nothing until the workflow re-runs**. The web and org
+repos each need their own copy of these.
 
 ## Conventions
 

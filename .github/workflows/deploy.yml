@@ -19,6 +19,11 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Only the org repo serves the site. This file is synced there by
+    # sync-pages-repo.yml, so it must stay in the source tree — guarding on the
+    # repository name is what stops *this* repo also publishing a copy, which it can
+    # only serve from a subpath its own bundle cannot boot from.
+    if: github.repository == 'mkalaimalai-residence/mkalaimalai-residence.github.io'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -61,6 +66,7 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    if: github.repository == 'mkalaimalai-residence/mkalaimalai-residence.github.io'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

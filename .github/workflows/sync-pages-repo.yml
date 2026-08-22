@@ -1,0 +1,43 @@
+name: Sync to Pages repo
+
+# The public site is served from the organisation repo
+# `mkalaimalai-residence/mkalaimalai-residence.github.io`, because a user/org Pages site
+# is the only way to get the bare root domain — this repo's own Pages URL is a
+# subpath, which a Next export without `basePath` cannot boot from.
+#
+# That repo therefore holds a copy of this source and runs its own deploy.yml. Keeping
+# the copy in step by hand is what let it fall 12 commits behind and serve a stale
+# build for weeks, so this pushes it on every commit to main instead.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: sync-pages-repo
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    # PAGES_REPO_TOKEN is a PAT with `contents: write` on the target repo — the default
+    # GITHUB_TOKEN is scoped to this repo alone and cannot push across.
+    if: github.repository == 'mkalaimalai/kalaimalai-residence'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # Full history: the target repo shares this history, so a shallow clone would
+          # make the push a non-fast-forward and be rejected.
+          fetch-depth: 0
+
+      - name: Push main to the Pages repo
+        env:
+          TOKEN: ${{ secrets.PAGES_REPO_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "PAGES_REPO_TOKEN is not set — skipping sync." >&2
+            echo "The public site will keep serving its previous build until this is configured." >&2
+            exit 0
+          fi
+          git push "https://x-access-token:${TOKEN}@github.com/mkalaimalai-residence/mkalaimalai-residence.github.io.git" \
+            HEAD:main
