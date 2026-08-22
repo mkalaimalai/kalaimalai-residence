@@ -1,0 +1,792 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Residence Monorepo Blueprint</title>
+<meta name="description" content="How the five apps, three packages, Supabase and the deploy pipeline fit together — at runtime, locally, and in production.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chivo:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+
+<style>
+  :root {
+    --ground:      #EDF1F3;
+    --surface:     #FFFFFF;
+    --surface-alt: #E3EAEE;
+    --ink:         #0E1A21;
+    --ink-muted:   #5B6E79;
+    --rule:        #C6D2D9;
+    --rule-soft:   #DCE4E9;
+    --accent:      #0F6E8C;
+    --accent-soft: #DCEDF3;
+    --live:        #2F7D4F;
+    --caution:     #A9761B;
+    --closed:      #B03A2E;
+    --shadow:      0 1px 2px rgba(14, 26, 33, .06), 0 8px 24px -16px rgba(14, 26, 33, .30);
+
+    --display: "Chivo", "Helvetica Neue", Arial, sans-serif;
+    --prose:   "Source Serif 4", Georgia, "Times New Roman", serif;
+    --mono:    "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:      #0D1519;
+      --surface:     #141F25;
+      --surface-alt: #1B282F;
+      --ink:         #DEE8ED;
+      --ink-muted:   #8CA1AC;
+      --rule:        #2B3B44;
+      --rule-soft:   #223038;
+      --accent:      #57B4D0;
+      --accent-soft: #16323D;
+      --live:        #67B98A;
+      --caution:     #D6A44B;
+      --closed:      #E0796A;
+      --shadow:      0 1px 2px rgba(0, 0, 0, .40), 0 8px 24px -16px rgba(0, 0, 0, .80);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground:      #0D1519;
+    --surface:     #141F25;
+    --surface-alt: #1B282F;
+    --ink:         #DEE8ED;
+    --ink-muted:   #8CA1AC;
+    --rule:        #2B3B44;
+    --rule-soft:   #223038;
+    --accent:      #57B4D0;
+    --accent-soft: #16323D;
+    --live:        #67B98A;
+    --caution:     #D6A44B;
+    --closed:      #E0796A;
+    --shadow:      0 1px 2px rgba(0, 0, 0, .40), 0 8px 24px -16px rgba(0, 0, 0, .80);
+  }
+
+  * { box-sizing: border-box; }
+
+  /* Wide content scrolls inside its own container; the page body never does. */
+  html, body { overflow-x: clip; }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--prose);
+    font-size: 17px;
+    line-height: 1.62;
+    margin: 0;
+    padding: 0 24px 96px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 1080px; margin: 0 auto; min-width: 0; }
+
+  /* The column spans the full width; running text is constrained per element so
+     figures and tables genuinely break out instead of being capped at 68ch too.
+     min-width:0 everywhere stops a wide child forcing the body to scroll. */
+  .col {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 0;
+  }
+  .col > *,
+  section > * { min-width: 0; }
+
+  section > p,
+  section > h2,
+  section > h3,
+  section > .kicker,
+  section > ul,
+  section > ol,
+  section > .note { max-width: 68ch; }
+
+  .wide { width: 100%; max-width: none; }
+
+  /* ---- masthead ---- */
+  header.masthead {
+    padding: 72px 0 36px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 44px;
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 18px;
+  }
+  h1 {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(38px, 6vw, 60px);
+    line-height: 1.02;
+    letter-spacing: -.026em;
+    text-wrap: balance;
+    margin: 0 0 20px;
+  }
+  .standfirst {
+    font-size: 20px;
+    color: var(--ink-muted);
+    max-width: 60ch;
+    margin: 0;
+  }
+
+  /* ---- sections ---- */
+  section { padding: 52px 0 8px; }
+  section + section { border-top: 1px solid var(--rule-soft); }
+
+  h2 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(25px, 3.2vw, 33px);
+    letter-spacing: -.018em;
+    line-height: 1.14;
+    text-wrap: balance;
+    margin: 0 0 6px;
+  }
+  h3 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: -.008em;
+    margin: 26px 0 -8px;
+  }
+  .kicker {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    font-weight: 500;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin: 0 0 14px;
+  }
+  p { margin: 0; }
+
+  code, .m {
+    font-family: var(--mono);
+    font-size: .855em;
+    background: var(--surface-alt);
+    border-radius: 3px;
+    padding: .12em .38em;
+    word-break: break-word;
+  }
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+  strong { font-weight: 600; }
+
+  /* ---- figures ---- */
+  figure {
+    margin: 30px 0 8px;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .figbody { overflow-x: auto; padding: 26px 22px 8px; }
+  figure svg { display: block; min-width: 720px; margin: 0 auto; }
+  figcaption {
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.55;
+    color: var(--ink-muted);
+    padding: 14px 22px 16px;
+    border-top: 1px solid var(--rule-soft);
+    background: var(--surface-alt);
+  }
+
+  /* SVG type roles */
+  .svg-box   { fill: var(--surface); stroke: var(--rule); stroke-width: 1.25; }
+  .svg-box-a { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.25; }
+  .svg-t     { font-family: var(--display); font-weight: 700; font-size: 14px; fill: var(--ink); }
+  .svg-s     { font-family: var(--mono); font-size: 11px; fill: var(--ink-muted); }
+  .svg-l     { font-family: var(--mono); font-size: 10.5px; fill: var(--ink-muted); letter-spacing: .04em; }
+  .svg-cap   { font-family: var(--mono); font-size: 10.5px; font-weight: 600; letter-spacing: .13em; fill: var(--accent); }
+  .svg-line  { stroke: var(--ink-muted); stroke-width: 1.4; fill: none; }
+  .svg-dash  { stroke: var(--accent); stroke-width: 1.4; fill: none; stroke-dasharray: 5 4; }
+  .svg-dead  { stroke: var(--closed); stroke-width: 1.4; fill: none; stroke-dasharray: 5 4; }
+  .svg-zone  { fill: none; stroke: var(--rule); stroke-width: 1; stroke-dasharray: 3 4; }
+
+  /* ---- tables ---- */
+  .tablewrap {
+    overflow-x: auto;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    margin: 28px 0 8px;
+  }
+  table { border-collapse: collapse; width: 100%; min-width: 640px; }
+  th, td {
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--rule-soft);
+    vertical-align: top;
+    font-size: 15px;
+  }
+  th {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    background: var(--surface-alt);
+    white-space: nowrap;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  td.mono, td .path { font-family: var(--mono); font-size: 13px; font-variant-numeric: tabular-nums; }
+
+  /* ---- pipeline (a real sequence, so it is numbered) ---- */
+  ol.pipeline {
+    list-style: none;
+    counter-reset: step;
+    margin: 28px 0 8px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  ol.pipeline li {
+    counter-increment: step;
+    position: relative;
+    padding: 18px 20px 18px 62px;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+  }
+  ol.pipeline li::before {
+    content: counter(step, decimal-leading-zero);
+    position: absolute;
+    left: 20px;
+    top: 18px;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: .06em;
+  }
+  ol.pipeline .step-t {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 16px;
+    display: block;
+    margin-bottom: 3px;
+  }
+  ol.pipeline .step-d { font-size: 15px; color: var(--ink-muted); }
+
+  /* ---- notes ---- */
+  .note {
+    border-left: 3px solid var(--caution);
+    background: var(--surface);
+    border-radius: 0 4px 4px 0;
+    padding: 16px 20px;
+    font-size: 15.5px;
+  }
+  .note.closed { border-left-color: var(--closed); }
+  .note.live   { border-left-color: var(--live); }
+  .note .note-h {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    color: var(--caution);
+    display: block;
+    margin-bottom: 5px;
+  }
+  .note.closed .note-h { color: var(--closed); }
+  .note.live   .note-h { color: var(--live); }
+
+  .pill {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 3px;
+    border: 1px solid currentColor;
+    white-space: nowrap;
+  }
+  .pill.live   { color: var(--live); }
+  .pill.build  { color: var(--accent); }
+  .pill.manual { color: var(--caution); }
+
+  ul.plain { margin: 0; padding-left: 1.1em; display: flex; flex-direction: column; gap: 9px; }
+  ul.plain li::marker { color: var(--accent); }
+
+  footer {
+    margin-top: 64px;
+    padding-top: 22px;
+    border-top: 2px solid var(--ink);
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-muted);
+    line-height: 1.7;
+  }
+
+  @media (max-width: 640px) {
+    body { font-size: 16px; padding: 0 18px 72px; }
+    header.masthead { padding-top: 48px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="eyebrow">Kalaimalai Residence · Monorepo Reference</p>
+    <h1>Residence Monorepo Blueprint</h1>
+    <p class="standfirst">Five apps, three packages, one database — how the pieces talk at runtime, how they run on your laptop, and how a push to <span class="m">main</span> becomes a deployed site.</p>
+  </header>
+
+  <div class="col">
+
+    <!-- ============ 1. THE SHAPE ============ -->
+    <section>
+      <p class="kicker">The shape of it</p>
+      <h2>One repo, five deployables, no shared runtime</h2>
+      <p>The repository is a monorepo, but nothing is deployed as a monolith. Each app has its own build, its own dependencies, its own config. What binds them together is not a runtime — it is a set of URLs in environment variables and a shared HTTP contract.</p>
+      <p style="margin-top:18px">Web and admin now share a <em>host</em>: admin is built separately and nested into the web export at <span class="m">/admin</span>, so both ship in one Pages artifact from one origin. Separate builds, one deploy.</p>
+
+      <div class="tablewrap wide">
+        <table>
+          <thead>
+            <tr><th>Workspace</th><th>What it is</th><th>Runtime</th><th>Ships to</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="mono">apps/web</td>
+              <td>Public 1.0 site, 2.0 portfolio, and the portal</td>
+              <td>Next 16, <span class="m">output: "export"</span></td>
+              <td>GitHub Pages</td>
+            </tr>
+            <tr>
+              <td class="mono">apps/admin</td>
+              <td>Record management — its own build, mounted at <span class="m">/admin</span></td>
+              <td>Next 16, <span class="m">output: "export"</span></td>
+              <td>GitHub Pages, nested</td>
+            </tr>
+            <tr>
+              <td class="mono">apps/api</td>
+              <td>FastAPI modular monolith, 10 bounded contexts</td>
+              <td>Python 3.12 + uvicorn</td>
+              <td>Render (free tier)</td>
+            </tr>
+            <tr>
+              <td class="mono">apps/ios</td>
+              <td>Native SwiftUI client</td>
+              <td>Xcode — outside npm entirely</td>
+              <td>Manual / Xcode</td>
+            </tr>
+            <tr>
+              <td class="mono">apps/android</td>
+              <td>Native Kotlin/Compose client</td>
+              <td>Gradle — outside npm entirely</td>
+              <td>Manual / Gradle</td>
+            </tr>
+            <tr>
+              <td class="mono">packages/*</td>
+              <td><span class="m">contracts</span> (entity types), <span class="m">api-client</span> (transport), <span class="m">theme</span> (tokens.css)</td>
+              <td>Compiled into each web app</td>
+              <td>Never deployed alone</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p style="margin-top:26px">Only <span class="m">apps/web</span>, <span class="m">apps/admin</span> and <span class="m">packages/*</span> are npm workspaces. The two native clients re-declare the entity shapes by hand in <span class="m">Models.swift</span> and <span class="m">Models.kt</span> — <span class="m">packages/contracts</span> cannot reach them, so a contract change has to be mirrored there manually.</p>
+    </section>
+
+    <!-- ============ 2. RUNTIME ============ -->
+    <section>
+      <p class="kicker">Runtime architecture</p>
+      <h2>Auth goes straight to Supabase; data never does</h2>
+      <p>This is the single most important line in the system, and it is easy to get backwards. Every client signs in against Supabase <em>directly</em> — the password never touches your API. But no client reads or writes <em>data</em> through Supabase. There is not one <span class="m">supabase.from(...)</span> call anywhere in the codebase; every data path goes through FastAPI, which verifies the resulting JWT.</p>
+
+      <figure class="wide">
+        <div class="figbody">
+          <svg viewBox="0 0 980 470" role="img" aria-label="Runtime diagram: four client surfaces reach FastAPI for data over HTTPS with a bearer token, while browser clients authenticate directly against Supabase Auth. FastAPI connects to Supabase Postgres as the postgres role. The PostgREST path from browsers to Postgres is closed by row-level security.">
+            <defs>
+              <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ink-muted)"/>
+              </marker>
+              <marker id="ar-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"/>
+              </marker>
+            </defs>
+
+            <!-- zone labels -->
+            <text class="svg-cap" x="20" y="22">CLIENTS</text>
+            <text class="svg-cap" x="410" y="22">YOUR API</text>
+            <text class="svg-cap" x="712" y="22">SUPABASE (CLOUD)</text>
+
+            <rect class="svg-zone" x="12" y="32" width="300" height="424" rx="4"/>
+            <rect class="svg-zone" x="700" y="32" width="268" height="424" rx="4"/>
+
+            <!-- clients -->
+            <rect class="svg-box" x="30" y="52" width="264" height="60" rx="4"/>
+            <text class="svg-t" x="46" y="78">Web 1.0 · /1.0/**</text>
+            <text class="svg-s" x="46" y="96">Server Components · seed, build-time</text>
+
+            <rect class="svg-box-a" x="30" y="132" width="264" height="60" rx="4"/>
+            <text class="svg-t" x="46" y="158">Web 2.0 + Portal</text>
+            <text class="svg-s" x="46" y="176">client-fetched · lib/api-v2.ts</text>
+
+            <rect class="svg-box-a" x="30" y="212" width="264" height="60" rx="4"/>
+            <text class="svg-t" x="46" y="238">Admin · /admin</text>
+            <text class="svg-s" x="46" y="256">client-fetched · lib/api-client.ts</text>
+
+            <rect class="svg-box-a" x="30" y="292" width="264" height="60" rx="4"/>
+            <text class="svg-t" x="46" y="318">iOS · Android</text>
+            <text class="svg-s" x="46" y="336">native, talk to the API directly</text>
+
+            <!-- seed dead-end for 1.0 -->
+            <rect class="svg-box" x="30" y="386" width="264" height="52" rx="4"/>
+            <text class="svg-s" x="46" y="408">data/*.ts — typed seed, baked into</text>
+            <text class="svg-s" x="46" y="424">the bundle at build time</text>
+            <path class="svg-line" d="M 60 112 L 60 386" marker-end="url(#ar)"/>
+
+            <!-- API -->
+            <rect class="svg-box" x="392" y="132" width="230" height="220" rx="4"/>
+            <text class="svg-t" x="412" y="160">FastAPI</text>
+            <text class="svg-s" x="412" y="180">10 bounded contexts</text>
+            <text class="svg-s" x="412" y="198">hexagonal / DDD</text>
+            <line x1="412" y1="216" x2="602" y2="216" stroke="var(--rule)" stroke-width="1"/>
+            <text class="svg-s" x="412" y="238">require_user</text>
+            <text class="svg-s" x="412" y="256">require_admin</text>
+            <text class="svg-s" x="412" y="274">↳ reads app_metadata.role</text>
+            <text class="svg-s" x="412" y="292">   off the verified token</text>
+            <line x1="412" y1="310" x2="602" y2="310" stroke="var(--rule)" stroke-width="1"/>
+            <text class="svg-l" x="412" y="332">:8099 local · Render in prod</text>
+
+            <!-- data arrows into API -->
+            <path class="svg-line" d="M 294 162 L 388 172" marker-end="url(#ar)"/>
+            <path class="svg-line" d="M 294 242 L 388 232" marker-end="url(#ar)"/>
+            <path class="svg-line" d="M 294 322 L 388 292" marker-end="url(#ar)"/>
+            <text class="svg-l" x="300" y="205">HTTPS + Bearer JWT</text>
+            <text class="svg-l" x="300" y="220">— all data, always</text>
+
+            <!-- Supabase Auth -->
+            <rect class="svg-box-a" x="718" y="52" width="232" height="76" rx="4"/>
+            <text class="svg-t" x="736" y="78">Supabase Auth</text>
+            <text class="svg-s" x="736" y="96">signIn · signUp · getSession</text>
+            <text class="svg-s" x="736" y="114">issues the JWT (ES256)</text>
+
+            <!-- Postgres -->
+            <rect class="svg-box" x="718" y="196" width="232" height="128" rx="4"/>
+            <text class="svg-t" x="736" y="222">Supabase Postgres 17.6</text>
+            <text class="svg-s" x="736" y="242">23 tables · RLS on, no policies</text>
+            <line x1="736" y1="258" x2="932" y2="258" stroke="var(--rule)" stroke-width="1"/>
+            <text class="svg-s" x="736" y="278">API connects as `postgres`,</text>
+            <text class="svg-s" x="736" y="296">which bypasses RLS —</text>
+            <text class="svg-s" x="736" y="314">so the API is the only door</text>
+
+            <!-- auth dashed arrows -->
+            <path class="svg-dash" d="M 200 132 C 220 60, 460 40, 714 78" marker-end="url(#ar-a)"/>
+            <path class="svg-dash" d="M 250 212 C 320 120, 500 62, 714 92" marker-end="url(#ar-a)"/>
+            <text class="svg-cap" x="330" y="70">SIGN IN — DIRECT, NO API</text>
+
+            <!-- API to postgres -->
+            <path class="svg-line" d="M 622 250 L 714 252" marker-end="url(#ar)"/>
+            <text class="svg-l" x="628" y="240">asyncpg</text>
+
+            <!-- closed PostgREST path -->
+            <path class="svg-dead" d="M 294 356 C 480 430, 600 420, 714 340"/>
+            <text class="svg-l" x="392" y="418" fill="var(--closed)">PostgREST with the anon key — CLOSED by RLS</text>
+            <g stroke="var(--closed)" stroke-width="2">
+              <line x1="496" y1="398" x2="512" y2="414"/>
+              <line x1="512" y1="398" x2="496" y2="414"/>
+            </g>
+          </svg>
+        </div>
+        <figcaption>Solid = data over HTTP. Dashed teal = authentication, which bypasses your API entirely. Dashed red = the PostgREST path that RLS closed — it was open until the migration <span class="m">a1c7e2b90d41</span>.</figcaption>
+      </figure>
+
+      <h3>Three surfaces, three data paths</h3>
+      <ul class="plain">
+        <li><strong>Web 1.0</strong> (<span class="m">/1.0/**</span>) reads the typed seed through <span class="m">lib/repository.ts</span> at build time. It hits neither Supabase nor the API at runtime — it is pure static HTML.</li>
+        <li><strong>Web 2.0 and the portal</strong> fetch live at runtime. 2.0 takes the project from the URL; the portal pins <span class="m">PORTAL_PROJECT_ID</span>.</li>
+        <li><strong>Admin</strong> fetches live at runtime against a project you select, persisted under <span class="m">portal_selected_project</span>.</li>
+      </ul>
+
+      <div class="note live" style="margin-top:26px">
+        <span class="note-h">Why the RLS change was safe</span>
+        Enabling row-level security with no policies shut the PostgREST door — and nothing was using that door. The API connects as <span class="m">postgres</span>, which bypasses RLS, which is why every endpoint kept working. What changed is that the anon key shipped in your JS bundle is now auth-only, instead of also being a live read/write handle on all 22 unprotected tables.
+      </div>
+
+      <div class="note" style="margin-top:16px">
+        <span class="note-h">The boundary is the API, never the UI</span>
+        Both web apps are static exports with no server, so there is no middleware and the page markup is a public file on a CDN. <span class="m">V2AuthGate</span> and the admin's <span class="m">AuthGate</span> decide what a browser <em>renders</em>; <span class="m">require_user</span> decides what anyone can <em>reach</em>. Anything sensitive must arrive from a gated endpoint at runtime — never be baked into <span class="m">data/*.ts</span>.
+      </div>
+    </section>
+
+    <!-- ============ 3. LOCAL ============ -->
+    <section>
+      <p class="kicker">Local development</p>
+      <h2>One launcher, and it points at production data by default</h2>
+      <p><span class="m">./scripts/dev.sh</span> starts everything from the repo root. It refuses to start when a port is taken and names the offending PID, because a stale server on <span class="m">:3000</span> looks exactly like code that will not reload.</p>
+
+      <figure class="wide">
+        <div class="figbody">
+          <svg viewBox="0 0 980 300" role="img" aria-label="Local development diagram: dev.sh starts web on port 3000, admin on 3001 and the API on 8099. DB_TARGET supabase points the API at cloud Postgres; DB_TARGET docker points it at a local seeded container with auth disabled.">
+            <defs>
+              <marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ink-muted)"/>
+              </marker>
+            </defs>
+
+            <rect class="svg-box-a" x="20" y="96" width="180" height="86" rx="4"/>
+            <text class="svg-t" x="38" y="126">./scripts/dev.sh</text>
+            <text class="svg-s" x="38" y="146">web · admin · api</text>
+            <text class="svg-s" x="38" y="164">[ web admin | api | all ]</text>
+
+            <rect class="svg-box" x="272" y="30" width="204" height="56" rx="4"/>
+            <text class="svg-t" x="290" y="54">Web</text>
+            <text class="svg-s" x="290" y="72">localhost:3000</text>
+
+            <rect class="svg-box" x="272" y="112" width="204" height="56" rx="4"/>
+            <text class="svg-t" x="290" y="136">Admin</text>
+            <text class="svg-s" x="290" y="154">localhost:3001</text>
+
+            <rect class="svg-box" x="272" y="194" width="204" height="56" rx="4"/>
+            <text class="svg-t" x="290" y="218">FastAPI</text>
+            <text class="svg-s" x="290" y="236">localhost:8099 · /docs</text>
+
+            <path class="svg-line" d="M 200 128 C 236 128, 236 58, 268 58" marker-end="url(#ar2)"/>
+            <path class="svg-line" d="M 200 139 L 268 139" marker-end="url(#ar2)"/>
+            <path class="svg-line" d="M 200 150 C 236 150, 236 222, 268 222" marker-end="url(#ar2)"/>
+
+            <!-- DB targets -->
+            <rect class="svg-box-a" x="580" y="150" width="376" height="60" rx="4"/>
+            <text class="svg-t" x="598" y="176">DB_TARGET=supabase <tspan class="svg-l" fill="var(--accent)">← default</tspan></text>
+            <text class="svg-s" x="598" y="196">cloud Postgres · real auth · never auto-seeded</text>
+
+            <rect class="svg-box" x="580" y="228" width="376" height="60" rx="4"/>
+            <text class="svg-t" x="598" y="254">DB_TARGET=docker</text>
+            <text class="svg-s" x="598" y="274">local container · seeded when empty · AUTH_DISABLED</text>
+
+            <path class="svg-line" d="M 476 216 C 520 216, 530 180, 576 180" marker-end="url(#ar2)"/>
+            <path class="svg-line" d="M 476 230 C 520 230, 530 258, 576 258" marker-end="url(#ar2)"/>
+
+            <text class="svg-cap" x="580" y="46">EVERY DEFAULT RUN READS AND WRITES</text>
+            <text class="svg-cap" x="580" y="64">REAL CLOUD DATA. WRITES ARE NOT UNDOABLE.</text>
+            <line x1="580" y1="86" x2="956" y2="86" stroke="var(--closed)" stroke-width="2"/>
+            <text class="svg-s" x="580" y="112">Use DB_TARGET=docker when you want a sandbox</text>
+            <text class="svg-s" x="580" y="130">you can wipe. pgweb lands on :8081.</text>
+          </svg>
+        </div>
+        <figcaption>Ports: web <span class="m">3000</span>, admin <span class="m">3001</span>, API <span class="m">8099</span>, pgweb <span class="m">8081</span> (docker target only).</figcaption>
+      </figure>
+
+      <div class="note closed" style="margin-top:26px">
+        <span class="note-h">The default is not a sandbox</span>
+        <span class="m">DB_TARGET</span> defaults to <span class="m">supabase</span> because that is the database the apps are actually developed against. The trade is real: local dev writes to the same Postgres production reads. Auth is real too, so unauthenticated calls 401 exactly as they would in production.
+      </div>
+
+      <h3>Migrations</h3>
+      <p>The schema is Alembic, in <span class="m">apps/api/migrations/versions/</span>, with the original SQL kept for reference under <span class="m">migrations/raw/</span>. Nothing runs migrations automatically — applying one to Supabase is a deliberate manual act from your machine:</p>
+      <div class="tablewrap wide">
+        <table>
+          <thead><tr><th>Step</th><th>Command</th></tr></thead>
+          <tbody>
+            <tr><td>Load cloud env</td><td class="mono">cd apps/api &amp;&amp; set -a &amp;&amp; . ./.env.supabase &amp;&amp; set +a</td></tr>
+            <tr><td>Apply</td><td class="mono">./.venv/bin/alembic upgrade head</td></tr>
+            <tr><td>Inspect</td><td class="mono">./.venv/bin/alembic current</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin-top:22px">Note that <span class="m">migrations/env.py</span> carries the same three <span class="m">connect_args</span> as <span class="m">app/shared/db.py</span> — Supabase's transaction pooler reuses one server connection across yours, so prepared-statement caching and fixed statement names both have to be off.</p>
+    </section>
+
+    <!-- ============ 4. PRODUCTION ============ -->
+    <section>
+      <p class="kicker">Production</p>
+      <h2>Two hosts, one shared database</h2>
+      <p>Nothing in production runs Node. Both frontends are static files served from a single Pages origin; the only server-side code anywhere is the FastAPI instance on Render.</p>
+
+      <figure class="wide">
+        <div class="figbody">
+          <svg viewBox="0 0 980 330" role="img" aria-label="Production topology: a single GitHub Pages origin serves the web app at the root and the admin app at /admin. Both call the FastAPI service on Render, which connects to Supabase Postgres. Browsers authenticate directly against Supabase Auth.">
+            <defs>
+              <marker id="ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ink-muted)"/>
+              </marker>
+              <marker id="ar3a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"/>
+              </marker>
+            </defs>
+
+            <rect class="svg-box" x="20" y="52" width="286" height="212" rx="4"/>
+            <text class="svg-t" x="38" y="78">GitHub Pages — one origin</text>
+            <text class="svg-s" x="38" y="97">mkalaimalai-residence.github.io</text>
+
+            <rect class="svg-box-a" x="38" y="112" width="250" height="62" rx="3"/>
+            <text class="svg-t" x="54" y="134">/ · /1.0 · /portal</text>
+            <text class="svg-s" x="54" y="154">apps/web/out</text>
+
+            <rect class="svg-box-a" x="38" y="186" width="250" height="62" rx="3"/>
+            <text class="svg-t" x="54" y="208">/admin</text>
+            <text class="svg-s" x="54" y="228">apps/admin/out, nested</text>
+
+            <rect class="svg-box-a" x="392" y="112" width="216" height="96" rx="4"/>
+            <text class="svg-t" x="410" y="138">Render · free tier</text>
+            <text class="svg-s" x="410" y="158">uvicorn app.main:app</text>
+            <text class="svg-s" x="410" y="176">healthCheckPath /healthz</text>
+            <text class="svg-s" x="410" y="196" fill="var(--caution)">sleeps when idle</text>
+
+            <rect class="svg-box" x="716" y="52" width="242" height="64" rx="4"/>
+            <text class="svg-t" x="734" y="78">Supabase Auth</text>
+            <text class="svg-s" x="734" y="98">ES256 · JWKS endpoint</text>
+
+            <rect class="svg-box" x="716" y="176" width="242" height="76" rx="4"/>
+            <text class="svg-t" x="734" y="202">Supabase Postgres</text>
+            <text class="svg-s" x="734" y="222">pooled connection, port 6543</text>
+            <text class="svg-s" x="734" y="240">RLS on across all 23 tables</text>
+
+            <path class="svg-line" d="M 306 143 C 340 143, 350 150, 388 152" marker-end="url(#ar3)"/>
+            <path class="svg-line" d="M 306 217 C 340 217, 350 180, 388 172" marker-end="url(#ar3)"/>
+            <text class="svg-l" x="316" y="196">CORS_ORIGINS needs</text>
+            <text class="svg-l" x="316" y="211">just this one origin</text>
+
+            <path class="svg-line" d="M 608 168 C 660 168, 670 200, 712 206" marker-end="url(#ar3)"/>
+            <path class="svg-dash" d="M 608 140 C 660 140, 670 92, 712 86" marker-end="url(#ar3a)"/>
+            <text class="svg-l" x="616" y="118" fill="var(--accent)">verifies JWT</text>
+
+            <path class="svg-dash" d="M 160 52 C 220 14, 560 10, 714 60" marker-end="url(#ar3a)"/>
+            <text class="svg-cap" x="330" y="28">BROWSER SIGNS IN DIRECTLY</text>
+
+            <text class="svg-l" x="20" y="292">Same origin means one localStorage — the Supabase session is shared between / and /admin.</text>
+          </svg>
+        </div>
+        <figcaption>One artifact, two exports. Render's free tier sleeps when idle, which is why the Pages workflow pre-warms <span class="m">/healthz</span> before building.</figcaption>
+      </figure>
+
+      <div class="note" style="margin-top:26px">
+        <span class="note-h">The env vars that actually break things</span>
+        <span class="m">NEXT_PUBLIC_*</span> values are inlined at <em>build</em> time, so changing one in a host dashboard does nothing until you rebuild — moving the API to a new host means rebuilding <em>both</em> frontends, not just repointing DNS. <span class="m">ADMIN_BASE_PATH</span> is the other one that matters: without it the nested admin build requests <span class="m">/_next/…</span> and is served the web app's chunks.
+      </div>
+    </section>
+
+    <!-- ============ 5. GITHUB ============ -->
+    <section>
+      <p class="kicker">GitHub &amp; deployment</p>
+      <h2>What a push actually triggers</h2>
+      <p>Three workflows, and they deliberately do not overlap. CI never runs on <span class="m">main</span>; the deploys only run on <span class="m">main</span>.</p>
+
+      <div class="tablewrap wide">
+        <table>
+          <thead><tr><th>Workflow</th><th>Fires on</th><th>Does</th><th>Gate</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="mono">ci.yml</td>
+              <td>every branch <em>except</em> main, plus every PR</td>
+              <td>typecheck:all · vitest · ruff · mypy · OpenAPI export · <span class="m">npm run verify</span></td>
+              <td><span class="pill build">always</span></td>
+            </tr>
+            <tr>
+              <td class="mono">deploy.yml</td>
+              <td>push to main (any path)</td>
+              <td>pre-warm API → build web → build admin with <span class="m">ADMIN_BASE_PATH=/admin</span> → nest into <span class="m">apps/web/out/admin</span> → Pages</td>
+              <td><span class="pill live">always</span></td>
+            </tr>
+            <tr>
+              <td class="mono">— none —</td>
+              <td>the API</td>
+              <td>Render deploys from its own git integration, per <span class="m">render.yaml</span></td>
+              <td><span class="pill manual">outside Actions</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>The web deploy, step by step</h3>
+      <ol class="pipeline">
+        <li>
+          <span class="step-t">Push lands on main</span>
+          <span class="step-d">CI does <em>not</em> run here — it ran on the branch and the PR. <span class="m">deploy.yml</span> and possibly <span class="m">deploy-admin.yml</span> start in parallel, each with its own concurrency group so deploys serialize rather than cancel each other.</span>
+        </li>
+        <li>
+          <span class="step-t">Pre-warm the API</span>
+          <span class="step-d">A best-effort <span class="m">curl</span> to <span class="m">$API_BASE_URL/healthz</span> with retries, to wake the sleeping Render instance before any build-time fetch needs it.</span>
+        </li>
+        <li>
+          <span class="step-t">Build apps/web</span>
+          <span class="step-d">With <span class="m">DATA_SOURCE</span> unset the public pages build from the local seed — zero config, always green. Set the repo variable to <span class="m">api</span> and they build from live data instead, with <span class="m">ALLOW_SEED_FALLBACK=1</span> so an unreachable API degrades to the seed rather than failing the deploy.</span>
+        </li>
+        <li>
+          <span class="step-t">Build the admin app under /admin</span>
+          <span class="step-d">A second, independent Next build with <span class="m">ADMIN_BASE_PATH=/admin</span>, which prefixes every route <em>and</em> every asset URL. Its <span class="m">NEXT_PUBLIC_*</span> values are set separately from the web build's.</span>
+        </li>
+        <li>
+          <span class="step-t">Nest one export into the other</span>
+          <span class="step-d"><span class="m">apps/admin/out</span> is copied to <span class="m">apps/web/out/admin</span>, guarded by a check that the path does not already exist — if it does, the two builds are fighting over the same route and the deploy fails rather than publishing something half-built.</span>
+        </li>
+        <li>
+          <span class="step-t">Publish to Pages</span>
+          <span class="step-d">The combined <span class="m">apps/web/out</span> is uploaded and deployed. One artifact, one origin, both apps.</span>
+        </li>
+      </ol>
+
+      <h3>Repo configuration this depends on</h3>
+      <div class="tablewrap wide">
+        <table>
+          <thead><tr><th>Name</th><th>Kind</th><th>Consumed by</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">API_BASE_URL</td><td>variable</td><td>both deploys — build-time fetches and the client bundle</td></tr>
+            <tr><td class="mono">SUPABASE_URL</td><td>variable</td><td>both deploys — inlined for auth</td></tr>
+            <tr><td class="mono">SUPABASE_ANON_KEY</td><td>secret</td><td>both deploys — auth only, now that RLS is on</td></tr>
+            <tr><td class="mono">WEB_URL</td><td>variable</td><td>admin — link back to the public app</td></tr>
+            <tr><td class="mono">ADMIN_BASE_PATH</td><td>set in-workflow</td><td>admin build — <span class="m">/admin</span> in CI, unset in dev</td></tr>
+            <tr><td class="mono">DATA_SOURCE</td><td>variable</td><td>optional — <span class="m">api</span> to build public pages from live data</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note closed" style="margin-top:26px">
+        <span class="note-h">Cloudflare is retired, but not yet disconnected</span>
+        <span class="m">deploy-admin.yml</span> and <span class="m">wrangler.jsonc</span> are gone. What remains is a <strong>Workers build connected to the repo through the Cloudflare dashboard</strong> — it still posts a check on every PR, and with nothing left to build it fails at Wrangler's app detection in the monorepo root. Disconnect it in the dashboard; there is nothing in the repo left to fix. Delete the old <span class="m">kr-admin</span> project too, but only <em>after</em> confirming <span class="m">/admin</span> serves from Pages: until then it is the only working admin, and it points at the live database.
+      </div>
+
+      <div class="note live" style="margin-top:16px">
+        <span class="note-h">The Python half of CI had never run</span>
+        <span class="m">ci.yml</span>'s dependency install set <span class="m">working-directory: apps/api</span> <em>and</em> passed <span class="m">apps/api/requirements.txt</span>, resolving to <span class="m">apps/api/apps/api/requirements.txt</span>. The step failed on every run, so ruff, mypy and the OpenAPI export below it never executed. The path is fixed; all four now pass.
+      </div>
+    </section>
+
+    <!-- ============ 6. SEAMS ============ -->
+    <section>
+      <p class="kicker">Where it bends</p>
+      <h2>Seams worth knowing before you change something</h2>
+      <ul class="plain">
+        <li><strong>Web and admin now share a browser origin.</strong> They are still separate builds, but they share <span class="m">localStorage</span> and therefore the Supabase session — signing in on the public app also signs you into <span class="m">/admin</span>. That is effectively single sign-on; <span class="m">require_admin</span> still decides what the session can reach.</li>
+        <li><strong>The seed is still the source of record for media.</strong> <span class="m">data/renderings.ts</span> and <span class="m">data/drawingSheets.ts</span> flow into the database through <span class="m">npm run export:seed</span> and <span class="m">scripts/seed.py</span>, with ids derived from kind plus owner slug plus index — so re-seeding upserts rather than duplicates.</li>
+        <li><strong>Native clients drift silently.</strong> A change to <span class="m">packages/contracts</span> compiles both web apps and reaches neither <span class="m">Models.swift</span> nor <span class="m">Models.kt</span>. Nothing fails; the apps just decode the old shape.</li>
+        <li><strong>Every entity carries a required <span class="m">projectId</span>.</strong> Collection GETs accept <span class="m">?projectId=</span>, and omitting it returns every project's rows — so a caller rendering one project must always pass it. Slugs are unique per project, not globally.</li>
+        <li><strong>Role lives in <span class="m">app_metadata</span>, never <span class="m">user_metadata</span>.</strong> Only the service_role key can write it. <span class="m">user_profiles.role</span> is a mirror for display; <span class="m">PATCH /me</span> accepts <span class="m">displayName</span> and nothing else, because a <span class="m">role</span> field there would be self-promotion.</li>
+        <li><strong>There is no per-user project membership.</strong> New signups get <span class="m">viewer</span>, which means read access to <em>every</em> project. That is the open tenancy question, not a bug in a specific endpoint.</li>
+        <li><strong>Uploads need a real Drive owner.</strong> A service account has no storage of its own, so <span class="m">GOOGLE_DRIVE_FOLDER_ID</span> must name a folder owned by a person and shared with the service account as Editor — without it, the upload endpoints return <span class="m">501</span>.</li>
+      </ul>
+    </section>
+
+    <footer>
+      Drawn from the working tree — workflows in <span class="m">.github/workflows/</span>, launcher in <span class="m">scripts/dev.sh</span>,
+      Render blueprint in <span class="m">apps/api/render.yaml</span>, and the Next configs in each app.<br>
+      Verified live against Supabase on 2026-08-22: 23 tables, RLS enabled on all of them.<br>
+      Updated for the <span class="m">/admin</span> mount (PR #4) — admin moved off Cloudflare onto the Pages origin, and the CI requirements path was fixed.
+    </footer>
+
+  </div>
+</div>
+</body>
+</html>
