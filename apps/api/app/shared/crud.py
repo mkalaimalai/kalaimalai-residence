@@ -32,6 +32,7 @@ from app.shared.auth import require_admin, require_user
 from app.shared.db import get_session
 from app.shared.errors import ConflictError, NotFoundError, ValidationError
 from app.shared.ids import new_id
+from app.shared.relations import NULLABLE_REFS
 from app.shared.sqlalchemy_repository import SqlAlchemyCrud
 
 TEntity = TypeVar("TEntity")
@@ -41,13 +42,29 @@ TEntity = TypeVar("TEntity")
 def make_mappers(
     entity_cls: type[TEntity],
 ) -> tuple[Callable[[object], TEntity], Callable[[TEntity], dict]]:
+    """Map a dataclass entity to and from its ORM row.
+
+    Relation columns are NULL-able in the database (a foreign key cannot accept the
+    empty string) but `""` in the entity, which is what every schema and
+    `types/index.ts` already declare. This is the one place that translation happens,
+    so the storage change stays invisible above it. See app.shared.relations.
+    """
     field_names = [f.name for f in dataclasses.fields(entity_cls)]
+    ref_names = [name for name in field_names if name in NULLABLE_REFS]
 
     def to_entity(row: object) -> TEntity:
-        return entity_cls(**{name: getattr(row, name) for name in field_names})
+        values = {name: getattr(row, name) for name in field_names}
+        for name in ref_names:
+            if values[name] is None:
+                values[name] = ""
+        return entity_cls(**values)
 
     def to_columns(entity: TEntity) -> dict:
-        return {name: getattr(entity, name) for name in field_names}
+        values = {name: getattr(entity, name) for name in field_names}
+        for name in ref_names:
+            if values[name] == "":
+                values[name] = None
+        return values
 
     return to_entity, to_columns
 

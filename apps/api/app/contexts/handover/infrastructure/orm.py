@@ -13,7 +13,7 @@ class WarrantyModel(ProjectScoped, Base):
     id: Mapped[str] = mapped_column(String, primary_key=True)
     item: Mapped[str] = mapped_column(String, nullable=False)
     category: Mapped[str] = mapped_column(String, default="")
-    vendor_id: Mapped[str] = mapped_column(String, default="")
+    vendor_id: Mapped[str | None] = mapped_column(String, nullable=True, default=None)
     brand: Mapped[str] = mapped_column(String, default="")
     purchase_date: Mapped[str] = mapped_column(String, default="")
     warranty_start: Mapped[str] = mapped_column(String, default="")

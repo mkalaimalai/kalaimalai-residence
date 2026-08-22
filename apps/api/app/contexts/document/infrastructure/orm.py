@@ -13,8 +13,8 @@ class DrawingModel(ProjectScoped, Base):
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
     title: Mapped[str] = mapped_column(String, nullable=False)
-    domain_id: Mapped[str] = mapped_column(String, default="")
-    space_id: Mapped[str] = mapped_column(String, default="")
+    domain_id: Mapped[str | None] = mapped_column(String, nullable=True, default=None)
+    space_id: Mapped[str | None] = mapped_column(String, nullable=True, default=None)
     revision: Mapped[str] = mapped_column(String, default="")
     date: Mapped[str] = mapped_column(String, default="")
     status: Mapped[str] = mapped_column(String, default="Draft")
@@ -30,8 +30,8 @@ class GalleryModel(ProjectScoped, Base):
     title: Mapped[str] = mapped_column(String, nullable=False)
     category: Mapped[str] = mapped_column(String, default="render")
     image: Mapped[str] = mapped_column(String, default="")
-    space_id: Mapped[str] = mapped_column(String, default="")
-    domain_id: Mapped[str] = mapped_column(String, default="")
+    space_id: Mapped[str | None] = mapped_column(String, nullable=True, default=None)
+    domain_id: Mapped[str | None] = mapped_column(String, nullable=True, default=None)
     caption: Mapped[str] = mapped_column(Text, default="")
 
 
@@ -42,6 +42,6 @@ class LessonModel(ProjectScoped, Base):
     title: Mapped[str] = mapped_column(String, nullable=False)
     category: Mapped[str] = mapped_column(String, default="")
     summary: Mapped[str] = mapped_column(Text, default="")
-    domain_id: Mapped[str] = mapped_column(String, default="")
-    space_id: Mapped[str] = mapped_column(String, default="")
+    domain_id: Mapped[str | None] = mapped_column(String, nullable=True, default=None)
+    space_id: Mapped[str | None] = mapped_column(String, nullable=True, default=None)
     impact: Mapped[dict] = mapped_column(JSONB, default=dict)
