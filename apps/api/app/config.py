@@ -31,6 +31,16 @@ class Settings(BaseSettings):
     # reports 501 rather than the server pretending it can do something it cannot.
     supabase_service_role_key: str = ""
 
+    # Connections kept open and reused between requests. 0 disables pooling, which is
+    # the old behaviour and the safe answer for a short-lived process (a script, a
+    # migration) that should not hold connections open.
+    #
+    # For the API itself, keep this non-zero: opening a Postgres connection costs a TCP
+    # round trip, a TLS handshake and an auth exchange, and with pooling disabled that
+    # sequence runs on *every request*. Invisible against a local database; the
+    # dominant cost when the database is in another region (see `shared/db.py`).
+    db_pool_size: int = 5
+
     # Comma-separated list of allowed browser origins for CORS.
     cors_origins: str = "http://localhost:3000"
 
