@@ -55,6 +55,33 @@ export type DrawingStatus =
   | "Superseded"
   | "Issued for Construction";
 
+/**
+ * ISO 19650 suitability code — what a revision may be *used for*, which is a separate
+ * question from where it sits in our workflow (`DrawingStatus`).
+ *
+ * The distinction is the point of the standard: "Approved" says an internal review
+ * finished, while `A1` says the site may build from it. Keeping both means a drawing
+ * can be approved-but-not-yet-released without that state being inexpressible.
+ *
+ *   S0  work in progress, not shared
+ *   S1  shared for coordination
+ *   S2  shared for information
+ *   S3  shared for review and comment
+ *   S4  shared for stage approval
+ *   A1  authorized and accepted — build from this
+ *   B1  partial sign-off, with comments
+ *   CR  construction record (as-built)
+ */
+export type Suitability =
+  | "S0"
+  | "S1"
+  | "S2"
+  | "S3"
+  | "S4"
+  | "A1"
+  | "B1"
+  | "CR";
+
 export interface Drawing {
   /** Owning project. Tenant boundary — see api/migrations/002_project_scope.sql. */
   projectId: string;
@@ -62,12 +89,48 @@ export interface Drawing {
   title: string;
   domainId: string;
   spaceId: string; // "" if not room-specific
+  /**
+   * Code of the current revision. Kept as a plain string so existing readers are
+   * unaffected; the authoritative history is `DrawingRevision[]`, and this mirrors
+   * the `code` of the latest one.
+   */
   revision: string;
   date: string; // ISO yyyy-mm-dd
   status: DrawingStatus;
+  /** ISO 19650 code for the current revision. Mirrors the latest `DrawingRevision`. */
+  suitability: Suitability;
   consultant: string;
   fileUrl: string;
   notes: string;
+}
+
+/**
+ * One issue of a drawing.
+ *
+ * A `Drawing` used to carry `revision: "R3"` and a single `fileUrl`, which meant R1 and
+ * R2 did not exist anywhere — every revision overwrote its predecessor. That makes the
+ * questions worth asking unanswerable: when was this approved, what changed, was that
+ * wall built from a superseded sheet.
+ *
+ * So the file belongs to the revision, not to the drawing. The drawing is the stable
+ * register entry (IFC calls it `IfcDocumentInformation`); this is the versioned issue,
+ * the same shape Speckle models as a commit.
+ */
+export interface DrawingRevision {
+  /** Owning project. Tenant boundary — see api/migrations/002_project_scope.sql. */
+  projectId: string;
+  id: string;
+  drawingId: string;
+  /** Revision code as issued: "R1", "P01", "C02". Unique per drawing. */
+  code: string;
+  issuedOn: string; // ISO yyyy-mm-dd
+  suitability: Suitability;
+  /** The file as issued. Superseded revisions keep their own file. */
+  fileUrl: string;
+  /** Revision this one replaces. "" for the first issue. */
+  supersedesId: string;
+  issuedBy: string;
+  changeNote: string;
 }
 
 export interface Vendor {
