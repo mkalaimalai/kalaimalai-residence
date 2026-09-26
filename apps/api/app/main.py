@@ -71,3 +71,28 @@ async def healthz_db() -> dict[str, str]:
             **target,
         }
     return {"status": "ok", **target}
+
+
+@app.get("/healthz/keepalive", tags=["health"])
+async def healthz_keepalive() -> dict[str, str | bool]:
+    """Read one real row, to count as activity against an idling free-tier database.
+
+    Supabase pauses a free project after ~7 days with no traffic, and restoring it is a
+    manual dashboard act. `/healthz` never opens a connection and `/healthz/db` runs a
+    bare `SELECT 1`, which the connection itself satisfies; this touches an actual table
+    so the probe is indistinguishable from real application traffic.
+
+    Deliberately unauthenticated, like the other health routes: the cron that calls it
+    (.github/workflows/keep-alive.yml) holds no Supabase token, and the response
+    discloses nothing but a row count.
+    """
+    try:
+        async with engine.connect() as conn:
+            result = await conn.execute(text("SELECT 1 FROM projects LIMIT 1"))
+            found = result.scalar() is not None
+    except Exception as exc:
+        # Broad on purpose, as in `/healthz/db`: any failure is the answer being asked for.
+        return {"status": "error", "error": type(exc).__name__, "detail": str(exc)[:300]}
+    # `rows: False` is still a successful ping — an empty table keeps the project awake
+    # just as well, and conflating "no data" with "unreachable" would hide a real outage.
+    return {"status": "ok", "rows": found}

@@ -1,0 +1,41 @@
+# Keeps the two free tiers from going idle.
+#
+# `GET /healthz/keepalive` is the probe because it is the only endpoint that does both
+# jobs at once: it reads a real row (`SELECT 1 FROM projects LIMIT 1`), so one request
+# counts as genuine Supabase activity *and* wakes the sleeping Render instance. Plain
+# `/healthz` would not do — it never opens a connection, so it keeps Render warm while
+# letting Supabase pause regardless. A Supabase free project pauses after ~7 days with
+# no traffic; Render free sleeps after ~15 min idle.
+#
+# Guarded on `github.repository` for the same reason deploy.yml is: this file is
+# mirrored into the org Pages repo by sync-pages-repo.yml, and without the guard both
+# copies would ping on the same schedule.
+name: keep-alive
+
+on:
+  schedule:
+    # Every 10 minutes. GitHub queues (and on a busy hour, drops) scheduled runs, so
+    # treat this as best-effort: the Render wake-up is opportunistic, while the
+    # 7-day Supabase window is wide enough that missed runs do not matter.
+    - cron: "*/10 * * * *"
+  # So the probe can be fired by hand after un-pausing a project.
+  workflow_dispatch:
+
+# Two runs overlapping would achieve nothing; the newer one is the useful one.
+concurrency:
+  group: keep-alive
+  cancel-in-progress: true
+
+jobs:
+  ping:
+    if: github.repository == 'mkalaimalai/kalaimalai-residence'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping keepalive (wakes Render, touches Supabase)
+        if: vars.API_BASE_URL != ''
+        # --max-time 90: a cold Render instance can take ~60s to answer the first
+        # request. Failure is never fatal — a down API must not show up as a red
+        # cron run every 10 minutes and drown out real CI signal.
+        run: |
+          curl -sS --max-time 90 --retry 3 --retry-all-errors \
+            "${{ vars.API_BASE_URL }}/healthz/keepalive" || echo "ping failed (non-fatal)"
