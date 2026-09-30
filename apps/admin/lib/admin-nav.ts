@@ -20,7 +20,7 @@ export interface NavSection {
   key: string;
   label: string;
   /** lucide-react icon name, resolved in the sidebar. */
-  icon: "boxes" | "hammer" | "receipt" | "images" | "settings";
+  icon: "boxes" | "hammer" | "receipt" | "images" | "settings" | "users";
   description: string;
   items: NavItem[];
 }
@@ -66,6 +66,16 @@ export const ADMIN_NAV: NavSection[] = [
     items: [
       { key: "quotes", label: "Quotes" },
       { key: "boq", label: "BOQ" },
+    ],
+  },
+  {
+    key: "marketplace",
+    label: "Marketplace",
+    icon: "users",
+    description: "Professional network — architects, consultants, contractors, trades.",
+    items: [
+      { key: "professionals", label: "Professionals", group: "Directory" },
+      { key: "briefs", label: "Project Briefs", group: "Engagement" },
     ],
   },
   {

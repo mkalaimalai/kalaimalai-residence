@@ -28,6 +28,10 @@ from app.contexts.notification.interfaces.rest_controller import (
 from app.contexts.project.interfaces.rest_controller import routers as project_routers
 from app.contexts.quality.interfaces.rest_controller import routers as quality_routers
 from app.contexts.vendor.interfaces.rest_controller import router as vendor_router
+from app.contexts.marketplace.interfaces.rest_controller import (
+    professional_router,
+    brief_router,
+)
 from app.shared.db import Base, engine
 
 
@@ -37,6 +41,8 @@ def build_api_router() -> APIRouter:
         *project_routers,
         *document_routers,
         vendor_router,
+        professional_router,
+        brief_router,
         *commercial_routers,
         *quality_routers,
         *handover_routers,

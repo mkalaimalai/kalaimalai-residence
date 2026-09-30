@@ -141,3 +141,97 @@ export interface UserProfile {
   createdAt: string;
   updatedAt: string;
 }
+
+export type ProfessionalType =
+  | "Architect"
+  | "Interior Designer"
+  | "Structural Consultant"
+  | "Electrical Consultant"
+  | "Plumbing Consultant"
+  | "HVAC Consultant"
+  | "Lighting Consultant"
+  | "Automation Specialist"
+  | "Landscape Architect"
+  | "General Contractor"
+  | "Subcontractor"
+  | "Supplier"
+  | "Trade";
+
+export type ProfessionalStatus = "Active" | "Inactive" | "On Hold" | "Blacklisted";
+
+export interface Professional {
+  projectId: string;
+  id: string;
+  userId?: string;
+  name: string;
+  company: string;
+  type: ProfessionalType;
+  specializations: string[];
+  contactPerson: string;
+  phone: string;
+  email: string;
+  location: string;
+  serviceAreas: string[];
+  website: string;
+  portfolioImages: string[];
+  certifications: string[];
+  licenseNumber: string;
+  rating: number;
+  reviewCount: number;
+  status: ProfessionalStatus;
+  availability: string;
+  hourlyRate?: number;
+  currency?: string;
+  notes: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProfessionalReview {
+  projectId: string;
+  id: string;
+  professionalId: string;
+  reviewerId: string;
+  reviewerName: string;
+  rating: number;
+  title: string;
+  content: string;
+  projectName: string;
+  date: string;
+  verified: boolean;
+}
+
+export type BriefStatus = "Draft" | "Published" | "In Progress" | "Closed";
+
+export interface ProjectBrief {
+  projectId: string;
+  id: string;
+  title: string;
+  description: string;
+  requiredProfessionalTypes: ProfessionalType[];
+  budgetMin: number;
+  budgetMax: number;
+  budgetCurrency: string;
+  timeline: string;
+  location: string;
+  status: BriefStatus;
+  responses: BriefResponse[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type ResponseStatus = "Pending" | "Shortlisted" | "Rejected" | "Accepted";
+
+export interface BriefResponse {
+  id: string;
+  briefId: string;
+  professionalId: string;
+  professionalName: string;
+  proposedFee: number;
+  currency: string;
+  timeline: string;
+  approach: string;
+  portfolioItems: string[];
+  status: ResponseStatus;
+  submittedAt: string;
+}

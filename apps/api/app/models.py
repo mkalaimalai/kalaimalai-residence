@@ -38,6 +38,12 @@ from app.contexts.quality.infrastructure.orm import (  # noqa: F401
     SnagModel,
 )
 from app.contexts.vendor.infrastructure.orm import VendorModel  # noqa: F401
+from app.contexts.marketplace.infrastructure.orm import (  # noqa: F401
+    ProfessionalModel,
+    ProfessionalReviewModel,
+    ProjectBriefModel,
+    BriefResponseModel,
+)
 
 __all__ = ["all_tables_loaded"]
 

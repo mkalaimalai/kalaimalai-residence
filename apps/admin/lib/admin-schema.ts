@@ -26,6 +26,8 @@ export type RefKey =
   | "drawings"
   | "decisions"
   | "lessons"
+  | "professionals"
+  | "briefs"
   // Not referenced by any `FieldDef` — loaded so the quotes screen can offer BOQ
   // packages for a quote's `boqId`.
   | "boq";
@@ -71,6 +73,27 @@ const GALLERY_CATEGORY = [
   "render", "drawing", "progress", "final", "material", "furniture",
   "lighting", "landscape",
 ] as const;
+
+const PROFESSIONAL_TYPE = [
+  "Architect",
+  "Interior Designer",
+  "Structural Consultant",
+  "Electrical Consultant",
+  "Plumbing Consultant",
+  "HVAC Consultant",
+  "Lighting Consultant",
+  "Automation Specialist",
+  "Landscape Architect",
+  "General Contractor",
+  "Subcontractor",
+  "Supplier",
+  "Trade",
+] as const;
+
+const PROFESSIONAL_STATUS = ["Active", "Inactive", "On Hold", "Blacklisted"] as const;
+
+const BRIEF_STATUS = ["Draft", "Published", "In Progress", "Closed"] as const;
+const RESPONSE_STATUS = ["Pending", "Shortlisted", "Rejected", "Accepted"] as const;
 
 export const ENTITIES: EntityDef[] = [
   {
@@ -354,6 +377,51 @@ export const ENTITIES: EntityDef[] = [
       { name: "spaceId", label: "Space", type: "idSelect", ref: "spaces" },
       { name: "domainId", label: "Domain", type: "idSelect", ref: "domains" },
       { name: "caption", label: "Caption", type: "textarea" },
+    ],
+  },
+  {
+    key: "professionals",
+    label: "Professionals",
+    endpoint: "/professionals",
+    titleField: "name",
+    fields: [
+      { name: "name", label: "Name", type: "text" },
+      { name: "company", label: "Company", type: "text" },
+      { name: "type", label: "Type", type: "enum", options: PROFESSIONAL_TYPE },
+      { name: "specializations", label: "Specializations (one per line)", type: "stringList" },
+      { name: "contactPerson", label: "Contact person", type: "text" },
+      { name: "phone", label: "Phone", type: "text" },
+      { name: "email", label: "Email", type: "text" },
+      { name: "location", label: "Location", type: "text" },
+      { name: "serviceAreas", label: "Service areas (one per line)", type: "stringList" },
+      { name: "website", label: "Website", type: "text" },
+      { name: "portfolioImages", label: "Portfolio images (one per line)", type: "stringList" },
+      { name: "certifications", label: "Certifications (one per line)", type: "stringList" },
+      { name: "licenseNumber", label: "License number", type: "text" },
+      { name: "rating", label: "Rating (0–5)", type: "number" },
+      { name: "reviewCount", label: "Review count", type: "number" },
+      { name: "status", label: "Status", type: "enum", options: PROFESSIONAL_STATUS },
+      { name: "availability", label: "Availability", type: "text" },
+      { name: "hourlyRate", label: "Hourly rate", type: "number" },
+      { name: "currency", label: "Currency", type: "enum", options: CURRENCY },
+      { name: "notes", label: "Notes", type: "textarea" },
+    ],
+  },
+  {
+    key: "briefs",
+    label: "Project Briefs",
+    endpoint: "/briefs",
+    titleField: "title",
+    fields: [
+      { name: "title", label: "Title", type: "text" },
+      { name: "description", label: "Description", type: "textarea" },
+      { name: "requiredProfessionalTypes", label: "Required professional types (one per line)", type: "stringList" },
+      { name: "budgetMin", label: "Budget min", type: "number" },
+      { name: "budgetMax", label: "Budget max", type: "number" },
+      { name: "budgetCurrency", label: "Budget currency", type: "enum", options: CURRENCY },
+      { name: "timeline", label: "Timeline", type: "text" },
+      { name: "location", label: "Location", type: "text" },
+      { name: "status", label: "Status", type: "enum", options: BRIEF_STATUS },
     ],
   },
 ];

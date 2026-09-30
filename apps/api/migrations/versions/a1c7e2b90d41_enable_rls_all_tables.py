@@ -29,7 +29,7 @@ TABLES = (
     "decisions", "snags", "boqs", "boq_line_items", "materials", "lessons",
     "progress_entries", "warranties", "gallery_items", "media_sets",
     "quotes", "quote_line_items", "purchase_orders", "deliveries",
-    "inspections", "notifications", "user_profiles",
+    "inspections", "notifications", "user_profiles", "alembic_version",
 )
 
 

@@ -21,6 +21,7 @@ import {
   PanelLeftOpen,
   Receipt,
   Settings,
+  Users,
   type LucideIcon,
 } from "lucide-react";
 import { ADMIN_NAV, groupItems, type NavSection } from "@/lib/admin-nav";
@@ -32,6 +33,7 @@ const ICONS: Record<NavSection["icon"], LucideIcon> = {
   receipt: Receipt,
   images: Images,
   settings: Settings,
+  users: Users,
 };
 
 export function AdminSidebar({

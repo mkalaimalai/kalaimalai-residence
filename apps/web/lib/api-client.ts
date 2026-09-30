@@ -23,9 +23,13 @@ import type {
   Warranty,
 } from "@/types";
 import type {
+  BriefResponse,
   Delivery,
   Inspection,
   NotificationRecord,
+  Professional,
+  ProfessionalReview,
+  ProjectBrief,
   PurchaseOrder,
   Quote,
   QuoteApproval,
@@ -240,4 +244,36 @@ export const api = {
    */
   projectFull: () =>
     apiGet<Project>(`/projects/${encodeURIComponent(activeProjectId)}`),
+
+  // --- Marketplace ---
+  /** Professional directory (admin-scoped writes, user-scoped reads). */
+  professionals: () => apiGet<Professional[]>(scopedPath("/professionals")),
+  professional: (id: string) =>
+    apiGet<Professional>(`/professionals/${encodeURIComponent(id)}`),
+  createProfessional: (body: Professional) =>
+    apiPost<Professional>(scopedPath("/professionals"), body),
+  updateProfessional: (id: string, body: Partial<Professional>) =>
+    apiPatch<Professional>(`/professionals/${encodeURIComponent(id)}`, body),
+  deleteProfessional: (id: string) =>
+    apiDelete<void>(`/professionals/${encodeURIComponent(id)}`),
+
+  professionalReviews: (professionalId: string) =>
+    apiGet<ProfessionalReview[]>(`/professionals/${encodeURIComponent(professionalId)}/reviews`),
+  createReview: (professionalId: string, body: ProfessionalReview) =>
+    apiPost<ProfessionalReview>(`/professionals/${encodeURIComponent(professionalId)}/reviews`, body),
+
+  briefs: () => apiGet<ProjectBrief[]>(scopedPath("/briefs")),
+  brief: (id: string) =>
+    apiGet<ProjectBrief>(`/briefs/${encodeURIComponent(id)}`),
+  createBrief: (body: ProjectBrief) =>
+    apiPost<ProjectBrief>(scopedPath("/briefs"), body),
+  updateBrief: (id: string, body: Partial<ProjectBrief>) =>
+    apiPatch<ProjectBrief>(`/briefs/${encodeURIComponent(id)}`, body),
+
+  briefResponses: (briefId: string) =>
+    apiGet<BriefResponse[]>(`/briefs/${encodeURIComponent(briefId)}/responses`),
+  createResponse: (briefId: string, body: BriefResponse) =>
+    apiPost<BriefResponse>(`/briefs/${encodeURIComponent(briefId)}/responses`, body),
+  updateResponse: (briefId: string, responseId: string, body: Partial<BriefResponse>) =>
+    apiPatch<BriefResponse>(`/briefs/${encodeURIComponent(briefId)}/responses/${encodeURIComponent(responseId)}`, body),
 };

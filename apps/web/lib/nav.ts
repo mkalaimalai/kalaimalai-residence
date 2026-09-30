@@ -26,4 +26,5 @@ export const PORTAL_NAV = [
   { label: "Progress", href: "/portal/progress" },
   { label: "Snags", href: "/portal/snags" },
   { label: "Warranties", href: "/portal/warranties" },
+  { label: "Marketplace", href: "/portal/marketplace" },
 ] as const;

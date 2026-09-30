@@ -361,3 +361,95 @@ export interface GalleryItem {
   domainId: string; // "" if not domain-specific
   caption: string;
 }
+
+export type ProfessionalType =
+  | "Architect"
+  | "Interior Designer"
+  | "Structural Consultant"
+  | "Electrical Consultant"
+  | "Plumbing Consultant"
+  | "HVAC Consultant"
+  | "Lighting Consultant"
+  | "Automation Specialist"
+  | "Landscape Architect"
+  | "General Contractor"
+  | "Subcontractor"
+  | "Supplier"
+  | "Trade";
+
+export type ProfessionalStatus = "Active" | "Inactive" | "On Hold" | "Blacklisted";
+
+export interface Professional {
+  /** Owning project. Tenant boundary — see api/migrations/002_project_scope.sql. */
+  projectId: string;
+  id: string;
+  /** Links to Supabase Auth user if the professional has an account. */
+  userId?: string;
+  name: string;
+  company: string;
+  type: ProfessionalType;
+  specializations: string[];
+  contactPerson: string;
+  phone: string;
+  email: string;
+  location: string;
+  serviceAreas: string[];
+  website: string;
+  portfolioImages: string[];
+  certifications: string[];
+  licenseNumber: string;
+  rating: number; // 0–5
+  reviewCount: number;
+  status: ProfessionalStatus;
+  availability: string; // e.g., "Available in 2 weeks"
+  hourlyRate?: number;
+  currency?: Currency;
+  notes: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProfessionalReview {
+  /** Owning project. Tenant boundary — see api/migrations/002_project_scope.sql. */
+  projectId: string;
+  id: string;
+  professionalId: string;
+  reviewerId: string; // UserProfile id
+  reviewerName: string;
+  rating: number; // 1–5
+  title: string;
+  content: string;
+  projectName: string;
+  date: string;
+  verified: boolean;
+}
+
+export interface ProjectBrief {
+  /** Owning project. Tenant boundary — see api/migrations/002_project_scope.sql. */
+  projectId: string;
+  id: string;
+  title: string;
+  description: string;
+  requiredProfessionalTypes: ProfessionalType[];
+  budgetRange: { min: number; max: number; currency: Currency };
+  timeline: string;
+  location: string;
+  status: "Draft" | "Published" | "In Progress" | "Closed";
+  responses: BriefResponse[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface BriefResponse {
+  id: string;
+  briefId: string;
+  professionalId: string;
+  professionalName: string;
+  proposedFee: number;
+  currency: Currency;
+  timeline: string;
+  approach: string;
+  portfolioItems: string[];
+  status: "Pending" | "Shortlisted" | "Rejected" | "Accepted";
+  submittedAt: string;
+}
